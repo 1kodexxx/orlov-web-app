@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import Layout from "./layout/Layout";
-import NavBar from "./components/NavBar";
 
 import Home from "./pages/Home";
 import AboutUs from "./pages/AboutUs";
@@ -12,7 +11,6 @@ import Reviews from "./pages/Reviews";
 const App = () => {
   return (
     <Layout>
-      <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about-us" element={<AboutUs />} />

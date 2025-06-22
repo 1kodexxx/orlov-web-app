@@ -1,4 +1,4 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaUserTie,
   FaShoppingCart,
@@ -19,29 +19,24 @@ const navItems = [
 const NavBar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleLogoClick = () => {
-    if (location.pathname === "/") {
-      navigate("/", { replace: true }); // сбрасываем активное состояние
-    } else {
-      navigate("/");
-    }
-    setMobileMenuOpen(false); // закрываем меню на мобилке
+    navigate("/");
+    setMobileMenuOpen(false);
   };
 
   return (
-    <header className="bg-background shadow-md sticky top-0 z-50">
-      <nav className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between relative">
-        {/* ЛОГОТИП */}
+    <header className="w-full sticky top-0 z-50 bg-background shadow-md">
+      <div className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between relative">
+        {/* Логотип */}
         <div
-          style={{ cursor: 'url("/cursor/cursor-pointer.png"), pointer' }}
           onClick={handleLogoClick}
+          style={{ cursor: 'url("/cursor/cursor-pointer.png"), pointer' }}
           className="text-primary font-bold text-xl cursor-pointer">
           Orlov Brand
         </div>
 
-        {/* ЦЕНТРАЛЬНОЕ МЕНЮ */}
+        {/* Центр. меню */}
         <ul className="hidden md:flex absolute left-1/2 -translate-x-1/2 gap-6">
           {navItems.map(({ label, path }) => (
             <li key={path}>
@@ -60,7 +55,7 @@ const NavBar = () => {
           ))}
         </ul>
 
-        {/* ИКОНКИ */}
+        {/* Иконки */}
         <div className="hidden md:flex gap-4 text-primary text-xl">
           <span className="cursor-pointer hover:scale-110 transition">
             <FaSearchDollar />
@@ -73,15 +68,15 @@ const NavBar = () => {
           </span>
         </div>
 
-        {/* БУРГЕР-МЕНЮ на мобилках */}
+        {/* Бургер */}
         <button
           className="md:hidden text-primary text-2xl"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           <FaBars />
         </button>
-      </nav>
+      </div>
 
-      {/* ВЫПАДАЮЩЕЕ МЕНЮ НА МОБИЛКАХ */}
+      {/* Мобильное меню */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-background px-6 py-4 border-t border-gray-700 space-y-4">
           {navItems.map(({ label, path }) => (
