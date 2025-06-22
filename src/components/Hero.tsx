@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import "../assets/background.png";
 
 const Hero = () => {
@@ -17,12 +16,6 @@ const Hero = () => {
         <p className="text-lg md:text-xl text-text-secondary mb-8">
           Элитные чехлы ручной работы. Роскошь в каждой детали.
         </p>
-
-        <Link
-          to="/catalog"
-          className="inline-block bg-primary text-background px-8 py-3 rounded-full font-semibold text-sm uppercase tracking-wide hover:brightness-110 transition">
-          Перейти в каталог
-        </Link>
       </motion.div>
     </section>
   );
