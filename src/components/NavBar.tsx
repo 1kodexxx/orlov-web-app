@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   FaUserTie,
   FaShoppingCart,
@@ -18,12 +18,27 @@ const navItems = [
 
 const NavBar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogoClick = () => {
+    if (location.pathname === "/") {
+      navigate("/", { replace: true }); // сбрасываем активное состояние
+    } else {
+      navigate("/");
+    }
+    setMobileMenuOpen(false); // закрываем меню на мобилке
+  };
 
   return (
     <header className="bg-background shadow-md sticky top-0 z-50">
       <nav className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between relative">
         {/* ЛОГОТИП */}
-        <div className="text-primary font-bold text-xl">Orlov Brand</div>
+        <div
+          onClick={handleLogoClick}
+          className="text-primary font-bold text-xl cursor-pointer">
+          Orlov Brand
+        </div>
 
         {/* ЦЕНТРАЛЬНОЕ МЕНЮ */}
         <ul className="hidden md:flex absolute left-1/2 -translate-x-1/2 gap-6">
@@ -66,8 +81,8 @@ const NavBar = () => {
             <NavLink
               key={path}
               to={path}
-              className="block text-text-secondary text-sm hover:text-primary transition"
-              onClick={() => setMobileMenuOpen(false)}>
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-text-secondary text-sm hover:text-primary transition">
               {label}
             </NavLink>
           ))}

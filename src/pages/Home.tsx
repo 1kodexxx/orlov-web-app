@@ -1,8 +1,10 @@
+import Hero from "../components/Hero";
+
 const Home = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background text-text-primary text-3xl font-semibold">
-      Главная
-    </div>
+    <>
+      <Hero />
+    </>
   );
 };
 
