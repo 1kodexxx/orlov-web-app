@@ -1,0 +1,17 @@
+/* src/styles/cursor.css */
+body {
+  cursor: url("/cursor/cursor.png"), auto;
+}
+
+/* Применить ко всем элементам с обработчиком клика */
+a,
+button,
+[role="button"],
+[class*="cursor-pointer"],
+.cursor-pointer {
+  cursor: url("/cursor/cursor-pointer.png"), pointer;
+}
+
+.cursor-pointer svg {
+  cursor: url("/cursor/cursor-pointer.png"), pointer;
+}

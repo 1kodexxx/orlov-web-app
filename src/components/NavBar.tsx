@@ -35,6 +35,7 @@ const NavBar = () => {
       <nav className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between relative">
         {/* ЛОГОТИП */}
         <div
+          style={{ cursor: 'url("/cursor/cursor-pointer.png"), pointer' }}
           onClick={handleLogoClick}
           className="text-primary font-bold text-xl cursor-pointer">
           Orlov Brand
@@ -61,9 +62,15 @@ const NavBar = () => {
 
         {/* ИКОНКИ */}
         <div className="hidden md:flex gap-4 text-primary text-xl">
-          <FaSearchDollar className="cursor-pointer hover:scale-110 transition" />
-          <FaShoppingCart className="cursor-pointer hover:scale-110 transition" />
-          <FaUserTie className="cursor-pointer hover:scale-110 transition" />
+          <span className="cursor-pointer hover:scale-110 transition">
+            <FaSearchDollar />
+          </span>
+          <span className="cursor-pointer hover:scale-110 transition">
+            <FaShoppingCart />
+          </span>
+          <span className="cursor-pointer hover:scale-110 transition">
+            <FaUserTie />
+          </span>
         </div>
 
         {/* БУРГЕР-МЕНЮ на мобилках */}

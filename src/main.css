@@ -1,3 +1,4 @@
+@import "./styles/cursor.css";
 @import "./styles/scrollbar.css";
 
 @tailwind base;
