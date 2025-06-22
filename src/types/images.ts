@@ -9,3 +9,12 @@ export interface BackgroundImage {
   brightness?: number; // яркость (1 = 100%)
   blur?: boolean; // нужно ли размытие?
 }
+
+export interface LogoImage {
+  id: string;
+  src: string; // путь к .svg
+  alt?: string; // описание для img alt
+  width?: number; // ширина логотипа
+  height?: number; // высота логотипа
+  className?: string; // кастомные стили
+}

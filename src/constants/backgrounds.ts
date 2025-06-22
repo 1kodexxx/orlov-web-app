@@ -1,4 +1,4 @@
-import heroBackground from "@/assets/heroBackground.jpeg";
+import heroBackground from "@/assets/background.png";
 import type { BackgroundImage } from "@/types/images";
 
 export const heroBg: BackgroundImage = {
