@@ -37,13 +37,13 @@ const NavBar = () => {
         </div>
 
         {/* Центр. меню */}
-        <ul className="hidden md:flex absolute left-1/2 -translate-x-1/2 gap-6">
+        <ul className="hidden lg:flex absolute left-1/2 -translate-x-1/2 gap-4 md:gap-6 flex-wrap">
           {navItems.map(({ label, path }) => (
             <li key={path}>
               <NavLink
                 to={path}
                 className={({ isActive }) =>
-                  `text-sm font-medium uppercase transition-all duration-300 ${
+                  `text-xs md:text-sm font-medium uppercase transition-all duration-300 ${
                     isActive
                       ? "text-primary underline underline-offset-4"
                       : "text-text-secondary hover:text-primary"
@@ -56,7 +56,7 @@ const NavBar = () => {
         </ul>
 
         {/* Иконки */}
-        <div className="hidden md:flex gap-4 text-primary text-xl">
+        <div className="hidden lg:flex gap-2 md:gap-4 text-primary text-lg md:text-xl">
           <span className="cursor-pointer hover:scale-110 transition">
             <FaSearchDollar />
           </span>
@@ -68,9 +68,9 @@ const NavBar = () => {
           </span>
         </div>
 
-        {/* Бургер */}
+        {/* Бургер для ширины ниже lg */}
         <button
-          className="md:hidden text-primary text-2xl"
+          className="lg:hidden text-primary text-2xl"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           <FaBars />
         </button>
@@ -78,7 +78,7 @@ const NavBar = () => {
 
       {/* Мобильное меню */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-background px-6 py-4 border-t border-gray-700 space-y-4">
+        <div className="lg:hidden bg-background px-6 py-4 border-t border-gray-700 space-y-4">
           {navItems.map(({ label, path }) => (
             <NavLink
               key={path}

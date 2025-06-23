@@ -1,50 +1,28 @@
-import type { ReactNode } from "react";
-import clsx from "clsx";
+import { Link } from "react-router-dom";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
-  variant?: "solid" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
-  fullWidth?: boolean;
-  className?: string;
+interface ButtonProps {
+  initialText: string;
+  hoverText: string;
+  to: string;
 }
 
-const baseStyles =
-  "inline-flex items-center justify-center font-semibold transition-all duration-200 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2";
-
-const variants = {
-  solid: "bg-primary text-background hover:brightness-110",
-  outline:
-    "border border-primary text-primary hover:bg-primary hover:text-background",
-  ghost: "text-primary hover:bg-surface",
-};
-
-const sizes = {
-  sm: "px-4 py-1 text-sm",
-  md: "px-6 py-2 text-base",
-  lg: "px-8 py-3 text-lg",
-};
-
-const Button = ({
-  children,
-  variant = "solid",
-  size = "md",
-  fullWidth = false,
-  className = "",
-  ...props
-}: ButtonProps) => {
+const Button = ({ initialText, hoverText, to }: ButtonProps) => {
   return (
-    <button
-      className={clsx(
-        baseStyles,
-        variants[variant],
-        sizes[size],
-        fullWidth && "w-full",
-        className
-      )}
-      {...props}>
-      {children}
-    </button>
+    <Link to={to}>
+      <button className="cursor-pointer bg-[#EFE393] px-6 py-3 rounded-xl text-[#181818] font-medium group transition-all duration-300">
+        <div className="relative overflow-hidden">
+          {/* Основной текст */}
+          <p className="group-hover:-translate-y-7 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]">
+            {initialText}
+          </p>
+
+          {/* Текст при наведении */}
+          <p className="absolute top-7 left-0 group-hover:top-0 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]">
+            {hoverText}
+          </p>
+        </div>
+      </button>
+    </Link>
   );
 };
 

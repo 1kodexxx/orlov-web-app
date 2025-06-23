@@ -62,10 +62,13 @@ const Hero = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}>
-              <Button variant="solid" size="md" className="gap-2">
-                Перейти в Каталог <span className="text-xl">👑</span>
-              </Button>
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="flex justify-center md:justify-start">
+              <Button
+                initialText="Перейти в Каталог 💎"
+                hoverText="Поехали! 🚀"
+                to="/catalog"
+              />
             </motion.div>
           </div>
 
@@ -84,7 +87,7 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Marquee ticker: absolute to Hero bottom */}
+      {/* Marquee ticker */}
       <Marquee />
     </section>
   );
