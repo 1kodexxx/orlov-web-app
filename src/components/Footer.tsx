@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { FaVk, FaTelegramPlane, FaWhatsapp } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -32,15 +33,27 @@ const Footer = () => {
         </div>
 
         {/* Соцсети */}
-        <div className="flex items-center gap-4 text-gold text-xl">
-          <a href="#" aria-label="VK" className="hover:text-white">
-            <i className="fab fa-vk"></i>
+        <div className="flex items-center gap-4 text-gold text-2xl">
+          <a
+            href="https://vk.com/orlov_brand_rus777"
+            target="_blank"
+            aria-label="VK"
+            className="hover:text-white">
+            <FaVk />
           </a>
-          <a href="#" aria-label="Telegram" className="hover:text-white">
-            <i className="fab fa-telegram-plane"></i>
+          <a
+            href="https://t.me/ORLOV_brand777"
+            target="_blank"
+            aria-label="Telegram"
+            className="hover:text-white">
+            <FaTelegramPlane />
           </a>
-          <a href="#" aria-label="WhatsApp" className="hover:text-white">
-            <i className="fab fa-whatsapp"></i>
+          <a
+            href="https://wa.me/89210428777"
+            target="_blank"
+            aria-label="WhatsApp"
+            className="hover:text-white">
+            <FaWhatsapp />
           </a>
         </div>
       </div>
