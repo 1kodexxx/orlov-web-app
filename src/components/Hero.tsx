@@ -1,23 +1,33 @@
-// src/components/Hero.tsx
 import { motion } from "framer-motion";
 import Button from "@/components/Button";
+import Marquee from "./Marquee";
 import logo from "@/assets/logo.svg";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden">
-      {/* Фоновое изображение на всю ширину секции */}
+    <section
+      className="relative w-full overflow-x-hidden flex flex-col"
+      style={{ minHeight: "calc(100vh - 3rem)" }}>
+      {/* Keyframes for marquee animation */}
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
+        }
+      `}</style>
+
+      {/* Background and overlay */}
       <div
-        className="absolute top-0 left-0 right-0 h-full bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/background.png')" }}>
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      {/* Контейнер для выравнивания по NavBar */}
-      <div className="relative z-10 w-full">
-        <div className="max-w-screen-xl mx-auto px-4 flex flex-col-reverse md:flex-row items-center justify-between gap-8 md:min-h-[80vh] py-16">
-          {/* Левая часть: текст и кнопка */}
-          <div className="flex-1 text-white text-center md:text-left space-y-6 flex flex-col justify-center h-full">
+      {/* Main content: flexible height */}
+      <div className="relative z-10 flex-1 flex items-center w-full pb-12">
+        <div className="max-w-screen-xl mx-auto px-4 flex flex-col-reverse md:flex-row items-center justify-between gap-8 w-full">
+          {/* Left side */}
+          <div className="flex-1 text-white text-center md:text-left space-y-6 flex flex-col justify-center">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -59,7 +69,7 @@ const Hero = () => {
             </motion.div>
           </div>
 
-          {/* Правая часть: логотип с высотой блока */}
+          {/* Right side: logo */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -68,11 +78,14 @@ const Hero = () => {
             <img
               src={logo}
               alt="Orlov Logo"
-              className="h-full object-contain max-h-[500px] w-auto"
+              className="h-full object-contain max-h-[400px] w-auto"
             />
           </motion.div>
         </div>
       </div>
+
+      {/* Marquee ticker: absolute to Hero bottom */}
+      <Marquee />
     </section>
   );
 };
