@@ -43,7 +43,7 @@ const NavBar = () => {
               <NavLink
                 to={path}
                 className={({ isActive }) =>
-                  `text-xs md:text-sm font-normal  transition-all duration-300 ${
+                  `text-xs md:text-base font-normal transition-all duration-300 ${
                     isActive
                       ? "text-primary underline underline-offset-4"
                       : "text-text-secondary hover:text-primary"
