@@ -9,7 +9,7 @@ interface ButtonProps {
 const Button = ({ initialText, hoverText, to }: ButtonProps) => {
   return (
     <Link to={to}>
-      <button className="cursor-pointer bg-[#EFE393] px-6 py-3 rounded-xl text-[#181818] font-medium group transition-all duration-300">
+      <button className="cursor-pointer bg-[#EFE393] px-6 py-3 rounded-xl text-[#181818] font-normal group transition-all duration-300">
         <div className="relative overflow-hidden">
           {/* Основной текст */}
           <p className="group-hover:-translate-y-7 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]">

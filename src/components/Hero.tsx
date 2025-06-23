@@ -64,7 +64,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="flex flex-col md:flex-row gap-4 w-full max-w-xs md:max-w-none mx-auto md:mx-0">
+              className="flex flex-col md:flex-row gap-4 w-full max-w-xs md:max-w-none mx-auto md:mx-0 md:justify-start justify-center items-center text-center md:text-left">
               <div className="w-full md:w-auto">
                 <Button
                   initialText="Перейти в каталог 💎"
