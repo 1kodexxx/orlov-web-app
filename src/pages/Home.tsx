@@ -1,5 +1,4 @@
 import Hero from "../components/Hero";
-import Features from "@/components/Features";
 import InfoSection from "@/components/InfoSection";
 
 import InfoSectionImage1 from "@/assets/InfoSection1.png";
@@ -66,7 +65,6 @@ const Home = () => {
       {sections.map((section, index) => (
         <InfoSection key={index} {...section} backgroundColor="bg-background" />
       ))}
-      <Features />
     </>
   );
 };

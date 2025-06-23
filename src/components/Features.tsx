@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FaCrown, FaShieldAlt, FaGem } from "react-icons/fa";
+import { FaCrown, FaHandshake, FaGem } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Features = () => {
@@ -10,8 +10,8 @@ const Features = () => {
       viewport={{ once: true }}
       transition={{ duration: 0.8, ease: "easeOut" }}
       className="py-16 px-4 text-text-secondary">
-      {/* Контейнер идентичный NavBar */}
-      <div className="max-w-screen-xl mx-auto">
+      {/* Контейнер идентичный NavBar и PromoSection */}
+      <div className="max-w-screen-xl mx-auto px-4">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -31,23 +31,27 @@ const Features = () => {
           премиум и стиль, который подчеркивает ваш уникальный вкус.
         </motion.p>
 
-        <div className="grid gap-12 md:grid-cols-3">
+        <div className="grid gap-12 md:grid-cols-3 items-stretch">
           {/* Преимущество 1 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-col items-center text-center space-y-4">
+            className="flex flex-col h-full justify-between items-center text-center space-y-4">
             <div className="bg-primary p-6 rounded-full">
               <FaCrown className="text-4xl text-primary-contrast" />
             </div>
             <h3 className="text-xl font-semibold text-primary">
-              Премиальный Дизайн
+              Премиальное
+              <br />
+              качество
             </h3>
-            <p className="text-text-secondary">
-              Каждый чехол Orlov — это авторская работа с утонченным стилем и
-              вниманием к каждой детали.
+            <p className="text-text-secondary text-justify leading-relaxed">
+              Отборные материалы, тщательная ручная работа <br /> и строгий
+              контроль качества – основа наших изделий. Мы дарим нашим клиентам
+              к каждому заказу целый ряд преимуществ: элитарная упаковка,
+              престижное наполнение и авторский подарок — решение ORLOV для Вас.
             </p>
             <Link
               to="/catalog"
@@ -62,16 +66,19 @@ const Features = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="flex flex-col items-center text-center space-y-4">
+            className="flex flex-col h-full justify-between items-center text-center space-y-4">
             <div className="bg-primary p-6 rounded-full">
-              <FaShieldAlt className="text-4xl text-primary-contrast" />
+              <FaHandshake className="text-4xl text-primary-contrast" />
             </div>
             <h3 className="text-xl font-semibold text-primary">
-              Высокая Защита
+              Индивидуальный <br />
+              подход
             </h3>
-            <p className="text-text-secondary">
-              Чехлы Orlov не только стильные, но и обеспечивают надежную защиту
-              вашего смартфона в любых условиях.
+            <p className="text-text-secondary text-justify leading-relaxed">
+              Мы понимаем, что каждый клиент уникален. Именно поэтому мы
+              разрабатываем решения, полностью соответствующие вашим пожеланиям.
+              Компания ORLOV знает и ценит своих клиентов. Для нас главное —
+              ваше уважение и доверие!
             </p>
             <Link
               to="/catalog"
@@ -86,16 +93,18 @@ const Features = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 1.0 }}
-            className="flex flex-col items-center text-center space-y-4">
+            className="flex flex-col h-full justify-between items-center text-center space-y-4">
             <div className="bg-primary p-6 rounded-full">
               <FaGem className="text-4xl text-primary-contrast" />
             </div>
             <h3 className="text-xl font-semibold text-primary">
-              Эксклюзивность
+              Стиль <br />и эксклюзив
             </h3>
-            <p className="text-text-secondary">
-              Лимитированные коллекции, которые подчёркивают индивидуальность и
-              выделяют вас из толпы.
+            <p className="text-text-secondary text-justify leading-relaxed">
+              Каждый аксессуар от ORLOV — это отражение статуса и уверенности.
+              Мы создаем предметы искусства для наших клиентов, постоянно
+              увеличивая ассортимент товаров. С нами вы знаете, что доверяете
+              лучшему!
             </p>
             <Link
               to="/catalog"
