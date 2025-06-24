@@ -14,7 +14,7 @@ interface ProductsListProps {
 
 const ProductsList: React.FC<ProductsListProps> = ({
   products,
-  itemsPerPage = 4,
+  itemsPerPage = 4, // возвращаем 4 товара на страницу
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(products.length / itemsPerPage);
@@ -31,24 +31,36 @@ const ProductsList: React.FC<ProductsListProps> = ({
   return (
     <section className="text-text-secondary bg-background body-font py-4">
       <div className="max-w-screen-xl mx-auto px-4">
-        <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul
+          className="
+            mt-4 grid gap-4
+            grid-cols-1
+            sm:grid-cols-2
+            md:grid-cols-3
+            lg:grid-cols-4   /* 4 карточки в ряду на больших экранах */
+            auto-rows-fr     /* ровные строки */
+          ">
           {currentProducts.map((product) => (
-            <li key={product.id}>
-              <a href="#" className="group block overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-[350px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[450px]"
-                />
-                <div className="relative bg-background-paper pt-3">
-                  <h3 className="text-xs text-text-secondary group-hover:underline group-hover:underline-offset-4">
+            <li key={product.id} className="flex flex-col">
+              <a
+                href="#"
+                className="group flex flex-col h-full overflow-hidden rounded-sm">
+                {/* контейнер с фиксированным соотношением */}
+                <div className="w-full aspect-[4/5] bg-background-paper p-4 overflow-hidden">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-contain transition duration-500 group-hover:scale-105"
+                  />
+                </div>
+
+                {/* текст внизу */}
+                <div className="mt-auto bg-background-paper p-3">
+                  <h3 className="text-xs text-text-secondary group-hover:underline truncate">
                     {product.name}
                   </h3>
-                  <p className="mt-2">
-                    <span className="sr-only">Цена</span>
-                    <span className="tracking-wider text-text-primary">
-                      {product.price}
-                    </span>
+                  <p className="mt-1 text-sm font-medium text-text-primary">
+                    {product.price}
                   </p>
                 </div>
               </a>
@@ -61,56 +73,32 @@ const ProductsList: React.FC<ProductsListProps> = ({
           <li>
             <button
               onClick={() => handlePageChange(currentPage - 1)}
-              className="inline-flex size-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition"
-              disabled={currentPage === 1}>
-              <span className="sr-only">Предыдущая страница</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-3 h-3"
-                viewBox="0 0 20 20"
-                fill="currentColor">
-                <path
-                  fillRule="evenodd"
-                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              disabled={currentPage === 1}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition">
+              ‹
             </button>
           </li>
 
-          {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-            (page) => (
-              <li key={page}>
-                <button
-                  onClick={() => handlePageChange(page)}
-                  className={`block size-8 rounded-sm border text-center leading-8 ${
-                    page === currentPage
-                      ? "bg-[#EFE393] text-black border-[#EFE393]"
-                      : "border-secondary hover:bg-secondary hover:text-background transition"
-                  }`}>
-                  {page}
-                </button>
-              </li>
-            )
-          )}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <li key={page}>
+              <button
+                onClick={() => handlePageChange(page)}
+                className={`inline-flex h-8 w-8 items-center justify-center rounded-sm border ${
+                  page === currentPage
+                    ? "bg-[#EFE393] text-black border-[#EFE393]"
+                    : "border-secondary hover:bg-secondary hover:text-background transition"
+                }`}>
+                {page}
+              </button>
+            </li>
+          ))}
 
           <li>
             <button
               onClick={() => handlePageChange(currentPage + 1)}
-              className="inline-flex size-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition"
-              disabled={currentPage === totalPages}>
-              <span className="sr-only">Следующая страница</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-3 h-3"
-                viewBox="0 0 20 20"
-                fill="currentColor">
-                <path
-                  fillRule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              disabled={currentPage === totalPages}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition">
+              ›
             </button>
           </li>
         </ol>
