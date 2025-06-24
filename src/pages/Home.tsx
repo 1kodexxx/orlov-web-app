@@ -1,5 +1,5 @@
 import Hero from "../components/Hero";
-import InfoSection from "@/components/InfoSection";
+import Teaser from "@/components/Teaser";
 
 import InfoSectionImage1 from "@/assets/InfoSection1.png";
 import InfoSectionImage2 from "@/assets/InfoSection2.png";
@@ -63,7 +63,7 @@ const Home = () => {
     <>
       <Hero />
       {sections.map((section, index) => (
-        <InfoSection key={index} {...section} backgroundColor="bg-background" />
+        <Teaser key={index} {...section} backgroundColor="bg-background" />
       ))}
     </>
   );
