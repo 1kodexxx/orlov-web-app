@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Search from "@/components/common/Search";
+import Search from "@/components/products/Search";
 import FilterDropdown from "@/components/products/FilterDropdown";
 import PriceFilter from "@/components/products/PriceFilter";
 
