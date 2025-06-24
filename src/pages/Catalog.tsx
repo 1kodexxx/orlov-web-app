@@ -2,12 +2,6 @@ import ProductFilterPanel from "@/components/products/ProductFilterPanel";
 import ProductsList from "@/components/products/ProductsList";
 import Breadcrumb from "@/components/common/Breadcrumb";
 
-const breadcrumbItems = [
-  { label: "Главная", href: "/" },
-  { label: "Категория", href: "/category" },
-  { label: "Чехол", href: "/product" },
-];
-
 const products = [
   {
     id: 1,
@@ -62,7 +56,7 @@ const products = [
 const Catalog = () => {
   return (
     <>
-      <Breadcrumb items={breadcrumbItems} />
+      <Breadcrumb />
       <ProductFilterPanel />
       <ProductsList products={products} />
     </>

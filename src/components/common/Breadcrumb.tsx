@@ -1,26 +1,41 @@
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 
-interface BreadcrumbItem {
-  label: string;
-  href: string;
-}
+const Breadcrumb: React.FC = () => {
+  const location = useLocation();
 
-interface BreadcrumbProps {
-  items: BreadcrumbItem[];
-}
+  const pathnames = location.pathname.split("/").filter((x) => x);
 
-const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
+  const labelMap: { [key: string]: string } = {
+    "": "Главная",
+    "about-us": "О нас",
+    catalog: "Каталог",
+    contacts: "Контакты",
+    delivery: "Доставка",
+    reviews: "Отзывы",
+    product: "Товар",
+    category: "Категория",
+  };
+
+  const items = [
+    { label: "Главная", href: "/" },
+    ...pathnames.map((value, index) => {
+      const href = "/" + pathnames.slice(0, index + 1).join("/");
+      return { label: labelMap[value] || value, href };
+    }),
+  ];
+
   return (
     <nav aria-label="Breadcrumb" className="py-4">
       <ol className="flex justify-center items-center gap-2 text-sm text-text-secondary">
         {items.map((item, index) => (
           <React.Fragment key={index}>
             <li>
-              <a
-                href={item.href}
+              <Link
+                to={item.href}
                 className="block transition-colors text-text-secondary hover:text-text-primary">
                 {item.label}
-              </a>
+              </Link>
             </li>
 
             {index < items.length - 1 && (
