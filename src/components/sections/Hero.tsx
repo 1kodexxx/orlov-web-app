@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import Marquee from "../layout/Marquee";
+import Marquee from "../common/Marquee";
 import heroImage from "@/assets/logo.svg";
 import Button from "../common/Button";
 

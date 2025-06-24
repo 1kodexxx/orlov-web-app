@@ -1,5 +1,5 @@
-import ProductFilterPanel from "@/components/product/ProductFilterPanel";
-import ProductsList from "@/components/product/ProductsList";
+import ProductFilterPanel from "@/components/products/ProductFilterPanel";
+import ProductsList from "@/components/products/ProductsList";
 import Breadcrumb from "@/components/common/Breadcrumb";
 
 const breadcrumbItems = [
