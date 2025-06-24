@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Search from "@/components/Search";
-import FilterDropdown from "@/components/FilterDropdown";
-import PriceFilter from "@/components/PriceFilter";
+import Search from "@/components/common/Search";
+import FilterDropdown from "@/components/product/FilterDropdown";
+import PriceFilter from "@/components/product/PriceFilter";
 
 const models = ["iPhone 15", "Pro", "Pro Max", "Plus"];
 const audiences = [

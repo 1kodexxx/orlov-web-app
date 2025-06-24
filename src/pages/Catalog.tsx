@@ -1,6 +1,6 @@
-import ProductFilterPanel from "@/components/ProductFilterPanel";
-import ProductsList from "@/components/ProductsList";
-import Breadcrumb from "@/components/Breadcrumb";
+import ProductFilterPanel from "@/components/product/ProductFilterPanel";
+import ProductsList from "@/components/product/ProductsList";
+import Breadcrumb from "@/components/common/Breadcrumb";
 
 const breadcrumbItems = [
   { label: "Главная", href: "/" },

@@ -1,5 +1,5 @@
-import Hero from "../components/Hero";
-import Teaser from "@/components/Teaser";
+import Hero from "../components/sections/Hero";
+import Teaser from "@/components/sections/Teaser";
 
 import InfoSectionImage1 from "@/assets/InfoSection1.png";
 import InfoSectionImage2 from "@/assets/InfoSection2.png";
