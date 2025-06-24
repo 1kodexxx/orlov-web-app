@@ -17,8 +17,8 @@ const AboutUs = () => {
         buttonInitialText="Начать сейчас 🛍️"
         buttonHoverText="Погнали! ✨"
         buttonLink="/catalog"
-        imageUrl1={PromoSectionImage1}
-        imageUrl2={PromoSectionImage2}
+        imageUrl1={PromoSectionImage2}
+        imageUrl2={PromoSectionImage1}
       />
       <Features />
     </>
