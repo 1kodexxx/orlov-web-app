@@ -85,7 +85,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
                   onClick={() => handlePageChange(page)}
                   className={`block size-8 rounded-sm border text-center leading-8 ${
                     page === currentPage
-                      ? "bg-primary text-background border-primary"
+                      ? "bg-[#EFE393] text-black border-[#EFE393]"
                       : "border-secondary hover:bg-secondary hover:text-background transition"
                   }`}>
                   {page}

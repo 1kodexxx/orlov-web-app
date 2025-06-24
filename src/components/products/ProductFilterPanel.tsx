@@ -17,38 +17,60 @@ const audiences = [
   "Наследие",
 ];
 
-const ProductFilterPanel: React.FC = () => {
+interface ProductFilterPanelProps {
+  onCategorySelect: (category: string) => void;
+}
+
+const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
+  onCategorySelect,
+}) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>("");
 
   const handleDropdownToggle = (title: string) => {
     setActiveDropdown((prev) => (prev === title ? null : title));
   };
 
+  const handleCategoryClick = (category: string) => {
+    setActiveCategory(category);
+    onCategorySelect(category);
+  };
+
+  const getButtonClass = (category: string) =>
+    `px-3 py-1 border rounded-full text-sm transition ${
+      activeCategory === category
+        ? "bg-[#EFE393] text-black border-[#EFE393]" // Правильный стиль для активной кнопки
+        : "border-secondary text-text-primary hover:border-primary hover:text-gold"
+    }`;
+
   return (
     <section className="text-text-secondary bg-background body-font m-0">
       <div className="max-w-screen-xl mx-auto px-4">
-        <div className="mb-4">
+        <div className="mb-2">
           <Search />
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-4">
-          {models.map((m) => (
+        <div className="flex flex-wrap gap-2 mb-2">
+          {models.map((model) => (
             <button
-              key={m}
-              className="px-3 py-1 border border-secondary rounded-full text-sm text-text-primary hover:border-primary transition">
-              {m}
+              key={model}
+              onClick={() => handleCategoryClick(model)}
+              className={getButtonClass(model)}>
+              {model}
             </button>
           ))}
-          {audiences.map((a) => (
+
+          {audiences.map((audience) => (
             <button
-              key={a}
-              className="px-3 py-1 border border-secondary rounded-full text-sm text-text-primary hover:border-primary transition">
-              {a}
+              key={audience}
+              onClick={() => handleCategoryClick(audience)}
+              className={getButtonClass(audience)}>
+              {audience}
             </button>
           ))}
         </div>
 
-        <div className="sm:flex sm:items-center sm:justify-between flex-wrap gap-4">
+        <div className="sm:flex sm:items-center sm:justify-between flex-wrap gap-2">
           <div className="block sm:hidden">
             <button className="flex items-center gap-2 border-b border-secondary pb-1 text-text-primary transition hover:border-primary">
               <span className="text-sm font-medium">Фильтры и Сортировка</span>

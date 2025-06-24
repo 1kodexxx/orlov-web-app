@@ -26,7 +26,7 @@ const Breadcrumb: React.FC = () => {
   ];
 
   return (
-    <nav aria-label="Breadcrumb" className="py-4">
+    <nav aria-label="Breadcrumb" className="py-2">
       <ol className="flex justify-center items-center gap-2 text-sm text-text-secondary">
         {items.map((item, index) => (
           <React.Fragment key={index}>
