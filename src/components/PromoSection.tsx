@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import Button from "./Button";
 
 interface PromoSectionProps {
-  title: string;
-  description: string;
-  buttonInitialText: string; // Новый проп
-  buttonHoverText: string; // Новый проп
+  title: React.ReactNode; // поддержка JSX для переносов
+  description: string; // поддержка HTML через dangerouslySetInnerHTML
+  buttonInitialText: string;
+  buttonHoverText: string;
   buttonLink: string;
   imageUrl1: string;
   imageUrl2: string;
@@ -39,12 +39,16 @@ const PromoSection: React.FC<PromoSectionProps> = ({
           transition={{ duration: 0.8, delay: 0.2 }}
           className={`${backgroundColor} p-8 md:p-12 lg:px-16 lg:py-24 flex items-center justify-center w-full`}>
           <div className="mx-auto max-w-xl text-center space-y-6">
+            {/* Заголовок с поддержкой JSX */}
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-background">
               {title}
             </h2>
-            <p className="text-base sm:text-lg leading-relaxed mt-4 text-background/90 whitespace-pre-line">
-              {description}
-            </p>
+
+            {/* Описание с поддержкой HTML разметки */}
+            <p
+              className="text-base sm:text-lg leading-relaxed mt-4 text-background/90"
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
 
             {/* Кнопка по центру */}
             <div className="mt-4 md:mt-8 flex justify-center">
