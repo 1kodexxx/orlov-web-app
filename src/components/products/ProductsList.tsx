@@ -14,7 +14,7 @@ interface ProductsListProps {
 
 const ProductsList: React.FC<ProductsListProps> = ({
   products,
-  itemsPerPage = 4, // возвращаем 4 товара на страницу
+  itemsPerPage = 12, // 3 ряда по 4 карточки
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(products.length / itemsPerPage);
@@ -29,37 +29,27 @@ const ProductsList: React.FC<ProductsListProps> = ({
   };
 
   return (
-    <section className="text-text-secondary bg-background body-font py-4">
-      <div className="max-w-screen-xl mx-auto px-4">
-        <ul
-          className="
-            mt-4 grid gap-4
-            grid-cols-1
-            sm:grid-cols-2
-            md:grid-cols-3
-            lg:grid-cols-4   /* 4 карточки в ряду на больших экранах */
-            auto-rows-fr     /* ровные строки */
-          ">
+    <section className="text-text-secondary bg-background body-font py-0">
+      <div className="max-w-screen-xl mx-auto px-4 pb-32">
+        <ul className="mt-4 grid gap-y-10 gap-x-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {currentProducts.map((product) => (
             <li key={product.id} className="flex flex-col">
               <a
                 href="#"
-                className="group flex flex-col h-full overflow-hidden rounded-sm">
-                {/* контейнер с фиксированным соотношением */}
-                <div className="w-full aspect-[4/5] bg-background-paper p-4 overflow-hidden">
+                className="group flex flex-col h-full overflow-hidden rounded-2xl shadow-lg bg-background-paper transition-transform duration-300 hover:scale-[1.02]">
+                <div className="w-full aspect-[3/4] max-h-[450px] overflow-hidden flex items-center justify-center bg-background-paper">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-contain transition duration-500 group-hover:scale-105"
+                    className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
 
-                {/* текст внизу */}
-                <div className="mt-auto bg-background-paper p-3">
-                  <h3 className="text-xs text-text-secondary group-hover:underline truncate">
+                <div className="mt-auto p-4">
+                  <h3 className="text-sm text-text-secondary group-hover:underline truncate">
                     {product.name}
                   </h3>
-                  <p className="mt-1 text-sm font-medium text-text-primary">
+                  <p className="mt-1 text-base font-semibold text-text-primary">
                     {product.price}
                   </p>
                 </div>
@@ -68,13 +58,12 @@ const ProductsList: React.FC<ProductsListProps> = ({
           ))}
         </ul>
 
-        {/* Pagination */}
-        <ol className="mt-6 flex justify-center gap-1 text-xs font-medium">
+        <ol className="mt-8 flex justify-center gap-2 text-xs font-medium">
           <li>
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition">
+              className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
               ‹
             </button>
           </li>
@@ -97,7 +86,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition">
+              className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
               ›
             </button>
           </li>
