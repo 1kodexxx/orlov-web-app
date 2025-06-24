@@ -1,0 +1,18 @@
+export const imageMap: Record<string, string> = {
+  "gold-case": "https://i.postimg.cc/MGT0pkLs/gold-case.webp",
+  "green-case": "https://i.postimg.cc/wxVhLjdW/green-case.webp",
+  "red-case": "https://i.postimg.cc/C5Q57t7K/red-case.webp",
+  "gray-case": "https://i.postimg.cc/XJyn3Jkn/gray-case.webp",
+  "brown-case": "https://i.postimg.cc/gk2B671Z/brown-case.webp",
+  "blue-case": "https://i.postimg.cc/C5BB3Sz8/blue-case.webp",
+  "iron-case": "https://i.postimg.cc/L513FrXJ/iron-case.webp",
+  "dark-brown-case": "https://i.postimg.cc/q7FKBjWy/dark-brown-case.webp",
+  "white-case": "https://i.postimg.cc/8c5xdktq/white-case.webp",
+  "pink-case": "https://i.postimg.cc/XqRxZnhK/pink-case.webp",
+  "dark-green-case": "https://i.postimg.cc/rmb7JX3s/dark-green-case.webp",
+  "dark-red-case": "https://i.postimg.cc/ZYdQSQXP/dark-red-case.webp",
+  "dark-gold-case": "https://i.postimg.cc/FshVBnvH/dark-gold-case.webp",
+  "dark-blue-case": "https://i.postimg.cc/MTT85YGP/dark-blue-case.webp",
+  "for-men": "https://i.postimg.cc/wvL0zG2b/man-in-suit-and-tie.png",
+  "logo-orlov": "https://i.postimg.cc/xC4ntXM9/logo.png",
+};

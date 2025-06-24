@@ -9,7 +9,7 @@ interface ProductSectionProps {
   reviewsCount: number;
 }
 
-const ProductSection: React.FC<ProductSectionProps> = ({
+const Product: React.FC<ProductSectionProps> = ({
   imageUrl,
   brand,
   title,
@@ -156,4 +156,4 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   );
 };
 
-export default ProductSection;
+export default Product;

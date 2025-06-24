@@ -1,16 +1,70 @@
-import ProductSection from "@/components/ProductSection";
+import ProductFilterPanel from "@/components/ProductFilterPanel";
+import ProductsList from "@/components/ProductsList";
+import Breadcrumb from "@/components/Breadcrumb";
+
+const breadcrumbItems = [
+  { label: "Главная", href: "/" },
+  { label: "Категория", href: "/category" },
+  { label: "Чехол", href: "/product" },
+];
+
+const products = [
+  {
+    id: 1,
+    name: "Чехол премиум",
+    image: "https://i.postimg.cc/MGT0pkLs/gold-case.webp",
+    price: "24 000 ₽",
+  },
+  {
+    id: 2,
+    name: "Чехол премиум",
+    image: "https://i.postimg.cc/MGT0pkLs/gold-case.webp",
+    price: "24 000 ₽",
+  },
+  {
+    id: 3,
+    name: "Чехол премиум",
+    image: "https://i.postimg.cc/MGT0pkLs/gold-case.webp",
+    price: "24 000 ₽",
+  },
+  {
+    id: 4,
+    name: "Чехол премиум",
+    image: "https://i.postimg.cc/MGT0pkLs/gold-case.webp",
+    price: "24 000 ₽",
+  },
+  {
+    id: 5,
+    name: "Чехол премиум",
+    image: "https://i.postimg.cc/MGT0pkLs/gold-case.webp",
+    price: "24 000 ₽",
+  },
+  {
+    id: 6,
+    name: "Чехол премиум",
+    image: "https://i.postimg.cc/MGT0pkLs/gold-case.webp",
+    price: "24 000 ₽",
+  },
+  {
+    id: 7,
+    name: "Чехол премиум",
+    image: "https://i.postimg.cc/MGT0pkLs/gold-case.webp",
+    price: "24 000 ₽",
+  },
+  {
+    id: 8,
+    name: "Чехол премиум",
+    image: "https://i.postimg.cc/MGT0pkLs/gold-case.webp",
+    price: "24 000 ₽",
+  },
+];
 
 const Catalog = () => {
   return (
     <>
-      <ProductSection
-        imageUrl="https://dummyimage.com/400x400"
-        brand="BRAND NAME"
-        title="The Catcher in the Rye"
-        description="Fam locavore kickstarter distillery. Mixtape chillwave tumeric sriracha taximy chia microdosing tilde DIY."
-        price="$58.00"
-        reviewsCount={4}
-      />
+      <Breadcrumb items={breadcrumbItems} />
+      <ProductFilterPanel />
+      <ProductsList products={products} />
     </>
   );
 };
