@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Search from "./Search";
-import FilterDropdown from "./FilterDropdown";
-import PriceFilter from "./PriceFilter";
-import SortBy from "./SortBy";
-import CategoryButtons from "./CategoryButtons";
+import {
+  Search,
+  FilterDropdown,
+  PriceFilter,
+  SortBy,
+  CategoryButtons,
+} from "./";
 
 const categories = [
   "Мужчинам",
