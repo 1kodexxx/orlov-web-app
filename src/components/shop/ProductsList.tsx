@@ -25,7 +25,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
 
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 500); // Минимальное время показа Loader для плавности
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [products, currentPage]);
@@ -41,36 +41,46 @@ const ProductsList: React.FC<ProductsListProps> = ({
       <div className="max-w-screen-xl mx-auto px-4 pb-32 min-h-[50vh] md:min-h-[60vh] flex flex-col justify-center">
         {isLoading ? (
           <Loader />
-        ) : currentProducts.length > 0 ? (
+        ) : (
           <AnimatePresence mode="wait">
-            <motion.ul
+            <motion.div
               key={JSON.stringify(currentProducts.map((p) => p.slug))}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="mt-4 grid gap-y-10 gap-x-[68.5px] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-              {currentProducts.map((product: Product, index) => (
-                <motion.li
-                  key={product.slug}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}>
-                  <ProductCard
-                    slug={product.slug}
-                    name={product.name}
-                    image={product.image}
-                    price={product.price}
-                  />
-                </motion.li>
-              ))}
-            </motion.ul>
+              // 🔥 min-h для постоянной высоты, даже если ничего не найдено
+              className="min-h-[50vh] md:min-h-[60vh] flex flex-col justify-center">
+              {currentProducts.length > 0 ? (
+                <motion.ul
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="mt-4 grid gap-y-10 gap-x-[68.5px] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center sm:justify-items-stretch">
+                  {currentProducts.map((product: Product, index) => (
+                    <motion.li
+                      key={product.slug}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}>
+                      <ProductCard
+                        slug={product.slug}
+                        name={product.name}
+                        image={product.image}
+                        price={product.price}
+                      />
+                    </motion.li>
+                  ))}
+                </motion.ul>
+              ) : (
+                <div className="text-center text-lg text-text-secondary">
+                  Ничего не найдено
+                </div>
+              )}
+            </motion.div>
           </AnimatePresence>
-        ) : (
-          <div className="mt-10 text-center text-lg text-text-secondary">
-            Ничего не найдено
-          </div>
         )}
 
         <ol className="mt-8 flex justify-center gap-2 text-xs font-medium">
