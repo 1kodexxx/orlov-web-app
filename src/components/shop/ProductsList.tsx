@@ -1,3 +1,4 @@
+// src/components/shop/ProductsList.tsx
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import type { Product } from "@/data/products";
@@ -22,11 +23,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
 
   useEffect(() => {
     setIsLoading(true);
-
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-
+    const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, [products, currentPage]);
 
@@ -65,7 +62,16 @@ const ProductsList: React.FC<ProductsListProps> = ({
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}>
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                      whileHover={{
+                        scale: 1.05,
+                        transition: {
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 20,
+                        },
+                      }}
+                      className="origin-center">
                       <ProductCard
                         slug={product.slug}
                         name={product.name}
