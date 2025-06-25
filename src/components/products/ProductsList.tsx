@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ProductCard from "./ProductCard";
 
 interface Product {
   id: number;
@@ -31,30 +32,15 @@ const ProductsList: React.FC<ProductsListProps> = ({
   return (
     <section className="text-text-secondary bg-background body-font py-0">
       <div className="max-w-screen-xl mx-auto px-4 pb-32">
-        <ul className="mt-4 grid gap-y-10 gap-x-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+        <ul className="mt-4 grid gap-y-10 gap-x-[68.5px] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {currentProducts.map((product) => (
-            <li key={product.id} className="flex flex-col">
-              <a
-                href="#"
-                className="group flex flex-col h-full overflow-hidden rounded-2xl shadow-lg bg-background-paper transition-transform duration-300 hover:scale-[1.02]">
-                <div className="w-full aspect-[3/4] max-h-[450px] overflow-hidden flex items-center justify-center bg-background-paper">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-
-                <div className="mt-auto p-4">
-                  <h3 className="text-sm text-text-secondary group-hover:underline truncate">
-                    {product.name}
-                  </h3>
-                  <p className="mt-1 text-base font-semibold text-text-primary">
-                    {product.price}
-                  </p>
-                </div>
-              </a>
-            </li>
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              image={product.image}
+              price={product.price}
+            />
           ))}
         </ul>
 

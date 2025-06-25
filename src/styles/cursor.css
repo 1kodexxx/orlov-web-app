@@ -6,6 +6,7 @@ body {
 /* Применить ко всем кликабельным элементам */
 a,
 button,
+select, /* Добавляем сюда */
 [role="button"],
 [class*="cursor-pointer"],
 .cursor-pointer {
