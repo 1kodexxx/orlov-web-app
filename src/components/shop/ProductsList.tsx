@@ -36,6 +36,8 @@ const ProductsList: React.FC<ProductsListProps> = ({
     }
   };
 
+  const showPagination = !isLoading && currentProducts.length > 0;
+
   return (
     <section className="text-text-secondary bg-background body-font py-0">
       <div className="max-w-screen-xl mx-auto px-4 pb-32 min-h-[50vh] md:min-h-[60vh] flex flex-col justify-center">
@@ -49,7 +51,6 @@ const ProductsList: React.FC<ProductsListProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              // 🔥 min-h для постоянной высоты, даже если ничего не найдено
               className="min-h-[50vh] md:min-h-[60vh] flex flex-col justify-center">
               {currentProducts.length > 0 ? (
                 <motion.ul
@@ -83,39 +84,41 @@ const ProductsList: React.FC<ProductsListProps> = ({
           </AnimatePresence>
         )}
 
-        <ol className="mt-8 flex justify-center gap-2 text-xs font-medium">
-          <li>
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
-              ‹
-            </button>
-          </li>
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <li key={page}>
+        {showPagination && (
+          <ol className="mt-8 flex justify-center gap-2 text-xs font-medium">
+            <li>
               <button
-                onClick={() => handlePageChange(page)}
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-sm border ${
-                  page === currentPage
-                    ? "bg-[#EFE393] text-black border-[#EFE393]"
-                    : "border-secondary hover:bg-secondary hover:text-background transition"
-                }`}>
-                {page}
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
+                ‹
               </button>
             </li>
-          ))}
 
-          <li>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
-              ›
-            </button>
-          </li>
-        </ol>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <li key={page}>
+                <button
+                  onClick={() => handlePageChange(page)}
+                  className={`inline-flex h-8 w-8 items-center justify-center rounded-sm border ${
+                    page === currentPage
+                      ? "bg-[#EFE393] text-black border-[#EFE393]"
+                      : "border-secondary hover:bg-secondary hover:text-background transition"
+                  }`}>
+                  {page}
+                </button>
+              </li>
+            ))}
+
+            <li>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
+                ›
+              </button>
+            </li>
+          </ol>
+        )}
       </div>
     </section>
   );

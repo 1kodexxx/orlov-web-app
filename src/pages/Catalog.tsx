@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { allProducts } from "@/data/products";
 import ProductFilterPanel from "@/components/shop/filters/ProductFilterPanel";
 import ProductsList from "@/components/shop/ProductsList";
