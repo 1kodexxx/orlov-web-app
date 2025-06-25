@@ -2,13 +2,13 @@ import { Routes, Route } from "react-router-dom";
 import Layout from "./layout/Layout";
 import ScrollToTop from "@/components/common/ScrollToTop";
 
-import Home from "./pages/Home";
-import AboutUs from "./pages/AboutUs";
-import Catalog from "./pages/Catalog";
-import Contacts from "./pages/Contacts";
-import Delivery from "./pages/Delivery";
-import Reviews from "./pages/Reviews";
-import NotFound from "./pages/NotFound";
+import Home from "@/pages/Home";
+import AboutUs from "@/pages/AboutUs";
+import Catalog from "@/pages/Catalog";
+import Contacts from "@/pages/Contacts";
+import Delivery from "@/pages/Delivery";
+import Reviews from "@/pages/Reviews";
+import NotFound from "@/pages/NotFound";
 
 const App = () => {
   return (

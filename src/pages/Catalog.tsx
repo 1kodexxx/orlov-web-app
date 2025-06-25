@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ProductFilterPanel from "@/components/products/ProductFilterPanel";
-import ProductsList from "@/components/products/ProductsList";
+import ProductFilterPanel from "@/components/shop/filters/ProductFilterPanel";
+import ProductsList from "@/components/shop/ProductsList";
 import Breadcrumb from "@/components/common/Breadcrumb";
 
 const allProducts = [

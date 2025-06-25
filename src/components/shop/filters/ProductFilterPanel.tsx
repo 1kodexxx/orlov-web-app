@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import Search from "@/components/products/Search";
-import FilterDropdown from "@/components/products/filters/FilterDropdown";
-import PriceFilter from "@/components/products/filters/PriceFilter";
+import Search from "@/components/shop/filters/Search";
+import FilterDropdown from "@/components/shop/filters/FilterDropdown";
+import PriceFilter from "@/components/shop/filters/PriceFilter";
+import SortBy from "@/components/shop/filters/SortBy";
 
 const categories = [
   "Мужчинам",
@@ -12,7 +13,6 @@ const categories = [
   "Премиум",
   "Культурный код",
   "Имперский стиль",
-
   "Православие",
   "История",
   "СССР",
@@ -133,20 +133,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
             />
           </div>
 
-          <div className="hidden sm:block">
-            <label htmlFor="SortBy" className="sr-only">
-              Сортировка
-            </label>
-            <select
-              id="SortBy"
-              className="h-10 rounded-sm border-secondary text-sm bg-background-paper text-text-secondary">
-              <option>Сортировать по</option>
-              <option value="Title, DESC">Название: от Я до А</option>
-              <option value="Title, ASC">Название: от А до Я</option>
-              <option value="Price, DESC">Цена: по убыванию</option>
-              <option value="Price, ASC">Цена: по возрастанию</option>
-            </select>
-          </div>
+          <SortBy />
         </div>
       </div>
     </section>
