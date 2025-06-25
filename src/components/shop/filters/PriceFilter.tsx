@@ -104,7 +104,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
             <div className="flex justify-between gap-4">
               <label
                 htmlFor="FilterPriceFrom"
-                className="flex items-center gap-2">
+                className="flex items-center gap-2 ">
                 <span className="text-sm text-text-secondary">₽</span>
                 <input
                   type="number"

@@ -112,7 +112,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
                     id={o.id}
                     checked={selectedOptions.includes(o.id)}
                     onChange={() => handleCheckboxChange(o.id)}
-                    className="w-5 h-5 rounded-sm border-secondary shadow-sm bg-background-paper"
+                    className="w-5 h-5 rounded-sm border-secondary shadow-sm bg-background-paper cursor-pointer"
                   />
                   <span className="text-sm font-medium text-text-secondary">
                     {o.label}

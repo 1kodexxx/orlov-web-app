@@ -1,12 +1,13 @@
-/* src/styles/cursor.css */
 body {
   cursor: url("/cursor/cursor.png"), auto;
 }
 
-/* Применить ко всем кликабельным элементам */
 a,
 button,
-select, /* Добавляем сюда */
+select,
+input[type="checkbox"],
+input[type="radio"],
+input[type="number"],
 [role="button"],
 [class*="cursor-pointer"],
 .cursor-pointer {
@@ -14,5 +15,10 @@ select, /* Добавляем сюда */
 }
 
 .cursor-pointer svg {
+  cursor: url("/cursor/cursor-pointer.png"), pointer !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   cursor: url("/cursor/cursor-pointer.png"), pointer !important;
 }

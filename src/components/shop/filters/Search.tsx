@@ -23,7 +23,7 @@ const Search: React.FC<SearchProps> = ({
   };
 
   return (
-    <label htmlFor="Search" className="block w-full">
+    <label htmlFor="Search" className="block w-full cursor-pointer">
       <span className="text-sm font-medium text-text-primary">Поиск</span>
 
       <div className="relative mt-2">
