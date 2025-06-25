@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import Search from "@/components/products/Search";
-import FilterDropdown from "@/components/products/FilterDropdown";
-import PriceFilter from "@/components/products/PriceFilter";
+import FilterDropdown from "@/components/products/filters/FilterDropdown";
+import PriceFilter from "@/components/products/filters/PriceFilter";
 
-const models = ["iPhone 15", "Pro", "Pro Max", "Plus"];
-const audiences = [
+const categories = [
   "Мужчинам",
   "Женщинам",
-  "Патриотизм",
-  "Военным",
-  "Бизнес",
-  "СССР",
+  "Патриотам",
+  "Гос.служащим",
+  "Для бизнеса",
+  "Премиум",
   "Культурный код",
-  "Россия",
+  "Имперский стиль",
+
+  "Православие",
   "История",
-  "Наследие",
+  "СССР",
 ];
 
 interface ProductFilterPanelProps {
@@ -39,7 +40,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   const getButtonClass = (category: string) =>
     `px-3 py-1 border rounded-full text-sm transition ${
       activeCategory === category
-        ? "bg-[#EFE393] text-black border-[#EFE393]" // Правильный стиль для активной кнопки
+        ? "bg-[#EFE393] text-black border-[#EFE393]"
         : "border-secondary text-text-primary hover:border-primary hover:text-gold"
     }`;
 
@@ -51,21 +52,12 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
         </div>
 
         <div className="flex flex-wrap gap-2 mb-2">
-          {models.map((model) => (
+          {categories.map((category) => (
             <button
-              key={model}
-              onClick={() => handleCategoryClick(model)}
-              className={getButtonClass(model)}>
-              {model}
-            </button>
-          ))}
-
-          {audiences.map((audience) => (
-            <button
-              key={audience}
-              onClick={() => handleCategoryClick(audience)}
-              className={getButtonClass(audience)}>
-              {audience}
+              key={category}
+              onClick={() => handleCategoryClick(category)}
+              className={getButtonClass(category)}>
+              {category}
             </button>
           ))}
         </div>
