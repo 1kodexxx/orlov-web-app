@@ -21,10 +21,18 @@ const categories = [
 
 interface ProductFilterPanelProps {
   onCategorySelect: (category: string) => void;
+  onSearch: (query: string) => void;
+  onPopularitySelect: (popularity: string) => void;
+  onMaterialSelect: (material: string) => void;
+  onCollectionSelect: (collection: string) => void;
 }
 
 const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   onCategorySelect,
+  onSearch,
+  onPopularitySelect,
+  onMaterialSelect,
+  onCollectionSelect,
 }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("");
@@ -38,19 +46,39 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
     onCategorySelect(category);
   };
 
+  // Функции выбора для фильтров
+  const handlePopularitySelect = (id: string) => {
+    onPopularitySelect(id);
+  };
+
+  const handleMaterialSelect = (id: string) => {
+    onMaterialSelect(id);
+  };
+
+  const handleCollectionSelect = (id: string) => {
+    onCollectionSelect(id);
+  };
+
   return (
     <section className="text-text-secondary bg-background body-font m-0">
       <div className="max-w-screen-xl mx-auto px-4">
+        {/* Поиск */}
         <div className="mb-2">
-          <Search />
+          <Search onSearch={onSearch} />
         </div>
 
+        {/* Категории */}
         <CategoryButtons
           categories={categories}
           activeCategory={activeCategory}
           onCategoryClick={handleCategoryClick}
+          onResetCategory={() => {
+            setActiveCategory("");
+            onCategorySelect("");
+          }}
         />
 
+        {/* Фильтры */}
         <div className="sm:flex sm:items-center sm:justify-between flex-wrap gap-2">
           <div className="block sm:hidden">
             <button className="flex items-center gap-2 border-b border-secondary pb-1 text-text-primary transition hover:border-primary">
@@ -81,6 +109,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
+              onSelect={handlePopularitySelect} // 🔥 моментально
             />
 
             <PriceFilter
@@ -97,6 +126,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
+              onSelect={handleMaterialSelect}
             />
 
             <FilterDropdown
@@ -109,6 +139,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
+              onSelect={handleCollectionSelect}
             />
           </div>
 

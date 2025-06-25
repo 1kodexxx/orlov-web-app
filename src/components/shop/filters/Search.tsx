@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 interface SearchProps {
   placeholder?: string;
-  onSearch?: (query: string) => void;
+  onSearch: (query: string) => void; // 🔥 onSearch обязателен
 }
 
 const Search: React.FC<SearchProps> = ({
@@ -11,16 +11,15 @@ const Search: React.FC<SearchProps> = ({
 }) => {
   const [query, setQuery] = useState("");
 
-  const handleSearch = () => {
-    if (onSearch) {
-      onSearch(query);
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    onSearch(value); // 🔥 моментальный поиск
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+  const handleBlur = () => {
+    setQuery(""); // Сбросить поле ввода
+    onSearch(""); // Сбросить фильтрацию
   };
 
   return (
@@ -32,8 +31,8 @@ const Search: React.FC<SearchProps> = ({
           type="text"
           id="Search"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
+          onChange={handleChange}
+          onBlur={handleBlur} // 🔥 сброс при потере фокуса
           placeholder={placeholder}
           className="w-full h-10 rounded border border-secondary bg-background-paper text-text-secondary shadow-sm sm:text-sm px-4 pr-10 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
         />
@@ -42,8 +41,9 @@ const Search: React.FC<SearchProps> = ({
           <button
             type="button"
             aria-label="Найти"
-            onClick={handleSearch}
-            className="p-1.5 rounded-full text-text-secondary hover:bg-secondary/40 transition">
+            className="p-1.5 rounded-full text-text-secondary hover:bg-secondary/40 transition"
+            disabled // 🔥 кнопка не нужна
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
