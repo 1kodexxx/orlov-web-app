@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import Search from "@/components/shop/filters/Search";
-import FilterDropdown from "@/components/shop/filters/FilterDropdown";
-import PriceFilter from "@/components/shop/filters/PriceFilter";
-import SortBy from "@/components/shop/filters/SortBy";
+import Search from "./Search";
+import FilterDropdown from "./FilterDropdown";
+import PriceFilter from "./PriceFilter";
+import SortBy from "./SortBy";
+import CategoryButtons from "./CategoryButtons";
 
 const categories = [
   "Мужчинам",
@@ -37,13 +38,6 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
     onCategorySelect(category);
   };
 
-  const getButtonClass = (category: string) =>
-    `px-3 py-1 border rounded-full text-sm transition ${
-      activeCategory === category
-        ? "bg-[#EFE393] text-black border-[#EFE393]"
-        : "border-secondary text-text-primary hover:border-primary hover:text-gold"
-    }`;
-
   return (
     <section className="text-text-secondary bg-background body-font m-0">
       <div className="max-w-screen-xl mx-auto px-4">
@@ -51,16 +45,11 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
           <Search />
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-2">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => handleCategoryClick(category)}
-              className={getButtonClass(category)}>
-              {category}
-            </button>
-          ))}
-        </div>
+        <CategoryButtons
+          categories={categories}
+          activeCategory={activeCategory}
+          onCategoryClick={handleCategoryClick}
+        />
 
         <div className="sm:flex sm:items-center sm:justify-between flex-wrap gap-2">
           <div className="block sm:hidden">
