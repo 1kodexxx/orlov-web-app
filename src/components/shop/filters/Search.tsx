@@ -30,6 +30,7 @@ const Search: React.FC<SearchProps> = ({
         <input
           type="text"
           id="Search"
+          autoComplete="off" // 🔥 отключение автозаполнения браузера
           value={query}
           onChange={handleChange}
           onBlur={handleBlur} // 🔥 сброс при потере фокуса
