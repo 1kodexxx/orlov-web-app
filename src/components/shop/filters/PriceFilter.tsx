@@ -1,16 +1,23 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface PriceFilterProps {
   activeDropdown: string | null;
   onToggle: (title: string) => void;
+  onPriceChange: (range: [number, number]) => void;
+  resetSignal: number;
 }
 
 const PriceFilter: React.FC<PriceFilterProps> = ({
   activeDropdown,
   onToggle,
+  onPriceChange,
+  resetSignal,
 }) => {
   const isOpen = activeDropdown === "Цена";
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [minPrice, setMinPrice] = useState<number | undefined>();
+  const [maxPrice, setMaxPrice] = useState<number | undefined>();
 
   // Авто-закрытие при клике вне
   useEffect(() => {
@@ -31,6 +38,31 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, onToggle]);
+
+  // Сброс при смене сигнала
+  useEffect(() => {
+    setMinPrice(undefined);
+    setMaxPrice(undefined);
+    onPriceChange([0, Infinity]);
+  }, [resetSignal]);
+
+  const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setMinPrice(value);
+    onPriceChange([value, maxPrice ?? Infinity]);
+  };
+
+  const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setMaxPrice(value);
+    onPriceChange([minPrice ?? 0, value]);
+  };
+
+  const handleReset = () => {
+    setMinPrice(undefined);
+    setMaxPrice(undefined);
+    onPriceChange([0, Infinity]);
+  };
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -63,6 +95,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
             </span>
             <button
               type="button"
+              onClick={handleReset}
               className="text-sm text-text-primary underline underline-offset-4">
               Сбросить
             </button>
@@ -76,6 +109,8 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
                 <input
                   type="number"
                   id="FilterPriceFrom"
+                  value={minPrice ?? ""}
+                  onChange={handleMinChange}
                   placeholder="От"
                   className="w-full rounded-md border-secondary shadow-xs sm:text-sm bg-background-paper text-text-secondary"
                 />
@@ -87,6 +122,8 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
                 <input
                   type="number"
                   id="FilterPriceTo"
+                  value={maxPrice ?? ""}
+                  onChange={handleMaxChange}
                   placeholder="До"
                   className="w-full rounded-md border-secondary shadow-xs sm:text-sm bg-background-paper text-text-secondary"
                 />

@@ -1,6 +1,10 @@
 import React from "react";
 
-const SortBy: React.FC = () => {
+interface SortByProps {
+  onSortChange: (sort: string) => void;
+}
+
+const SortBy: React.FC<SortByProps> = ({ onSortChange }) => {
   return (
     <div className="hidden sm:block">
       <label htmlFor="SortBy" className="sr-only">
@@ -8,8 +12,9 @@ const SortBy: React.FC = () => {
       </label>
       <select
         id="SortBy"
+        onChange={(e) => onSortChange(e.target.value)}
         className="h-10 rounded-sm border-secondary text-sm bg-background-paper text-text-secondary">
-        <option>Сортировать по</option>
+        <option value="">Сортировать по</option>
         <option value="Title, DESC">Название: от Я до А</option>
         <option value="Title, ASC">Название: от А до Я</option>
         <option value="Price, DESC">Цена: по убыванию</option>

@@ -22,17 +22,23 @@ const categories = [
 interface ProductFilterPanelProps {
   onCategorySelect: (category: string) => void;
   onSearch: (query: string) => void;
-  onPopularitySelect: (popularity: string) => void;
-  onMaterialSelect: (material: string) => void;
-  onCollectionSelect: (collection: string) => void;
+  onSortChange: (sort: string) => void;
+  onPopularitySelect: (selected: string[]) => void;
+  onMaterialSelect: (selected: string[]) => void;
+  onCollectionSelect: (selected: string[]) => void;
+  onPriceChange: (range: [number, number]) => void;
+  resetSignal: number;
 }
 
 const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   onCategorySelect,
   onSearch,
+  onSortChange,
   onPopularitySelect,
   onMaterialSelect,
   onCollectionSelect,
+  onPriceChange,
+  resetSignal,
 }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("");
@@ -46,39 +52,25 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
     onCategorySelect(category);
   };
 
-  // Функции выбора для фильтров
-  const handlePopularitySelect = (id: string) => {
-    onPopularitySelect(id);
-  };
-
-  const handleMaterialSelect = (id: string) => {
-    onMaterialSelect(id);
-  };
-
-  const handleCollectionSelect = (id: string) => {
-    onCollectionSelect(id);
+  const handleResetCategory = () => {
+    setActiveCategory("");
+    onCategorySelect("");
   };
 
   return (
     <section className="text-text-secondary bg-background body-font m-0">
       <div className="max-w-screen-xl mx-auto px-4">
-        {/* Поиск */}
         <div className="mb-2">
           <Search onSearch={onSearch} />
         </div>
 
-        {/* Категории */}
         <CategoryButtons
           categories={categories}
           activeCategory={activeCategory}
           onCategoryClick={handleCategoryClick}
-          onResetCategory={() => {
-            setActiveCategory("");
-            onCategorySelect("");
-          }}
+          onResetCategory={handleResetCategory}
         />
 
-        {/* Фильтры */}
         <div className="sm:flex sm:items-center sm:justify-between flex-wrap gap-2">
           <div className="block sm:hidden">
             <button className="flex items-center gap-2 border-b border-secondary pb-1 text-text-primary transition hover:border-primary">
@@ -109,24 +101,28 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
-              onSelect={handlePopularitySelect} // 🔥 моментально
+              onSelect={onPopularitySelect}
+              resetSignal={resetSignal}
             />
 
             <PriceFilter
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
+              onPriceChange={onPriceChange}
+              resetSignal={resetSignal}
             />
 
             <FilterDropdown
               title="Материал"
               options={[
-                { id: "matLeather", label: "Кожа" },
-                { id: "matMetal", label: "Металл" },
-                { id: "matSilicone", label: "Силикон" },
+                { id: "Кожа", label: "Кожа" },
+                { id: "Металл", label: "Металл" },
+                { id: "Силикон", label: "Силикон" },
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
-              onSelect={handleMaterialSelect}
+              onSelect={onMaterialSelect}
+              resetSignal={resetSignal}
             />
 
             <FilterDropdown
@@ -139,11 +135,12 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
-              onSelect={handleCollectionSelect}
+              onSelect={onCollectionSelect}
+              resetSignal={resetSignal}
             />
           </div>
 
-          <SortBy />
+          <SortBy onSortChange={onSortChange} />
         </div>
       </div>
     </section>

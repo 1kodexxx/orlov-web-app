@@ -4,7 +4,7 @@ interface CategoryButtonsProps {
   categories: string[];
   activeCategory: string;
   onCategoryClick: (category: string) => void;
-  onResetCategory: () => void; // 🔥 сброс категории
+  onResetCategory: () => void;
 }
 
 const CategoryButtons: React.FC<CategoryButtonsProps> = ({
@@ -17,11 +17,15 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+
+      // Если клик был вне кнопок и вне карточки товара
       if (
         buttonsRef.current &&
-        !buttonsRef.current.contains(event.target as Node)
+        !buttonsRef.current.contains(target) &&
+        !target.closest(".product-card") // 🔥 не сбрасывать, если клик внутри карточки
       ) {
-        onResetCategory(); // 🔥 сброс при клике вне
+        onResetCategory();
       }
     };
 

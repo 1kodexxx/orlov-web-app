@@ -22,7 +22,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <li
-      className="flex flex-col items-center max-w-[260px] w-full cursor-pointer"
+      className="product-card flex flex-col items-center max-w-[260px] w-full cursor-pointer"
       onClick={handleCardClick}>
       <div className="flex flex-col items-center">
         <div className="overflow-hidden bg-background-paper rounded-lg">
