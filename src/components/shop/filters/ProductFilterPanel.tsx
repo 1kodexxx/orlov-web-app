@@ -73,28 +73,17 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
 
           <div className="hidden sm:flex sm:gap-4 flex-wrap">
             <FilterDropdown
-              title="Наличие"
+              title="Популярность"
               options={[
-                { id: "inStock", label: "В наличии (5+)" },
-                { id: "preOrder", label: "Под заказ (3+)" },
-                { id: "outOfStock", label: "Нет в наличии (10+)" },
+                { id: "hit", label: "Хит продаж" },
+                { id: "new", label: "Новинка" },
+                { id: "recommended", label: "Рекомендуем" },
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
             />
 
             <PriceFilter
-              activeDropdown={activeDropdown}
-              onToggle={handleDropdownToggle}
-            />
-
-            <FilterDropdown
-              title="Цвет"
-              options={[
-                { id: "colorBlack", label: "Черный" },
-                { id: "colorGold", label: "Золотой" },
-                { id: "colorGreen", label: "Зеленый" },
-              ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
             />
@@ -111,11 +100,12 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
             />
 
             <FilterDropdown
-              title="Бренд"
+              title="Коллекция"
               options={[
-                { id: "brandOrlov", label: "Orlov" },
-                { id: "brandPremium", label: "Premium Line" },
-                { id: "brandClassic", label: "Classic" },
+                { id: "business", label: "Бизнес" },
+                { id: "limited", label: "Лимитированная" },
+                { id: "premium", label: "Премиум" },
+                { id: "autumn2025", label: "Осень 2025" },
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}

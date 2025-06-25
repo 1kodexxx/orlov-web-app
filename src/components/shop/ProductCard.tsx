@@ -2,14 +2,14 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
-  id: number;
+  slug: string;
   name: string;
   image: string;
-  price: string;
+  price: number; // цена должна быть number
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
-  id,
+  slug,
   name,
   image,
   price,
@@ -17,7 +17,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/catalog/${id}`);
+    navigate(`/catalog/${slug}`);
   };
 
   return (
@@ -34,7 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {name}
           </h3>
           <p className="mt-1 text-base font-semibold text-text-primary">
-            {price}
+            {price.toLocaleString()} ₽
           </p>
         </div>
       </div>

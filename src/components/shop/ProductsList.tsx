@@ -1,27 +1,23 @@
 import React, { useState } from "react";
 import ProductCard from "./ProductCard";
-
-interface Product {
-  id: number;
-  name: string;
-  image: string;
-  price: string;
-}
+import { allProducts } from "@/data/products";
+import type { Product } from "@/data/products";
 
 interface ProductsListProps {
-  products: Product[];
   itemsPerPage?: number;
 }
 
 const ProductsList: React.FC<ProductsListProps> = ({
-  products,
   itemsPerPage = 12, // 3 ряда по 4 карточки
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const totalPages = Math.ceil(allProducts.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentProducts = products.slice(startIndex, startIndex + itemsPerPage);
+  const currentProducts = allProducts.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -33,10 +29,10 @@ const ProductsList: React.FC<ProductsListProps> = ({
     <section className="text-text-secondary bg-background body-font py-0">
       <div className="max-w-screen-xl mx-auto px-4 pb-32">
         <ul className="mt-4 grid gap-y-10 gap-x-[68.5px] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-          {currentProducts.map((product) => (
+          {currentProducts.map((product: Product) => (
             <ProductCard
-              key={product.id}
-              id={product.id}
+              key={product.slug}
+              slug={product.slug}
               name={product.name}
               image={product.image}
               price={product.price}
