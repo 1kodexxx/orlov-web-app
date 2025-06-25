@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ProductFilterPanel from "@/components/shop/filters/ProductFilterPanel";
+import { ProductFilterPanel } from "@/components/shop/filters";
 import ProductsList from "@/components/shop/ProductsList";
 import Breadcrumb from "@/components/common/Breadcrumb";
 
