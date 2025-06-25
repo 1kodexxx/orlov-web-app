@@ -45,7 +45,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   // category buttons
   const [activeCategory, setActiveCategory] = useState<string>("");
 
-  // mobile accordion open state
+  // mobile accordion state
   const [openPop, setOpenPop] = useState(false);
   const [openPrice, setOpenPrice] = useState(false);
   const [openMat, setOpenMat] = useState(false);
@@ -58,7 +58,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   const [mobileMin, setMobileMin] = useState<number | "">("");
   const [mobileMax, setMobileMax] = useState<number | "">("");
 
-  // сброс на resetSignal
+  // reset on desktop/mobile filters when resetSignal changes
   useEffect(() => {
     setMobilePopularity([]);
     setMobileMaterial([]);
@@ -83,7 +83,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
     onCategorySelect("");
   };
 
-  // утилита для мобильных чекбоксов
+  // helper for mobile checkboxes
   const toggleMobile = (
     id: string,
     arr: string[],
@@ -128,55 +128,62 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
           onResetCategory={handleResetCategory}
         />
 
-        {/* ========= DESKTOP: без изменений ========= */}
-        <div className="hidden sm:flex sm:items-center sm:justify-between flex-wrap gap-4 mt-4">
-          <FilterDropdown
-            title="Популярность"
-            options={[
-              { id: "hit", label: "Хит продаж" },
-              { id: "new", label: "Новинка" },
-              { id: "recommended", label: "Рекомендуем" },
-            ]}
-            activeDropdown={activeDropdown}
-            onToggle={handleDropdownToggle}
-            onSelect={onPopularitySelect}
-            resetSignal={resetSignal}
-          />
-          <PriceFilter
-            activeDropdown={activeDropdown}
-            onToggle={handleDropdownToggle}
-            onPriceChange={onPriceChange}
-            resetSignal={resetSignal}
-          />
-          <FilterDropdown
-            title="Материал"
-            options={[
-              { id: "Кожа", label: "Кожа" },
-              { id: "Металл", label: "Металл" },
-              { id: "Силикон", label: "Силикон" },
-            ]}
-            activeDropdown={activeDropdown}
-            onToggle={handleDropdownToggle}
-            onSelect={onMaterialSelect}
-            resetSignal={resetSignal}
-          />
-          <FilterDropdown
-            title="Коллекция"
-            options={[
-              { id: "business", label: "Бизнес" },
-              { id: "limited", label: "Лимитированная" },
-              { id: "premium", label: "Премиум" },
-              { id: "autumn2025", label: "Осень 2025" },
-            ]}
-            activeDropdown={activeDropdown}
-            onToggle={handleDropdownToggle}
-            onSelect={onCollectionSelect}
-            resetSignal={resetSignal}
-          />
+        {/* ===== DESKTOP: ИСХОДНАЯ РАСКЛАДКА ФИЛЬТРОВ ===== */}
+        <div className="sm:flex sm:items-center sm:justify-between flex-wrap gap-2">
+          <div className="hidden sm:flex sm:gap-4 flex-wrap">
+            <FilterDropdown
+              title="Популярность"
+              options={[
+                { id: "hit", label: "Хит продаж" },
+                { id: "new", label: "Новинка" },
+                { id: "recommended", label: "Рекомендуем" },
+              ]}
+              activeDropdown={activeDropdown}
+              onToggle={handleDropdownToggle}
+              onSelect={onPopularitySelect}
+              resetSignal={resetSignal}
+            />
+
+            <PriceFilter
+              activeDropdown={activeDropdown}
+              onToggle={handleDropdownToggle}
+              onPriceChange={onPriceChange}
+              resetSignal={resetSignal}
+            />
+
+            <FilterDropdown
+              title="Материал"
+              options={[
+                { id: "Кожа", label: "Кожа" },
+                { id: "Металл", label: "Металл" },
+                { id: "Силикон", label: "Силикон" },
+              ]}
+              activeDropdown={activeDropdown}
+              onToggle={handleDropdownToggle}
+              onSelect={onMaterialSelect}
+              resetSignal={resetSignal}
+            />
+
+            <FilterDropdown
+              title="Коллекция"
+              options={[
+                { id: "business", label: "Бизнес" },
+                { id: "limited", label: "Лимитированная" },
+                { id: "premium", label: "Премиум" },
+                { id: "autumn2025", label: "Осень 2025" },
+              ]}
+              activeDropdown={activeDropdown}
+              onToggle={handleDropdownToggle}
+              onSelect={onCollectionSelect}
+              resetSignal={resetSignal}
+            />
+          </div>
+
           <SortBy onSortChange={onSortChange} />
         </div>
+        {/* ===== КОНЕЦ DESKTOP ===== */}
 
-        {/* ========= MOBILE: аккордеоны с чекбоксами ========= */}
+        {/* ===== MOBILE: аккордеоны с чекбоксами ===== */}
         <div className="sm:hidden space-y-4 mt-4">
           {/* Популярность */}
           <div>
@@ -217,7 +224,6 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               </div>
             )}
           </div>
-
           {/* Цена */}
           <div>
             <button
@@ -250,7 +256,6 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               </div>
             )}
           </div>
-
           {/* Материал */}
           <div>
             <button
@@ -286,7 +291,6 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               </div>
             )}
           </div>
-
           {/* Коллекция */}
           <div>
             <button
@@ -323,6 +327,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
             )}
           </div>
         </div>
+        {/* ===== END MOBILE ===== */}
       </div>
     </section>
   );
