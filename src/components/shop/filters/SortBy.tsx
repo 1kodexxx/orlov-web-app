@@ -44,7 +44,7 @@ const SortBy: React.FC<SortByProps> = ({ onSortChange }) => {
   };
 
   return (
-    <div className="relative hidden sm:block" ref={dropdownRef}>
+    <div className="sort-by relative hidden sm:block " ref={dropdownRef}>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className="h-10 flex items-center justify-between gap-2 rounded-sm border border-secondary bg-background-paper text-sm text-text-secondary px-4 cursor-pointer">
