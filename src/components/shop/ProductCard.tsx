@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
   id: number;
@@ -7,11 +8,24 @@ interface ProductCardProps {
   price: string;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ name, image, price }) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  id,
+  name,
+  image,
+  price,
+}) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/catalog/${id}`);
+  };
+
   return (
-    <li className="flex flex-col items-center max-w-[260px] w-full">
-      <a className="flex flex-col items-center">
-        <div className="overflow-hidden bg-background-paper">
+    <li
+      className="flex flex-col items-center max-w-[260px] w-full cursor-pointer"
+      onClick={handleCardClick}>
+      <div className="flex flex-col items-center">
+        <div className="overflow-hidden bg-background-paper rounded-lg">
           <img src={image} alt={name} className="object-cover w-full" />
         </div>
 
@@ -23,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ name, image, price }) => {
             {price}
           </p>
         </div>
-      </a>
+      </div>
     </li>
   );
 };

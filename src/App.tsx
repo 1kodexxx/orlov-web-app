@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import Layout from "./layout/Layout";
+import Layout from "@/layout/Layout";
+
 import ScrollToTop from "@/components/common/ScrollToTop";
+import ProductPage from "@/components/shop/ProductPage";
 
 import Home from "@/pages/Home";
 import AboutUs from "@/pages/AboutUs";
@@ -21,6 +23,8 @@ const App = () => {
         <Route path="/contacts" element={<Contacts />} />
         <Route path="/delivery" element={<Delivery />} />
         <Route path="/reviews" element={<Reviews />} />
+
+        <Route path="/catalog/:id" element={<ProductPage />} />
 
         {/* Обработка несуществующих маршрутов */}
         <Route path="*" element={<NotFound />} />
