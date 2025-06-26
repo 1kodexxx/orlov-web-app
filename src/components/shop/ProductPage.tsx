@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Breadcrumb from "@/components/common/Breadcrumb";
-import Loader from "@/components/common/Loader";
-import Button from "@/components/common/Button";
+import { Breadcrumb, Loader, Button } from "@/components/common";
 import { allProducts, type Product } from "@/data/products";
 
 const ProductPage: React.FC = () => {

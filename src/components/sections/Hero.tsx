@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import Marquee from "../common/Marquee";
 import heroImage from "@/assets/logo.svg";
-import Button from "../common/Button";
+import { Button, Marquee } from "../common";
 
 const Hero = () => {
   return (
