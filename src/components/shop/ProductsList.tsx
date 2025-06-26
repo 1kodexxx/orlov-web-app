@@ -115,13 +115,13 @@ const ProductsList: React.FC<ProductsListProps> = ({
           )}
         </div>
 
-        {/* 🔥 Пагинация ВСЕГДА отображается, даже в момент загрузки */}
-        {showPagination && (
+        {/* 🔥 Пагинация теперь скрывается во время загрузки */}
+        {!isLoading && showPagination && (
           <ol className="mt-8 flex justify-center gap-2 text-xs font-medium">
             <li>
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1 || isLoading}
+                disabled={currentPage === 1}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
                 ‹
               </button>
@@ -131,12 +131,11 @@ const ProductsList: React.FC<ProductsListProps> = ({
               <li key={page}>
                 <button
                   onClick={() => handlePageChange(page)}
-                  disabled={isLoading}
                   className={`inline-flex h-8 w-8 items-center justify-center rounded-sm border ${
                     page === currentPage
                       ? "bg-[#EFE393] text-black border-[#EFE393]"
                       : "border-secondary hover:bg-secondary hover:text-background transition"
-                  } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}>
+                  }`}>
                   {page}
                 </button>
               </li>
@@ -145,7 +144,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
             <li>
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages || isLoading}
+                disabled={currentPage === totalPages}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
                 ›
               </button>
