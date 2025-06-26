@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Breadcrumb, Loader, Button } from "@/components/common";
 import { allProducts, type Product } from "@/data/products";
 
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
@@ -39,7 +40,30 @@ const ProductPage: React.FC = () => {
     <>
       <Breadcrumb lastLabel={product.name} />
 
-      <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
+      {/* Кнопка Назад */}
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 lg:mt-8">
+        <div className="lg:w-4/5 mx-auto">
+          <button
+            onClick={() => navigate(-1)}
+            className="text-primary hover:underline flex items-center gap-2">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Назад в каталог
+          </button>
+        </div>
+      </div>
+
+      <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center lg:-mt-12">
         <div className="max-w-screen-xl mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8 w-full">
           <div className="flex flex-col lg:flex-row lg:w-4/5 mx-auto gap-8 lg:items-stretch">
             {/* Левая часть — картинка */}
