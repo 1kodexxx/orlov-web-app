@@ -1,5 +1,4 @@
-import Hero from "../components/sections/Hero";
-import Teaser from "@/components/sections/Teaser";
+import { Hero, Teaser } from "@/components/sections";
 
 import InfoSectionImage1 from "@/assets/InfoSection1.png";
 import InfoSectionImage2 from "@/assets/InfoSection2.png";

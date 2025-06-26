@@ -1,5 +1,4 @@
-import PromoSection from "@/components/sections/PromoSection";
-import Features from "@/components/sections/Features";
+import { PromoSection, Features } from "@/components/sections";
 
 import PromoSectionImage1 from "@/assets/PromoSection1.png";
 import PromoSectionImage2 from "@/assets/PromoSection2.png";
