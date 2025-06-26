@@ -29,6 +29,10 @@ const NavBar = () => {
     navigate("/catalog?focus=search");
   };
 
+  const handleCartClick = () => {
+    navigate("/cart");
+  };
+
   return (
     <header className="w-full sticky top-0 z-50 bg-background shadow-md">
       <div className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between relative">
@@ -66,7 +70,9 @@ const NavBar = () => {
             onClick={handleSearchClick}>
             <FaSearchDollar />
           </span>
-          <span className="cursor-pointer hover:scale-110 transition">
+          <span
+            className="cursor-pointer hover:scale-110 transition"
+            onClick={handleCartClick}>
             <FaShoppingCart />
           </span>
           <span className="cursor-pointer hover:scale-110 transition">
@@ -96,7 +102,7 @@ const NavBar = () => {
           ))}
           <div className="flex justify-around pt-4 text-primary text-2xl">
             <FaSearchDollar onClick={handleSearchClick} />
-            <FaShoppingCart />
+            <FaShoppingCart onClick={handleCartClick} />
             <FaUserTie />
           </div>
         </div>
