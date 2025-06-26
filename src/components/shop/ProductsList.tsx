@@ -1,4 +1,3 @@
-// src/components/shop/ProductsList.tsx
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import type { Product } from "@/data/products";
