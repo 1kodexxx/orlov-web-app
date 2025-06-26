@@ -10,6 +10,7 @@ import Catalog from "@/pages/Catalog";
 import Contacts from "@/pages/Contacts";
 import Delivery from "@/pages/Delivery";
 import Reviews from "@/pages/Reviews";
+import Cart from "@/pages/Cart";
 import NotFound from "@/pages/NotFound";
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/contacts" element={<Contacts />} />
         <Route path="/delivery" element={<Delivery />} />
         <Route path="/reviews" element={<Reviews />} />
+        <Route path="/cart" element={<Cart />} />
 
         <Route path="/catalog/:id" element={<ProductPage />} />
 
