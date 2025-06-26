@@ -12,7 +12,7 @@ const ProductPage: React.FC = () => {
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [slideIndex, setSlideIndex] = useState(0);
 
-  // touch/swipe state
+  // для тача/драг-свайпов
   const [touchStartX, setTouchStartX] = useState(0);
 
   useEffect(() => {
@@ -43,16 +43,7 @@ const ProductPage: React.FC = () => {
   const handlePrev = () => setSlideIndex((slideIndex + 2) % 3);
   const handleNext = () => setSlideIndex((slideIndex + 1) % 3);
 
-  // прокрутка колёсиком
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (e.deltaY > 0) {
-      handleNext();
-    } else {
-      handlePrev();
-    }
-  };
-
-  // мышь для desktop
+  // mouse drag для десктопа
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     setTouchStartX(e.clientX);
@@ -63,7 +54,7 @@ const ProductPage: React.FC = () => {
     else if (diff < -50) handleNext();
   };
 
-  // тач для мобильных
+  // тач для мобилок
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setTouchStartX(e.touches[0].clientX);
   };
@@ -104,10 +95,9 @@ const ProductPage: React.FC = () => {
       <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
         <div className="max-w-screen-xl mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8 w-full lg:-mt-12">
           <div className="flex flex-col lg:flex-row lg:w-4/5 mx-auto gap-8 lg:items-stretch">
-            {/* Слайдер */}
+            {/* Слайдер без реакции на прокрутку */}
             <div
               className="w-full md:w-2/3 lg:w-1/2 relative overflow-hidden select-none"
-              onWheel={handleWheel}
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onTouchStart={handleTouchStart}
