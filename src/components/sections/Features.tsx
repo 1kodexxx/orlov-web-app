@@ -10,8 +10,8 @@ const Features = () => {
       viewport={{ once: true }}
       transition={{ duration: 0.8, ease: "easeOut" }}
       className="py-16 px-4 text-text-secondary">
-      {/* Контейнер идентичный NavBar и PromoSection */}
-      <div className="max-w-screen-xl mx-auto px-4">
+      {/* Контейнер с адаптивной шириной */}
+      <div className="w-full px-0 sm:px-4 md:max-w-screen-xl mx-auto">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -31,7 +31,7 @@ const Features = () => {
           премиум и стиль, который подчеркивает ваш уникальный вкус.
         </motion.p>
 
-        <div className="grid gap-12 md:grid-cols-3 items-stretch">
+        <div className="flex flex-col md:grid md:grid-cols-3 gap-12 items-stretch">
           {/* Преимущество 1 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
