@@ -25,6 +25,10 @@ const NavBar = () => {
     setMobileMenuOpen(false);
   };
 
+  const handleSearchClick = () => {
+    navigate("/catalog?focus=search");
+  };
+
   return (
     <header className="w-full sticky top-0 z-50 bg-background shadow-md">
       <div className="max-w-screen-xl mx-auto px-4 py-4 flex items-center justify-between relative">
@@ -57,7 +61,9 @@ const NavBar = () => {
 
         {/* Иконки */}
         <div className="hidden lg:flex gap-2 md:gap-4 text-primary text-lg md:text-xl">
-          <span className="cursor-pointer hover:scale-110 transition">
+          <span
+            className="cursor-pointer hover:scale-110 transition"
+            onClick={handleSearchClick}>
             <FaSearchDollar />
           </span>
           <span className="cursor-pointer hover:scale-110 transition">
@@ -89,7 +95,7 @@ const NavBar = () => {
             </NavLink>
           ))}
           <div className="flex justify-around pt-4 text-primary text-2xl">
-            <FaSearchDollar />
+            <FaSearchDollar onClick={handleSearchClick} />
             <FaShoppingCart />
             <FaUserTie />
           </div>

@@ -1,33 +1,63 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 interface SearchProps {
-  placeholder?: string;
+  placeholderList?: string[];
   onSearch: (query: string) => void;
 }
 
 const Search: React.FC<SearchProps> = ({
-  placeholder = "Поиск...",
+  placeholderList = ["Поиск...", "Найти товар...", "Введите запрос..."],
   onSearch,
 }) => {
   const [query, setQuery] = useState("");
-  const [animatedPlaceholder, setAnimatedPlaceholder] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const location = useLocation();
+
+  const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
+  const [displayedPlaceholder, setDisplayedPlaceholder] = useState("");
   const [index, setIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const typingSpeed = 150;
+  const deletingSpeed = 75;
+  const pauseTime = 1000;
+
+  const currentPlaceholder = placeholderList[currentPlaceholderIndex];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setAnimatedPlaceholder((prev) => {
-        if (index < placeholder.length) {
-          return prev + placeholder[index];
-        } else {
-          return "";
-        }
-      });
+    let timer: NodeJS.Timeout;
 
-      setIndex((prev) => (prev < placeholder.length ? prev + 1 : 0));
-    }, 300); // 🔥 Уменьшил скорость, теперь 300ms между буквами
+    if (!isDeleting && index <= currentPlaceholder.length) {
+      timer = setTimeout(() => {
+        setDisplayedPlaceholder(currentPlaceholder.substring(0, index));
+        setIndex((prev) => prev + 1);
+      }, typingSpeed);
+    } else if (isDeleting && index >= 0) {
+      timer = setTimeout(() => {
+        setDisplayedPlaceholder(currentPlaceholder.substring(0, index));
+        setIndex((prev) => prev - 1);
+      }, deletingSpeed);
+    } else if (index === currentPlaceholder.length) {
+      timer = setTimeout(() => {
+        setIsDeleting(true);
+      }, pauseTime);
+    } else if (index === 0 && isDeleting) {
+      setIsDeleting(false);
+      setCurrentPlaceholderIndex((prev) =>
+        prev === placeholderList.length - 1 ? 0 : prev + 1
+      );
+    }
 
-    return () => clearInterval(interval);
-  }, [index, placeholder]);
+    return () => clearTimeout(timer);
+  }, [index, isDeleting, currentPlaceholder, placeholderList]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("focus") === "search" && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [location]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -50,10 +80,11 @@ const Search: React.FC<SearchProps> = ({
         <input
           type="text"
           id="Search"
+          ref={inputRef}
           autoComplete="off"
           value={query}
           onChange={handleChange}
-          placeholder={animatedPlaceholder}
+          placeholder={displayedPlaceholder}
           className="w-full h-10 rounded border border-secondary bg-background-paper text-text-secondary shadow-sm sm:text-sm px-4 pr-10 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
         />
 
@@ -64,6 +95,7 @@ const Search: React.FC<SearchProps> = ({
             onClick={query ? handleClear : undefined}
             className="p-1.5 rounded-full text-text-secondary hover:bg-secondary/40 transition">
             {query ? (
+              // Крестик
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -78,6 +110,7 @@ const Search: React.FC<SearchProps> = ({
                 />
               </svg>
             ) : (
+              // Иконка поиска
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
