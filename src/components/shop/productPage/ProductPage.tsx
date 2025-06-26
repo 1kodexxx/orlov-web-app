@@ -102,7 +102,7 @@ const ProductPage: React.FC = () => {
               </p>
 
               {/* Группа 4: Цвета и модели */}
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-8 pb-5 border-b border-secondary">
+              <div className="flex flex-col md:flex-row md:justify-between gap-8 pb-5 border-b border-secondary">
                 {/* Цвета */}
                 <div className="flex flex-col gap-3">
                   <span className="text-text-secondary">Цвет</span>
@@ -131,7 +131,7 @@ const ProductPage: React.FC = () => {
                 {/* Модели */}
                 <div className="flex flex-col gap-3">
                   <span className="text-text-secondary">Модель</span>
-                  <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {[
                       "iPhone 14 Pro",
                       "iPhone 13",
