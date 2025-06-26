@@ -55,7 +55,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="mt-4 grid gap-y-10 gap-x-[68.5px] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center sm:justify-items-stretch">
+                  className="mt-4 grid gap-y-10 gap-x-4 sm:gap-x-[68.5px] grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center">
                   {currentProducts.map((product: Product, index) => (
                     <motion.li
                       key={product.slug}
