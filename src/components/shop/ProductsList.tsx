@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import ProductCard from "./ProductCard";
 import type { Product } from "@/data/products";
 import Loader from "@/components/common/Loader";
@@ -9,6 +9,8 @@ import { useInView } from "react-intersection-observer";
 interface ProductsListProps {
   products: Product[];
   itemsPerPage?: number;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
 }
 
 const AnimatedProductCard: React.FC<{ product: Product; index: number }> = ({
@@ -59,35 +61,38 @@ const AnimatedProductCard: React.FC<{ product: Product; index: number }> = ({
 const ProductsList: React.FC<ProductsListProps> = ({
   products,
   itemsPerPage = 12,
+  currentPage,
+  setCurrentPage,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
-
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProducts = products.slice(startIndex, startIndex + itemsPerPage);
 
+  // 🔥 Сбрасываем currentPage, если после фильтрации текущая страница стала невалидной
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, [products, currentPage]);
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [products]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
   };
 
-  const showPagination = !isLoading && currentProducts.length > 0;
+  const showPagination = currentProducts.length > 0;
 
   return (
     <section className="text-text-secondary bg-background body-font py-0">
-      <div className="max-w-screen-xl mx-auto px-4 pb-32 min-h-[50vh] md:min-h-[60vh] flex flex-col justify-center">
-        {isLoading ? (
-          <Loader />
+      <div className="max-w-screen-xl mx-auto px-4 pb-32 min-h-[70vh] flex flex-col justify-center">
+        {products.length === 0 ? (
+          <div className="flex justify-center items-center min-h-[50vh]">
+            <Loader />
+          </div>
         ) : (
-          <div className="min-h-[50vh] md:min-h-[60vh] flex flex-col justify-center">
+          <div className="flex flex-col justify-center">
             {currentProducts.length > 0 ? (
               <ul className="mt-4 grid gap-y-10 gap-x-4 sm:gap-x-[68.5px] grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center">
                 {currentProducts.map((product, index) => (

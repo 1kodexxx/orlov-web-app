@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { allProducts } from "@/data/products";
 import ProductFilterPanel from "@/components/shop/filters/ProductFilterPanel";
 import ProductsList from "@/components/shop/ProductsList";
@@ -19,6 +19,21 @@ const Catalog = () => {
   const [selectedMaterial, setSelectedMaterial] = useState<string[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, Infinity]);
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // 🔥 Сбрасываем страницу на первую при любом изменении фильтров
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    selectedCategory,
+    searchQuery,
+    sortOption,
+    selectedPopularity,
+    selectedMaterial,
+    selectedCollection,
+    priceRange,
+  ]);
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
@@ -92,7 +107,11 @@ const Catalog = () => {
         onPriceChange={setPriceRange}
         resetSignal={resetSignal}
       />
-      <ProductsList products={filteredProducts} />
+      <ProductsList
+        products={filteredProducts}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
     </>
   );
 };
