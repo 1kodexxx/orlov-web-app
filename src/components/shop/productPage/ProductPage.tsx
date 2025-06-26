@@ -41,29 +41,25 @@ const ProductPage: React.FC = () => {
       <Breadcrumb lastLabel={product.name} />
 
       {/* Кнопка Назад */}
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-7 mt-4 lg:mt-1">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 lg:mt-1">
         <div className="lg:w-4/5 mx-auto">
-          <div className="lg:pr-[60%]">
-            {" "}
-            {/* Подкорректировали для небольшого сдвига вправо */}
-            <button
-              onClick={() => navigate(-1)}
-              className="text-primary hover:underline flex items-center gap-2">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Назад в каталог
-            </button>
-          </div>
+          <button
+            onClick={() => navigate(-1)}
+            className="text-primary hover:underline flex items-center gap-2">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Назад в каталог
+          </button>
         </div>
       </div>
 
@@ -71,11 +67,11 @@ const ProductPage: React.FC = () => {
         <div className="max-w-screen-xl mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8 w-full lg:-mt-12">
           <div className="flex flex-col lg:flex-row lg:w-4/5 mx-auto gap-8 lg:items-stretch">
             {/* Левая часть — картинка */}
-            <div className="w-full lg:w-1/2 flex lg:h-full bg-transparent">
+            <div className="w-full md:w-2/3 lg:w-1/2 flex lg:h-full bg-transparent">
               <img
                 alt={product.name}
                 src={product.image}
-                className="w-full h-full lg:max-h-[80vh] object-contain object-center rounded"
+                className="w-full h-full md:max-h-[60vh] lg:max-h-[80vh] object-contain object-center rounded"
               />
             </div>
 
@@ -151,7 +147,8 @@ const ProductPage: React.FC = () => {
                             : "border-secondary"
                         }`}
                         style={{ backgroundColor: item.color }}
-                        onClick={() => setSelectedColor(item.color)}></button>
+                        onClick={() => setSelectedColor(item.color)}
+                      />
                     ))}
                   </div>
                 </div>
