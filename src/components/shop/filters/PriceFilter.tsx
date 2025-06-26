@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
 interface PriceFilterProps {
   activeDropdown: string | null;
@@ -16,10 +18,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
   const isOpen = activeDropdown === "Цена";
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const [minPrice, setMinPrice] = useState<number | undefined>();
-  const [maxPrice, setMaxPrice] = useState<number | undefined>();
-  const [mobileMin, setMobileMin] = useState<number | "">("");
-  const [mobileMax, setMobileMax] = useState<number | "">("");
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 60000]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -41,46 +40,19 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
   }, [isOpen, onToggle]);
 
   useEffect(() => {
-    setMinPrice(undefined);
-    setMaxPrice(undefined);
-    setMobileMin("");
-    setMobileMax("");
+    setPriceRange([0, 60000]);
     onPriceChange([0, Infinity]);
   }, [resetSignal]);
 
-  const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
-    setMinPrice(value);
-    onPriceChange([value, maxPrice ?? Infinity]);
-  };
-
-  const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
-    setMaxPrice(value);
-    onPriceChange([minPrice ?? 0, value]);
-  };
-
-  const handleMobileMinChange = (v: string) => {
-    const num = v === "" ? "" : Number(v);
-    setMobileMin(num);
-    onPriceChange([
-      num === "" ? 0 : num,
-      mobileMax === "" ? Infinity : mobileMax,
-    ]);
-  };
-
-  const handleMobileMaxChange = (v: string) => {
-    const num = v === "" ? "" : Number(v);
-    setMobileMax(num);
-    onPriceChange([
-      mobileMin === "" ? 0 : mobileMin,
-      num === "" ? Infinity : num,
-    ]);
+  const handleSliderChange = (values: number | number[]) => {
+    if (Array.isArray(values)) {
+      setPriceRange([values[0], values[1]]);
+      onPriceChange([values[0], values[1]]);
+    }
   };
 
   const handleReset = () => {
-    setMinPrice(undefined);
-    setMaxPrice(undefined);
+    setPriceRange([0, 60000]);
     onPriceChange([0, Infinity]);
   };
 
@@ -110,10 +82,11 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
         </button>
 
         {isOpen && (
-          <div className="absolute top-full mt-2 z-50 w-96 rounded-sm border border-secondary bg-background-paper">
-            <header className="flex items-center justify-between p-4">
+          <div className="absolute top-full mt-2 z-50 w-96 rounded-sm border border-secondary bg-background-paper p-4">
+            <header className="flex items-center justify-between mb-4">
               <span className="text-sm text-text-secondary">
-                Максимальная цена: 60 000 ₽
+                {priceRange[0].toLocaleString()} ₽ –{" "}
+                {priceRange[1].toLocaleString()} ₽
               </span>
               <button
                 type="button"
@@ -122,36 +95,20 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
                 Сбросить
               </button>
             </header>
-            <div className="border-t border-secondary p-4">
-              <div className="flex justify-between gap-4">
-                <label
-                  htmlFor="FilterPriceFrom"
-                  className="flex items-center gap-2 ">
-                  <span className="text-sm text-text-secondary">₽</span>
-                  <input
-                    type="number"
-                    id="FilterPriceFrom"
-                    value={minPrice ?? ""}
-                    onChange={handleMinChange}
-                    placeholder="От"
-                    className="w-full rounded-md border-secondary shadow-xs sm:text-sm bg-background-paper text-text-secondary"
-                  />
-                </label>
-                <label
-                  htmlFor="FilterPriceTo"
-                  className="flex items-center gap-2">
-                  <span className="text-sm text-text-secondary">₽</span>
-                  <input
-                    type="number"
-                    id="FilterPriceTo"
-                    value={maxPrice ?? ""}
-                    onChange={handleMaxChange}
-                    placeholder="До"
-                    className="w-full rounded-md border-secondary shadow-xs sm:text-sm bg-background-paper text-text-secondary"
-                  />
-                </label>
-              </div>
-            </div>
+            <Slider
+              range
+              min={0}
+              max={60000}
+              step={100}
+              value={priceRange}
+              onChange={handleSliderChange}
+              trackStyle={[{ backgroundColor: "#EFE393" }]}
+              handleStyle={[
+                { borderColor: "#EFE393", backgroundColor: "#EFE393" },
+                { borderColor: "#EFE393", backgroundColor: "#EFE393" },
+              ]}
+              railStyle={{ backgroundColor: "#666" }}
+            />
           </div>
         )}
       </div>
@@ -168,21 +125,31 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
           </span>
         </button>
         {isOpen && (
-          <div className="pt-2 flex gap-2">
-            <input
-              type="number"
-              placeholder="От"
-              value={mobileMin}
-              onChange={(e) => handleMobileMinChange(e.target.value)}
-              className="flex-1 rounded border px-2 py-1 bg-background-paper"
+          <div className="pt-2">
+            <div className="mb-2 text-sm text-text-secondary text-center">
+              {priceRange[0].toLocaleString()} ₽ –{" "}
+              {priceRange[1].toLocaleString()} ₽
+            </div>
+            <Slider
+              range
+              min={0}
+              max={60000}
+              step={100}
+              value={priceRange}
+              onChange={handleSliderChange}
+              trackStyle={[{ backgroundColor: "#EFE393" }]}
+              handleStyle={[
+                { borderColor: "#EFE393", backgroundColor: "#EFE393" },
+                { borderColor: "#EFE393", backgroundColor: "#EFE393" },
+              ]}
+              railStyle={{ backgroundColor: "#666" }}
             />
-            <input
-              type="number"
-              placeholder="До"
-              value={mobileMax}
-              onChange={(e) => handleMobileMaxChange(e.target.value)}
-              className="flex-1 rounded border px-2 py-1 bg-background-paper"
-            />
+            <button
+              type="button"
+              onClick={handleReset}
+              className="mt-2 text-sm text-text-primary underline underline-offset-4 w-full">
+              Сбросить
+            </button>
           </div>
         )}
       </div>
