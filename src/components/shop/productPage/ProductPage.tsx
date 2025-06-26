@@ -28,7 +28,7 @@ const ProductPage: React.FC = () => {
     return (
       <>
         <Breadcrumb lastLabel="Товар не найден" />
-        <section className="max-w-screen-xl mx-auto px-4 py-8 text-text-secondary">
+        <section className="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-text-secondary">
           <h1 className="text-3xl font-bold mb-4">Товар не найден</h1>
         </section>
       </>
@@ -39,32 +39,32 @@ const ProductPage: React.FC = () => {
     <>
       <Breadcrumb lastLabel={product.name} />
 
-      <section className="text-text-secondary bg-background body-font overflow-hidden">
-        <div className="max-w-screen-xl mx-auto px-4 py-24">
-          <div className="flex flex-wrap lg:w-4/5 mx-auto">
+      <section className="bg-background body-font overflow-hidden">
+        <div className="max-w-screen-xl mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+          <div className="flex flex-col lg:flex-row lg:w-4/5 mx-auto gap-8 lg:items-stretch">
             {/* Левая часть — картинка */}
-            <div className="w-full lg:w-1/2">
+            <div className="w-full lg:w-1/2 flex lg:h-full">
               <img
                 alt={product.name}
                 src={product.image}
-                className="w-full h-64 object-cover object-center rounded bg-background-paper lg:h-auto"
+                className="w-full h-full lg:max-h-[80vh] object-contain object-center rounded bg-background-paper"
               />
             </div>
 
             {/* Правая часть — контент */}
-            <div className="w-full lg:w-1/2 lg:pl-10 lg:py-6 mt-6 lg:mt-0 flex flex-col space-y-6">
+            <div className="w-full lg:w-1/2 flex flex-col space-y-6">
               {/* Группа 1: Заголовок */}
               <div>
                 <h2 className="text-sm font-medium text-text-secondary tracking-widest uppercase">
                   ORLOV BRAND
                 </h2>
-                <h1 className="text-3xl font-semibold text-text-primary mb-2">
+                <h1 className="text-2xl sm:text-3xl font-semibold text-text-primary mt-1">
                   {product.name}
                 </h1>
               </div>
 
               {/* Группа 2: Рейтинг и соц. иконки */}
-              <div className="flex items-center mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center mb-4 gap-4">
                 <span className="flex items-center">
                   {[...Array(4)].map((_, i) => (
                     <svg
@@ -91,9 +91,9 @@ const ProductPage: React.FC = () => {
                   </svg>
                   <span className="ml-2 text-text-secondary">0 отзывов</span>
                 </span>
-                <span className="flex ml-4 pl-4 py-2 border-l border-secondary space-x-3">
+                <div className="flex items-center border-l border-secondary pl-4 space-x-3">
                   {/* Соц. иконки */}
-                </span>
+                </div>
               </div>
 
               {/* Группа 3: Описание */}
@@ -102,7 +102,7 @@ const ProductPage: React.FC = () => {
               </p>
 
               {/* Группа 4: Цвета и модели */}
-              <div className="flex flex-wrap lg:flex-nowrap items-start pb-5 border-b border-secondary gap-8">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-8 pb-5 border-b border-secondary">
                 {/* Цвета */}
                 <div className="flex flex-col gap-3">
                   <span className="text-text-secondary">Цвет</span>
@@ -131,7 +131,7 @@ const ProductPage: React.FC = () => {
                 {/* Модели */}
                 <div className="flex flex-col gap-3">
                   <span className="text-text-secondary">Модель</span>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
                     {[
                       "iPhone 14 Pro",
                       "iPhone 13",
@@ -155,11 +155,11 @@ const ProductPage: React.FC = () => {
               </div>
 
               {/* Группа 5: Цена и кнопки */}
-              <div className="flex items-center">
-                <span className="text-2xl font-medium text-text-primary">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-6">
+                <span className="text-2xl sm:text-3xl font-medium text-text-primary">
                   {product.price.toLocaleString()} ₽
                 </span>
-                <div className="ml-auto flex gap-4">
+                <div className="ml-0 sm:ml-auto flex gap-3">
                   <Button
                     to="/cart"
                     initialText="Добавить в корзину 🛒"
