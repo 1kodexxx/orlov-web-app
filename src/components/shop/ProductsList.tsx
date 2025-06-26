@@ -70,14 +70,12 @@ const ProductsList: React.FC<ProductsListProps> = ({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProducts = products.slice(startIndex, startIndex + itemsPerPage);
 
-  // 🔥 Сбрасываем currentPage, если после фильтрации текущая страница стала невалидной
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(1);
     }
   }, [products]);
 
-  // 🔥 Включаем Loader на 500ms при смене страницы или фильтрации
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => setIsLoading(false), 500);
@@ -91,41 +89,39 @@ const ProductsList: React.FC<ProductsListProps> = ({
     }
   };
 
-  const showPagination = currentProducts.length > 0;
+  const showPagination = totalPages > 1;
 
   return (
     <section className="text-text-secondary bg-background body-font py-0">
       <div className="max-w-screen-xl mx-auto px-4 pb-32 min-h-[70vh] flex flex-col justify-center">
-        {isLoading ? (
-          <div className="flex justify-center items-center min-h-[50vh]">
+        {/* 🔥 Контент и Loader в одном контейнере с фиксированной высотой */}
+        <div className="min-h-[50vh] flex flex-col justify-center items-center">
+          {isLoading ? (
             <Loader />
-          </div>
-        ) : (
-          <div className="flex flex-col justify-center">
-            {currentProducts.length > 0 ? (
-              <ul className="mt-4 grid gap-y-10 gap-x-4 sm:gap-x-[68.5px] grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center">
-                {currentProducts.map((product, index) => (
-                  <AnimatedProductCard
-                    key={product.slug}
-                    product={product}
-                    index={index}
-                  />
-                ))}
-              </ul>
-            ) : (
-              <div className="text-center text-lg text-text-secondary">
-                Ничего не найдено
-              </div>
-            )}
-          </div>
-        )}
+          ) : currentProducts.length > 0 ? (
+            <ul className="mt-4 grid gap-y-10 gap-x-4 sm:gap-x-[68.5px] grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center">
+              {currentProducts.map((product, index) => (
+                <AnimatedProductCard
+                  key={product.slug}
+                  product={product}
+                  index={index}
+                />
+              ))}
+            </ul>
+          ) : (
+            <div className="text-center text-lg text-text-secondary">
+              Ничего не найдено
+            </div>
+          )}
+        </div>
 
+        {/* 🔥 Пагинация ВСЕГДА отображается, даже в момент загрузки */}
         {showPagination && (
           <ol className="mt-8 flex justify-center gap-2 text-xs font-medium">
             <li>
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
+                disabled={currentPage === 1 || isLoading}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
                 ‹
               </button>
@@ -135,11 +131,12 @@ const ProductsList: React.FC<ProductsListProps> = ({
               <li key={page}>
                 <button
                   onClick={() => handlePageChange(page)}
+                  disabled={isLoading}
                   className={`inline-flex h-8 w-8 items-center justify-center rounded-sm border ${
                     page === currentPage
                       ? "bg-[#EFE393] text-black border-[#EFE393]"
                       : "border-secondary hover:bg-secondary hover:text-background transition"
-                  }`}>
+                  } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {page}
                 </button>
               </li>
@@ -148,7 +145,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
             <li>
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || isLoading}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
                 ›
               </button>
