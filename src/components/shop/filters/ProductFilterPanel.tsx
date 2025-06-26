@@ -79,7 +79,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
           onResetCategory={handleResetCategory}
         />
 
-        <div className="flex flex-wrap items-center gap-4 justify-start sm:justify-between">
+        <div className="flex flex-wrap items-center gap-0 sm:gap-4 justify-start sm:justify-between">
           <div className="flex flex-wrap items-center gap-4 flex-1">
             <FilterDropdown
               title="Популярность"
