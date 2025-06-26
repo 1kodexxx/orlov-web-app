@@ -13,7 +13,7 @@ interface InfoSectionProps {
   buttonLink?: string;
 }
 
-const InfoSection: React.FC<InfoSectionProps> = ({
+const Teaser: React.FC<InfoSectionProps> = ({
   title,
   description,
   imageUrl,
@@ -92,4 +92,4 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   );
 };
 
-export default InfoSection;
+export default Teaser;
