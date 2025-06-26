@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import type { Product } from "@/data/products";
 import Loader from "@/components/common/Loader";
@@ -64,6 +64,8 @@ const ProductsList: React.FC<ProductsListProps> = ({
   currentPage,
   setCurrentPage,
 }) => {
+  const [isLoading, setIsLoading] = useState(true);
+
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProducts = products.slice(startIndex, startIndex + itemsPerPage);
@@ -74,6 +76,13 @@ const ProductsList: React.FC<ProductsListProps> = ({
       setCurrentPage(1);
     }
   }, [products]);
+
+  // 🔥 Включаем Loader на 500ms при смене страницы или фильтрации
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, [products, currentPage]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -87,7 +96,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
   return (
     <section className="text-text-secondary bg-background body-font py-0">
       <div className="max-w-screen-xl mx-auto px-4 pb-32 min-h-[70vh] flex flex-col justify-center">
-        {products.length === 0 ? (
+        {isLoading ? (
           <div className="flex justify-center items-center min-h-[50vh]">
             <Loader />
           </div>
