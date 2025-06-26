@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { allProducts } from "@/data/products";
-import ProductFilterPanel from "@/components/shop/filters/ProductFilterPanel";
+
 import ProductsList from "@/components/shop/ProductsList";
-import Breadcrumb from "@/components/common/Breadcrumb";
+import { Breadcrumb } from "@/components/common/";
+import { ProductFilterPanel } from "@/components/shop/filters/";
 
 const parsePrice = (price: number | string) => {
   if (typeof price === "number") return price;
