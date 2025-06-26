@@ -1,134 +1,178 @@
 // src/pages/Cart.tsx
-import React from "react";
+import React, { useState } from "react";
+// import { Trash2 } from "lucide-react";
+
+interface CartItemType {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
+
+const initialCart: CartItemType[] = [
+  {
+    id: 1,
+    name: "Apple iMac 27”",
+    price: 1499,
+    image: "https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg",
+    quantity: 1,
+  },
+  {
+    id: 2,
+    name: "Apple iPhone 14",
+    price: 999,
+    image:
+      "https://flowbite.s3.amazonaws.com/blocks/e-commerce/iphone-light.svg",
+    quantity: 2,
+  },
+  {
+    id: 3,
+    name: "Apple iPad Air",
+    price: 898,
+    image: "https://flowbite.s3.amazonaws.com/blocks/e-commerce/ipad-light.svg",
+    quantity: 1,
+  },
+  {
+    id: 4,
+    name: "MacBook Pro 16″",
+    price: 4499,
+    image:
+      "https://flowbite.s3.amazonaws.com/blocks/e-commerce/macbook-pro-light.svg",
+    quantity: 4,
+  },
+  {
+    id: 5,
+    name: "PlayStation 5",
+    price: 499,
+    image: "https://flowbite.s3.amazonaws.com/blocks/e-commerce/ps5-light.svg",
+    quantity: 1,
+  },
+  {
+    id: 6,
+    name: "Xbox Series X",
+    price: 499,
+    image: "https://flowbite.s3.amazonaws.com/blocks/e-commerce/xbox-light.svg",
+    quantity: 1,
+  },
+  {
+    id: 7,
+    name: "Apple Watch SE",
+    price: 399,
+    image:
+      "https://flowbite.s3.amazonaws.com/blocks/e-commerce/apple-watch-light.svg",
+    quantity: 2,
+  },
+];
 
 const Cart: React.FC = () => {
+  const [cart, setCart] = useState<CartItemType[]>(initialCart);
+
+  const updateQuantity = (id: number, amount: number) => {
+    setCart(
+      cart.map((item) =>
+        item.id === id
+          ? { ...item, quantity: Math.max(1, item.quantity + amount) }
+          : item
+      )
+    );
+  };
+
+  const removeItem = (id: number) => {
+    setCart(cart.filter((item) => item.id !== id));
+  };
+
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const discount = 299;
+  const pickup = 99;
+  const tax = 799;
+  const total = subtotal - discount + pickup + tax;
+
   return (
-    <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+    <section className="bg-background py-8 antialiased md:py-16">
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-          Shopping Cart
+        <h2 className="text-xl font-semibold text-text-primary sm:text-2xl mb-8">
+          Корзина
         </h2>
 
-        <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+        <div className="lg:flex lg:items-start lg:gap-8">
           {/* Cart Items */}
-          <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
-            {/* Здесь вставь компонент CartItem и повторяй для каждого товара */}
-            {/* Или оставь как сейчас, если делаешь статичный пример */}
-            {/* Cart Item 1 */}
-            {/* Вставляй сюда предоставленную тобой разметку cart items (один за другим) */}
+          <div className="w-full space-y-4">
+            {cart.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between bg-background-paper rounded-lg p-4 border dark:border-gray-700">
+                <div className="flex items-center gap-4">
+                  <img src={item.image} alt={item.name} className="w-12 h-12" />
+                  <span className="text-sm text-text-primary">{item.name}</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => updateQuantity(item.id, -1)}
+                    className="h-8 w-8 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-lg">
+                    -
+                  </button>
+                  <span className="w-8 text-center">{item.quantity}</span>
+                  <button
+                    onClick={() => updateQuantity(item.id, 1)}
+                    className="h-8 w-8 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-lg">
+                    +
+                  </button>
+                </div>
+
+                <span className="text-sm font-medium text-text-primary">
+                  {(item.price * item.quantity).toLocaleString()} ₽
+                </span>
+
+                <button
+                  onClick={() => removeItem(item.id)}
+                  className="text-red-500 hover:text-red-700">
+                  {/* <Trash2 size={20} /> */}
+                </button>
+              </div>
+            ))}
           </div>
 
           {/* Order Summary */}
-          <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
-            <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
-              <p className="text-xl font-semibold text-gray-900 dark:text-white">
-                Order summary
-              </p>
-
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <dl className="flex items-center justify-between gap-4">
-                    <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                      Original price
-                    </dt>
-                    <dd className="text-base font-medium text-gray-900 dark:text-white">
-                      $7,592.00
-                    </dd>
-                  </dl>
-
-                  <dl className="flex items-center justify-between gap-4">
-                    <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                      Savings
-                    </dt>
-                    <dd className="text-base font-medium text-green-600">
-                      -$299.00
-                    </dd>
-                  </dl>
-
-                  <dl className="flex items-center justify-between gap-4">
-                    <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                      Store Pickup
-                    </dt>
-                    <dd className="text-base font-medium text-gray-900 dark:text-white">
-                      $99
-                    </dd>
-                  </dl>
-
-                  <dl className="flex items-center justify-between gap-4">
-                    <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                      Tax
-                    </dt>
-                    <dd className="text-base font-medium text-gray-900 dark:text-white">
-                      $799
-                    </dd>
-                  </dl>
+          <div className="w-full lg:w-1/3 mt-8 lg:mt-0 space-y-4">
+            <div className="rounded-lg border border-gray-200 bg-background-paper p-4 shadow-sm dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-text-primary mb-4">
+                Сводка заказа
+              </h3>
+              <div className="space-y-2 text-sm text-text-secondary">
+                <div className="flex justify-between">
+                  <span>Исходная стоимость</span>
+                  <span>{subtotal.toLocaleString()} ₽</span>
                 </div>
-
-                <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
-                  <dt className="text-base font-bold text-gray-900 dark:text-white">
-                    Total
-                  </dt>
-                  <dd className="text-base font-bold text-gray-900 dark:text-white">
-                    $8,191.00
-                  </dd>
-                </dl>
-              </div>
-
-              <a
-                href="#"
-                className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                Proceed to Checkout
-              </a>
-
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                  or
-                </span>
-                <a
-                  href="#"
-                  title=""
-                  className="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500">
-                  Continue Shopping
-                  <svg
-                    className="h-5 w-5"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24">
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 12H5m14 0-4 4m4-4-4-4"
-                    />
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
-              <form className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="voucher"
-                    className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                    Do you have a voucher or gift card?
-                  </label>
-                  <input
-                    type="text"
-                    id="voucher"
-                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
-                    placeholder=""
-                    required
-                  />
+                <div className="flex justify-between">
+                  <span>Скидка</span>
+                  <span className="text-green-500">- {discount} ₽</span>
                 </div>
-                <button
-                  type="submit"
-                  className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                  Apply Code
+                <div className="flex justify-between">
+                  <span>Самовывоз</span>
+                  <span>{pickup} ₽</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Налог</span>
+                  <span>{tax} ₽</span>
+                </div>
+              </div>
+              <div className="flex justify-between border-t pt-2 mt-2 text-base font-semibold text-text-primary">
+                <span>Итого</span>
+                <span>{total.toLocaleString()} ₽</span>
+              </div>
+              <div className="flex gap-4 mt-6">
+                <button className="w-1/2 py-2 rounded-lg border text-sm text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700">
+                  Продолжить покупки
                 </button>
-              </form>
+                <button className="w-1/2 py-2 rounded-lg bg-primary text-sm text-primary-contrast hover:bg-yellow-300">
+                  Оформить заказ
+                </button>
+              </div>
             </div>
           </div>
         </div>
