@@ -1,36 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
-import type { Variants } from "framer-motion";
 import Breadcrumb from "@/components/common/Breadcrumb";
 import Loader from "@/components/common/Loader";
 import Button from "@/components/common/Button";
 import { allProducts, type Product } from "@/data/products";
-
-const sectionVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.2, duration: 0.4 }, // Ускорил
-  }),
-};
-
-const buttonGroupVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-      duration: 0.4,
-    },
-  },
-};
-
-const buttonItemVariants: Variants = {
-  hidden: { opacity: 0, x: -50 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
-};
 
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -72,39 +45,28 @@ const ProductPage: React.FC = () => {
         <div className="max-w-screen-xl mx-auto px-4 py-24">
           <div className="flex flex-wrap lg:w-4/5 mx-auto">
             {/* Левая часть — картинка */}
-            <motion.div
-              className="w-full lg:w-1/2"
-              initial="hidden"
-              animate="visible"
-              custom={0}
-              variants={sectionVariants}>
-              <motion.img
+            <div className="w-full lg:w-1/2">
+              <img
                 alt={product.name}
                 src={product.image}
                 className="w-full h-64 object-cover object-center rounded bg-background-paper lg:h-auto"
               />
-            </motion.div>
+            </div>
 
             {/* Правая часть — контент */}
-            <motion.div
-              className="w-full lg:w-1/2 lg:pl-10 lg:py-6 mt-6 lg:mt-0 flex flex-col space-y-6"
-              initial="hidden"
-              animate="visible">
+            <div className="w-full lg:w-1/2 lg:pl-10 lg:py-6 mt-6 lg:mt-0 flex flex-col space-y-6">
               {/* Группа 1: Заголовок */}
-              <motion.div custom={1} variants={sectionVariants}>
+              <div>
                 <h2 className="text-sm font-medium text-text-secondary tracking-widest uppercase">
                   ORLOV BRAND
                 </h2>
                 <h1 className="text-3xl font-semibold text-text-primary mb-2">
                   {product.name}
                 </h1>
-              </motion.div>
+              </div>
 
               {/* Группа 2: Рейтинг и соц. иконки */}
-              <motion.div
-                className="flex items-center mb-4"
-                custom={2}
-                variants={sectionVariants}>
+              <div className="flex items-center mb-4">
                 <span className="flex items-center">
                   {[...Array(4)].map((_, i) => (
                     <svg
@@ -134,21 +96,15 @@ const ProductPage: React.FC = () => {
                 <span className="flex ml-4 pl-4 py-2 border-l border-secondary space-x-3">
                   {/* Соц. иконки */}
                 </span>
-              </motion.div>
+              </div>
 
               {/* Группа 3: Описание */}
-              <motion.p
-                className="leading-relaxed text-text-secondary"
-                custom={3}
-                variants={sectionVariants}>
+              <p className="leading-relaxed text-text-secondary">
                 {product.description || "Описание товара отсутствует."}
-              </motion.p>
+              </p>
 
               {/* Группа 4: Цвета и модели */}
-              <motion.div
-                className="flex flex-wrap lg:flex-nowrap items-start pb-5 border-b border-secondary gap-8"
-                custom={4}
-                variants={sectionVariants}>
+              <div className="flex flex-wrap lg:flex-nowrap items-start pb-5 border-b border-secondary gap-8">
                 {/* Цвета */}
                 <div className="flex flex-col gap-3">
                   <span className="text-text-secondary">Цвет</span>
@@ -198,46 +154,36 @@ const ProductPage: React.FC = () => {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              {/* Группа 5: Цена и кнопки (анимация по очереди слева направо) */}
-              <motion.div
-                className="flex items-center"
-                variants={buttonGroupVariants}
-                initial="hidden"
-                animate="visible">
-                <motion.span
-                  className="text-2xl font-medium text-text-primary"
-                  variants={buttonItemVariants}>
+              {/* Группа 5: Цена и кнопки */}
+              <div className="flex items-center">
+                <span className="text-2xl font-medium text-text-primary">
                   {product.price.toLocaleString()} ₽
-                </motion.span>
-                <motion.div className="ml-auto flex gap-4">
-                  <motion.div variants={buttonItemVariants}>
-                    <Button
-                      to="/cart"
-                      initialText="Добавить в корзину 🛒"
-                      hoverText="К оформлению 🎉"
-                      variant="light"
-                    />
-                  </motion.div>
-                  <motion.div variants={buttonItemVariants}>
-                    <button
-                      className="w-10 h-10 bg-background-paper rounded-full flex items-center justify-center text-text-secondary hover:text-primary transition"
-                      aria-label="Добавить в избранное">
-                      <svg
-                        fill="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        viewBox="0 0 24 24"
-                        className="w-5 h-5">
-                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                      </svg>
-                    </button>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-            </motion.div>
+                </span>
+                <div className="ml-auto flex gap-4">
+                  <Button
+                    to="/cart"
+                    initialText="Добавить в корзину 🛒"
+                    hoverText="К оформлению 🎉"
+                    variant="light"
+                  />
+                  <button
+                    className="w-10 h-10 bg-background-paper rounded-full flex items-center justify-center text-text-secondary hover:text-primary transition"
+                    aria-label="Добавить в избранное">
+                    <svg
+                      fill="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                      className="w-5 h-5">
+                      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
