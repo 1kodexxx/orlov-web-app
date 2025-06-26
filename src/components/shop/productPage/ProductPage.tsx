@@ -16,7 +16,7 @@ const ProductPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[50vh] flex justify-center items-center">
+      <div className="min-h-[calc(100vh-4rem)] flex justify-center items-center">
         <Loader />
       </div>
     );
@@ -28,7 +28,7 @@ const ProductPage: React.FC = () => {
     return (
       <>
         <Breadcrumb lastLabel="Товар не найден" />
-        <section className="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-text-secondary">
+        <section className="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-text-secondary min-h-screen flex items-center justify-center">
           <h1 className="text-3xl font-bold mb-4">Товар не найден</h1>
         </section>
       </>
@@ -39,15 +39,15 @@ const ProductPage: React.FC = () => {
     <>
       <Breadcrumb lastLabel={product.name} />
 
-      <section className="bg-background body-font overflow-hidden">
-        <div className="max-w-screen-xl mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+      <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
+        <div className="max-w-screen-xl mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8 w-full">
           <div className="flex flex-col lg:flex-row lg:w-4/5 mx-auto gap-8 lg:items-stretch">
             {/* Левая часть — картинка */}
-            <div className="w-full lg:w-1/2 flex lg:h-full">
+            <div className="w-full lg:w-1/2 flex lg:h-full bg-transparent">
               <img
                 alt={product.name}
                 src={product.image}
-                className="w-full h-full lg:max-h-[80vh] object-contain object-center rounded bg-background-paper"
+                className="w-full h-full lg:max-h-[80vh] object-contain object-center rounded"
               />
             </div>
 
