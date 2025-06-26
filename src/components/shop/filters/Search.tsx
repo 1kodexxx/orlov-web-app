@@ -2,62 +2,40 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
 interface SearchProps {
-  placeholderList?: string[];
+  placeholder?: string;
   onSearch: (query: string) => void;
 }
 
 const Search: React.FC<SearchProps> = ({
-  placeholderList = ["Поиск...", "Найти товар...", "Введите запрос..."],
+  placeholder = "Поиск...",
   onSearch,
 }) => {
   const [query, setQuery] = useState("");
+  const [animatedPlaceholder, setAnimatedPlaceholder] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
 
-  const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
-  const [displayedPlaceholder, setDisplayedPlaceholder] = useState("");
-  const [index, setIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const typingSpeed = 150;
-  const deletingSpeed = 75;
-  const pauseTime = 1000;
-
-  const currentPlaceholder = placeholderList[currentPlaceholderIndex];
+  const text = placeholder;
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let index = 0;
+    const speed = 200; // скорость печати
 
-    if (!isDeleting && index <= currentPlaceholder.length) {
-      timer = setTimeout(() => {
-        setDisplayedPlaceholder(currentPlaceholder.substring(0, index));
-        setIndex((prev) => prev + 1);
-      }, typingSpeed);
-    } else if (isDeleting && index >= 0) {
-      timer = setTimeout(() => {
-        setDisplayedPlaceholder(currentPlaceholder.substring(0, index));
-        setIndex((prev) => prev - 1);
-      }, deletingSpeed);
-    } else if (index === currentPlaceholder.length) {
-      timer = setTimeout(() => {
-        setIsDeleting(true);
-      }, pauseTime);
-    } else if (index === 0 && isDeleting) {
-      setIsDeleting(false);
-      setCurrentPlaceholderIndex((prev) =>
-        prev === placeholderList.length - 1 ? 0 : prev + 1
-      );
-    }
+    const type = () => {
+      setAnimatedPlaceholder(text.slice(0, index + 1));
+      index++;
 
-    return () => clearTimeout(timer);
-  }, [index, isDeleting, currentPlaceholder, placeholderList]);
+      if (index === text.length) {
+        setTimeout(() => {
+          index = 0;
+          setAnimatedPlaceholder("");
+        }, 1000); // пауза перед новым циклом
+      }
+    };
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    if (params.get("focus") === "search" && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [location]);
+    const interval = setInterval(type, speed);
+    return () => clearInterval(interval);
+  }, [text]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -69,6 +47,13 @@ const Search: React.FC<SearchProps> = ({
     setQuery("");
     onSearch("");
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("focus") === "search" && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [location]);
 
   return (
     <label
@@ -84,7 +69,7 @@ const Search: React.FC<SearchProps> = ({
           autoComplete="off"
           value={query}
           onChange={handleChange}
-          placeholder={displayedPlaceholder}
+          placeholder={animatedPlaceholder}
           className="w-full h-10 rounded border border-secondary bg-background-paper text-text-secondary shadow-sm sm:text-sm px-4 pr-10 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
         />
 
@@ -95,7 +80,6 @@ const Search: React.FC<SearchProps> = ({
             onClick={query ? handleClear : undefined}
             className="p-1.5 rounded-full text-text-secondary hover:bg-secondary/40 transition">
             {query ? (
-              // Крестик
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -110,7 +94,6 @@ const Search: React.FC<SearchProps> = ({
                 />
               </svg>
             ) : (
-              // Иконка поиска
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
