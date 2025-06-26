@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import type { Product } from "@/data/products";
-import { motion, AnimatePresence } from "framer-motion";
 import Loader from "@/components/common/Loader";
+import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
 interface ProductsListProps {
@@ -20,16 +21,31 @@ const AnimatedProductCard: React.FC<{ product: Product; index: number }> = ({
     threshold: 0.2,
   });
 
+  const variants: Variants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (custom: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: custom * 0.1,
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    }),
+    hover: {
+      scale: 1.05,
+      transition: { type: "spring", stiffness: 300, damping: 20 },
+    },
+  };
+
   return (
     <motion.li
       ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
-      whileHover={{
-        scale: 1.05,
-        transition: { type: "spring", stiffness: 300, damping: 20 },
-      }}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      whileHover="hover"
+      variants={variants}
+      custom={index}
       className="origin-center">
       <ProductCard
         slug={product.slug}
@@ -72,34 +88,23 @@ const ProductsList: React.FC<ProductsListProps> = ({
         {isLoading ? (
           <Loader />
         ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={JSON.stringify(currentProducts.map((p) => p.slug))}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="min-h-[50vh] md:min-h-[60vh] flex flex-col justify-center">
-              {currentProducts.length > 0 ? (
-                <motion.ul
-                  initial="hidden"
-                  animate="visible"
-                  className="mt-4 grid gap-y-10 gap-x-4 sm:gap-x-[68.5px] grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center">
-                  {currentProducts.map((product, index) => (
-                    <AnimatedProductCard
-                      key={product.slug}
-                      product={product}
-                      index={index}
-                    />
-                  ))}
-                </motion.ul>
-              ) : (
-                <div className="text-center text-lg text-text-secondary">
-                  Ничего не найдено
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
+          <div className="min-h-[50vh] md:min-h-[60vh] flex flex-col justify-center">
+            {currentProducts.length > 0 ? (
+              <ul className="mt-4 grid gap-y-10 gap-x-4 sm:gap-x-[68.5px] grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center">
+                {currentProducts.map((product, index) => (
+                  <AnimatedProductCard
+                    key={product.slug}
+                    product={product}
+                    index={index}
+                  />
+                ))}
+              </ul>
+            ) : (
+              <div className="text-center text-lg text-text-secondary">
+                Ничего не найдено
+              </div>
+            )}
+          </div>
         )}
 
         {showPagination && (
