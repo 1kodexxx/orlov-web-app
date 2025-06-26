@@ -26,7 +26,7 @@ const Teaser: React.FC<InfoSectionProps> = ({
   return (
     <section
       className={`${backgroundColor} text-white py-12 min-h-[80vh] md:min-h-[calc(100vh-3rem)] flex items-center`}>
-      <div className="px-4 sm:px-0 sm:max-w-[1246px] sm:mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-8">
+      <div className="max-w-screen-xl mx-auto px-4 flex flex-col-reverse md:flex-row items-center justify-between gap-8 w-full">
         {/* Левая часть */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -84,7 +84,7 @@ const Teaser: React.FC<InfoSectionProps> = ({
           <img
             src={imageUrl}
             alt="image"
-            className="w-full sm:w-auto sm:max-w-[480px] md:max-w-[720px] rounded-lg object-cover"
+            className="w-full max-w-[320px] sm:max-w-[480px] md:max-w-[720px] rounded-lg object-cover"
           />
         </motion.div>
       </div>
