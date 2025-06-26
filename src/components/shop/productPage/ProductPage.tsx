@@ -6,9 +6,14 @@ import { allProducts, type Product } from "@/data/products";
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  // touch/swipe state
+  const [touchStartX, setTouchStartX] = useState(0);
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 300);
@@ -24,23 +29,56 @@ const ProductPage: React.FC = () => {
   }
 
   const product: Product | undefined = allProducts.find((p) => p.slug === id);
-
   if (!product) {
     return (
       <>
         <Breadcrumb lastLabel="Товар не найден" />
         <section className="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-text-secondary min-h-screen flex items-center justify-center">
-          <h1 className="text-3xl font-bold mb-4">Товар не найден</h1>
+          <h1 className="text-3xl font-bold">Товар не найден</h1>
         </section>
       </>
     );
   }
 
+  const handlePrev = () => setSlideIndex((slideIndex + 2) % 3);
+  const handleNext = () => setSlideIndex((slideIndex + 1) % 3);
+
+  // прокрутка колёсиком
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (e.deltaY > 0) {
+      handleNext();
+    } else {
+      handlePrev();
+    }
+  };
+
+  // мышь для desktop
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setTouchStartX(e.clientX);
+  };
+  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+    const diff = e.clientX - touchStartX;
+    if (diff > 50) handlePrev();
+    else if (diff < -50) handleNext();
+  };
+
+  // тач для мобильных
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchEndX - touchStartX;
+    if (diff > 50) handlePrev();
+    else if (diff < -50) handleNext();
+  };
+
   return (
     <>
       <Breadcrumb lastLabel={product.name} />
 
-      {/* Кнопка Назад */}
+      {/* Кнопка «Назад» */}
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 lg:mt-1">
         <div className="lg:w-4/5 mx-auto">
           <button
@@ -66,18 +104,66 @@ const ProductPage: React.FC = () => {
       <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
         <div className="max-w-screen-xl mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8 w-full lg:-mt-12">
           <div className="flex flex-col lg:flex-row lg:w-4/5 mx-auto gap-8 lg:items-stretch">
-            {/* Левая часть — картинка */}
-            <div className="w-full md:w-2/3 lg:w-1/2 flex lg:h-full bg-transparent">
-              <img
-                alt={product.name}
-                src={product.image}
-                className="w-full h-full md:max-h-[60vh] lg:max-h-[80vh] object-contain object-center rounded"
-              />
+            {/* Слайдер */}
+            <div
+              className="w-full md:w-2/3 lg:w-1/2 relative overflow-hidden select-none"
+              onWheel={handleWheel}
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}>
+              <div
+                className="flex transition-transform duration-300"
+                style={{ transform: `translateX(-${slideIndex * 100}%)` }}>
+                {[0, 1, 2].map((idx) => (
+                  <img
+                    key={idx}
+                    src={product.image}
+                    alt={`${product.name} ${idx + 1}`}
+                    className="w-full h-full md:max-h-[60vh] lg:max-h-[80vh] object-contain object-center rounded flex-shrink-0"
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={handlePrev}
+                className="absolute top-1/2 left-2 -translate-y-1/2 bg-background-paper bg-opacity-60 hover:bg-opacity-90 p-2 rounded-full"
+                aria-label="Previous slide">
+                <svg
+                  className="w-5 h-5 text-text-secondary"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={handleNext}
+                className="absolute top-1/2 right-2 -translate-y-1/2 bg-background-paper bg-opacity-60 hover:bg-opacity-90 p-2 rounded-full"
+                aria-label="Next slide">
+                <svg
+                  className="w-5 h-5 text-text-secondary"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
             </div>
 
             {/* Правая часть — контент */}
             <div className="w-full lg:w-1/2 flex flex-col space-y-6">
-              {/* Группа 1: Заголовок */}
+              {/* Заголовок */}
               <div>
                 <h2 className="text-sm font-medium text-text-secondary tracking-widest uppercase">
                   ORLOV BRAND
@@ -87,7 +173,7 @@ const ProductPage: React.FC = () => {
                 </h1>
               </div>
 
-              {/* Группа 2: Рейтинг и соц. иконки */}
+              {/* Рейтинг и соц. иконки */}
               <div className="flex flex-col sm:flex-row sm:items-center mb-4 gap-4">
                 <span className="flex items-center">
                   {[...Array(4)].map((_, i) => (
@@ -120,14 +206,13 @@ const ProductPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Группа 3: Описание */}
+              {/* Описание */}
               <p className="leading-relaxed text-text-secondary">
                 {product.description || "Описание товара отсутствует."}
               </p>
 
-              {/* Группа 4: Цвета и модели */}
+              {/* Цвета и модели */}
               <div className="flex flex-col md:flex-row md:justify-between gap-8 pb-5 border-b border-secondary">
-                {/* Цвета */}
                 <div className="flex flex-col gap-3">
                   <span className="text-text-secondary">Цвет</span>
                   <div className="flex flex-wrap gap-2">
@@ -138,9 +223,9 @@ const ProductPage: React.FC = () => {
                       { color: "#3b82f6" },
                       { color: "#f87171" },
                       { color: "#a855f7" },
-                    ].map((item, index) => (
+                    ].map((item, idx) => (
                       <button
-                        key={index}
+                        key={idx}
                         className={`w-6 h-6 rounded-full border-2 ${
                           selectedColor === item.color
                             ? "border-primary"
@@ -152,8 +237,6 @@ const ProductPage: React.FC = () => {
                     ))}
                   </div>
                 </div>
-
-                {/* Модели */}
                 <div className="flex flex-col gap-3">
                   <span className="text-text-secondary">Модель</span>
                   <div className="flex flex-wrap gap-2">
@@ -163,9 +246,9 @@ const ProductPage: React.FC = () => {
                       "Galaxy S23",
                       "Redmi Note 12",
                       "Pixel 7",
-                    ].map((model, index) => (
+                    ].map((model, idx) => (
                       <button
-                        key={index}
+                        key={idx}
                         className={`px-3 py-1 rounded ${
                           selectedModel === model
                             ? "bg-secondary text-primary"
@@ -179,7 +262,7 @@ const ProductPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Группа 5: Цена и кнопки */}
+              {/* Цена и кнопки */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-6">
                 <span className="text-2xl sm:text-3xl font-medium text-text-primary">
                   {product.price.toLocaleString()} ₽
