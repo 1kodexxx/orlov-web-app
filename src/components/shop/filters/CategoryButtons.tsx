@@ -19,11 +19,12 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
 
-      // Если клик был вне кнопок и вне карточки товара
+      // Если клик был вне кнопок, вне карточки товара и вне блока сортировки
       if (
         buttonsRef.current &&
         !buttonsRef.current.contains(target) &&
-        !target.closest(".product-card") // 🔥 не сбрасывать, если клик внутри карточки
+        !target.closest(".product-card") &&
+        !target.closest(".sort-by") // 🔥 НЕ сбрасывать, если клик внутри сортировки
       ) {
         onResetCategory();
       }
