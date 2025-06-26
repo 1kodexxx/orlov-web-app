@@ -21,7 +21,6 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
-  // Авто-закрытие при клике вне
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -41,7 +40,6 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
     };
   }, [isOpen, onToggle]);
 
-  // Сброс по сигналу
   useEffect(() => {
     setSelectedOptions([]);
     onSelect([]);
@@ -66,63 +64,99 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => onToggle(title)}
-        className="flex items-center gap-2 border-b border-secondary pb-1 text-text-primary transition hover:border-primary cursor-pointer">
-        <span className="text-sm font-medium">{title}</span>
-        <span className={`transition ${isOpen ? "rotate-180" : ""}`}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="w-4 h-4">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-            />
-          </svg>
-        </span>
-      </button>
+    <div className="relative w-full sm:w-auto" ref={dropdownRef}>
+      {/* Десктоп версия */}
+      <div className="hidden sm:block">
+        <button
+          onClick={() => onToggle(title)}
+          className="flex items-center gap-2 border-b border-secondary pb-1 text-text-primary transition hover:border-primary cursor-pointer">
+          <span className="text-sm font-medium">{title}</span>
+          <span className={`transition ${isOpen ? "rotate-180" : ""}`}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-4 h-4">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+              />
+            </svg>
+          </span>
+        </button>
 
-      {isOpen && (
-        <div className="absolute top-full mt-2 z-50 w-64 rounded-sm border border-secondary bg-background-paper">
-          <header className="flex items-center justify-between p-4">
-            <span className="text-sm text-text-secondary">
-              {selectedOptions.length} выбрано
-            </span>
+        {isOpen && (
+          <div className="absolute top-full mt-2 z-50 w-64 rounded-sm border border-secondary bg-background-paper">
+            <header className="flex items-center justify-between p-4">
+              <span className="text-sm text-text-secondary">
+                {selectedOptions.length} выбрано
+              </span>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="text-sm text-text-primary underline underline-offset-4">
+                Сбросить
+              </button>
+            </header>
+            <ul className="space-y-1 border-t border-secondary p-4">
+              {options.map((o) => (
+                <li key={o.id}>
+                  <label
+                    htmlFor={o.id}
+                    className="inline-flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      id={o.id}
+                      checked={selectedOptions.includes(o.id)}
+                      onChange={() => handleCheckboxChange(o.id)}
+                      className="w-5 h-5 rounded-sm border-secondary shadow-sm bg-background-paper cursor-pointer"
+                    />
+                    <span className="text-sm font-medium text-text-secondary">
+                      {o.label}
+                    </span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Мобильная версия */}
+      <div className="sm:hidden">
+        <button
+          onClick={() => onToggle(title)}
+          className="w-full flex justify-between items-center border-b pb-1">
+          <span>{title}</span>
+          <span
+            className={`transition-transform ${isOpen ? "rotate-180" : ""}`}>
+            ▼
+          </span>
+        </button>
+        {isOpen && (
+          <div className="pt-2 space-y-2">
+            {options.map((o) => (
+              <label key={o.id} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selectedOptions.includes(o.id)}
+                  onChange={() => handleCheckboxChange(o.id)}
+                />
+                <span>{o.label}</span>
+              </label>
+            ))}
             <button
               type="button"
               onClick={handleReset}
               className="text-sm text-text-primary underline underline-offset-4">
               Сбросить
             </button>
-          </header>
-          <ul className="space-y-1 border-t border-secondary p-4">
-            {options.map((o) => (
-              <li key={o.id}>
-                <label
-                  htmlFor={o.id}
-                  className="inline-flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    id={o.id}
-                    checked={selectedOptions.includes(o.id)}
-                    onChange={() => handleCheckboxChange(o.id)}
-                    className="w-5 h-5 rounded-sm border-secondary shadow-sm bg-background-paper cursor-pointer"
-                  />
-                  <span className="text-sm font-medium text-text-secondary">
-                    {o.label}
-                  </span>
-                </label>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
