@@ -4,11 +4,42 @@ import ProductCard from "./ProductCard";
 import type { Product } from "@/data/products";
 import { motion, AnimatePresence } from "framer-motion";
 import Loader from "@/components/common/Loader";
+import { useInView } from "react-intersection-observer";
 
 interface ProductsListProps {
   products: Product[];
   itemsPerPage?: number;
 }
+
+const AnimatedProductCard: React.FC<{ product: Product; index: number }> = ({
+  product,
+  index,
+}) => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.2,
+  });
+
+  return (
+    <motion.li
+      ref={ref}
+      initial={{ opacity: 0, y: 30 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
+      whileHover={{
+        scale: 1.05,
+        transition: { type: "spring", stiffness: 300, damping: 20 },
+      }}
+      className="origin-center">
+      <ProductCard
+        slug={product.slug}
+        name={product.name}
+        image={product.image}
+        price={product.price}
+      />
+    </motion.li>
+  );
+};
 
 const ProductsList: React.FC<ProductsListProps> = ({
   products,
@@ -51,34 +82,15 @@ const ProductsList: React.FC<ProductsListProps> = ({
               className="min-h-[50vh] md:min-h-[60vh] flex flex-col justify-center">
               {currentProducts.length > 0 ? (
                 <motion.ul
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
+                  initial="hidden"
+                  animate="visible"
                   className="mt-4 grid gap-y-10 gap-x-4 sm:gap-x-[68.5px] grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center">
-                  {currentProducts.map((product: Product, index) => (
-                    <motion.li
+                  {currentProducts.map((product, index) => (
+                    <AnimatedProductCard
                       key={product.slug}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}
-                      whileHover={{
-                        scale: 1.05,
-                        transition: {
-                          type: "spring",
-                          stiffness: 300,
-                          damping: 20,
-                        },
-                      }}
-                      className="origin-center">
-                      <ProductCard
-                        slug={product.slug}
-                        name={product.name}
-                        image={product.image}
-                        price={product.price}
-                      />
-                    </motion.li>
+                      product={product}
+                      index={index}
+                    />
                   ))}
                 </motion.ul>
               ) : (
