@@ -110,7 +110,7 @@ const Notification: React.FC<NotificationProps> = ({
                 type="button"
                 onClick={onContinueShopping}
                 className="flex-1 rounded border border-transparent px-3 py-2 text-sm font-medium text-[#EFE393] transition-colors hover:bg-[#2C2C2C] text-center">
-                Продолжить покупки
+                Вернуться в каталог
               </button>
 
               <button
