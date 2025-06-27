@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ColorSelector, ModelSelector, PriceActions } from "./";
 import { type Product } from "@/data/products";
 
@@ -9,10 +9,20 @@ interface ProductDetailsProps {
 export default function ProductDetails({ product }: ProductDetailsProps) {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col space-y-6">
-      <div>
+      {/* Блок заголовка */}
+      <div
+        className={`transition-all duration-700 ease-out ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        }`}>
         <h2 className="text-sm font-medium text-text-secondary tracking-widest uppercase">
           ORLOV BRAND
         </h2>
@@ -21,7 +31,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         </h1>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center mb-4 gap-4">
+      {/* Блок рейтинга */}
+      <div
+        className={`flex flex-col sm:flex-row sm:items-center mb-4 gap-4 transition-all duration-700 ease-out delay-100 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        }`}>
         <span className="flex items-center">
           {[...Array(4)].map((_, i) => (
             <svg
@@ -50,11 +64,19 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         </span>
       </div>
 
-      <p className="leading-relaxed text-text-secondary">
+      {/* Блок описания */}
+      <p
+        className={`leading-relaxed text-text-secondary transition-all duration-700 ease-out delay-200 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        }`}>
         {product.description || "Описание товара отсутствует."}
       </p>
 
-      <div className="flex flex-col md:flex-row md:justify-between gap-8 pb-5 border-b border-secondary">
+      {/* Блок выбора цвета и модели */}
+      <div
+        className={`flex flex-col md:flex-row md:justify-between gap-8 pb-5 border-b border-secondary transition-all duration-700 ease-out delay-300 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        }`}>
         <ColorSelector
           colors={[
             "#facc15",
@@ -80,7 +102,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         />
       </div>
 
-      <PriceActions price={product.price} />
+      {/* Блок цены */}
+
+      <PriceActions price={product.price} isVisible={isVisible} delay={400} />
     </div>
   );
 }
