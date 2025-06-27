@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 export default function BackTo() {
   const navigate = useNavigate();
   return (
-    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 lg:mt-1">
+    <div className="max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-16 mt-4 lg:mt-1">
       <button
         onClick={() => navigate(-1)}
         className="text-primary hover:underline flex items-center gap-2">
