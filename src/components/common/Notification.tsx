@@ -112,8 +112,7 @@ const Notification: React.FC<NotificationProps> = ({
       } ${styles.bg} p-4 shadow-lg transition-all duration-500 ease-out ${
         visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
       }`}
-      style={{ pointerEvents: "auto" }} // позволяет взаимодействовать, если поверх чего-то
-    >
+      style={{ pointerEvents: "auto" }}>
       <div className="flex items-start gap-4">
         <div className={styles.iconColor}>{styles.icon}</div>
 
@@ -121,7 +120,9 @@ const Notification: React.FC<NotificationProps> = ({
           <strong className="font-medium text-[#EFE393]">{title}</strong>
 
           {description && (
-            <p className="mt-0.5 text-sm text-[#CCCCCC]">{description}</p>
+            <p
+              className="mt-0.5 text-sm text-[#CCCCCC]"
+              dangerouslySetInnerHTML={{ __html: description }}></p>
           )}
         </div>
 

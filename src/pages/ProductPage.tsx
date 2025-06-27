@@ -100,7 +100,6 @@ const ProductPage: React.FC = () => {
             </div>
 
             <div className="w-full lg:w-1/2 flex">
-              {/* ✅ Передаём setNotification в ProductDetails */}
               <ProductDetails
                 product={product}
                 setNotification={setNotification}

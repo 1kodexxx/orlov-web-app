@@ -14,11 +14,23 @@ interface ProductDetailsProps {
   >;
 }
 
+const colorOptions = [
+  { name: "Жёлтый", hex: "#facc15" },
+  { name: "Чёрный", hex: "#404040" },
+  { name: "Зелёный", hex: "#86efac" },
+  { name: "Синий", hex: "#3b82f6" },
+  { name: "Красный", hex: "#f87171" },
+  { name: "Фиолетовый", hex: "#a855f7" },
+];
+
 export default function ProductDetails({
   product,
   setNotification,
 }: ProductDetailsProps) {
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<{
+    name: string;
+    hex: string;
+  } | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -41,7 +53,7 @@ export default function ProductDetails({
 
     addToCart({
       ...product,
-      selectedColor,
+      selectedColor: selectedColor.hex,
       selectedModel,
       quantity: 1,
     });
@@ -49,7 +61,7 @@ export default function ProductDetails({
     setNotification({
       variant: "success",
       title: "Товар добавлен в корзину!",
-      description: `Модель: ${selectedModel}, Цвет: ${selectedColor}`,
+      description: `Модель: ${selectedModel}<br/>Цвет: <span style="color: ${selectedColor.hex};">${selectedColor.name}</span>`,
     });
   };
 
@@ -115,16 +127,12 @@ export default function ProductDetails({
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}>
         <ColorSelector
-          colors={[
-            "#facc15",
-            "#404040",
-            "#86efac",
-            "#3b82f6",
-            "#f87171",
-            "#a855f7",
-          ]}
-          selected={selectedColor}
-          onSelect={setSelectedColor}
+          colors={colorOptions.map((c) => c.hex)}
+          selected={selectedColor?.hex || null}
+          onSelect={(hex) => {
+            const color = colorOptions.find((c) => c.hex === hex);
+            if (color) setSelectedColor(color);
+          }}
         />
         <ModelSelector
           models={[

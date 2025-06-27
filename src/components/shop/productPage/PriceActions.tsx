@@ -5,7 +5,7 @@ interface PriceActionsProps {
   price: number;
   isVisible: boolean;
   delay?: number;
-  onBuy: () => void; // ✅ только onBuy
+  onBuy: () => void;
 }
 
 const PriceActions: React.FC<PriceActionsProps> = ({
@@ -36,7 +36,7 @@ const PriceActions: React.FC<PriceActionsProps> = ({
           className={buttonClass}
           style={{ transitionDelay: `${delay + 100}ms` }}>
           <Button
-            onClick={onBuy} // ✅ просто передаём
+            onClick={onBuy}
             initialText="Добавить в корзину 🛒"
             hoverText="Купить! ✨"
             variant="light"
