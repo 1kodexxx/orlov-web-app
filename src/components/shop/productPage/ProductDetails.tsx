@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ColorSelector, ModelSelector, PriceActions } from "./";
-import { type Product } from "@/data/products";
+import type { Product } from "@/data/products";
 
 interface ProductDetailsProps {
   product: Product;
@@ -103,8 +103,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       </div>
 
       {/* Блок цены */}
-
-      <PriceActions price={product.price} isVisible={isVisible} delay={400} />
+      <PriceActions
+        price={product.price}
+        isVisible={isVisible}
+        delay={400}
+        product={product}
+      />
     </div>
   );
 }

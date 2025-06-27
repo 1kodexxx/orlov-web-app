@@ -6,6 +6,7 @@ import {
   FaBars,
 } from "react-icons/fa";
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 
 const navItems = [
   { label: "Главная", path: "/" },
@@ -19,6 +20,9 @@ const navItems = [
 const NavBar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { cartItems } = useCart();
+
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleLogoClick = () => {
     navigate("/");
@@ -70,11 +74,18 @@ const NavBar = () => {
             onClick={handleSearchClick}>
             <FaSearchDollar />
           </span>
+
           <span
-            className="cursor-pointer hover:scale-110 transition"
+            className="relative cursor-pointer hover:scale-110 transition"
             onClick={handleCartClick}>
             <FaShoppingCart />
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] min-w-[16px] h-[16px] flex items-center justify-center rounded-full px-[4px]">
+                {totalItems}
+              </span>
+            )}
           </span>
+
           <span className="cursor-pointer hover:scale-110 transition">
             <FaUserTie />
           </span>
@@ -102,7 +113,19 @@ const NavBar = () => {
           ))}
           <div className="flex justify-around pt-4 text-primary text-2xl">
             <FaSearchDollar onClick={handleSearchClick} />
-            <FaShoppingCart onClick={handleCartClick} />
+            <span
+              className="relative cursor-pointer"
+              onClick={() => {
+                handleCartClick();
+                setMobileMenuOpen(false);
+              }}>
+              <FaShoppingCart />
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] min-w-[16px] h-[16px] flex items-center justify-center rounded-full px-[4px]">
+                  {totalItems}
+                </span>
+              )}
+            </span>
             <FaUserTie />
           </div>
         </div>
