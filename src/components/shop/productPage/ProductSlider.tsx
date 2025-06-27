@@ -18,7 +18,7 @@ export default function ProductSlider({
 
   return (
     <div
-      className="relative overflow-hidden select-none flex items-center justify-center max-w-[360px] max-h-[600px] w-full"
+      className="relative overflow-hidden select-none flex items-center justify-center max-w-[395px] max-h-[600px] w-full"
       onMouseDown={(e) => setStartX(e.clientX)}
       onMouseUp={(e) => {
         const diff = e.clientX - startX;

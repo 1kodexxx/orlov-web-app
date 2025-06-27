@@ -66,11 +66,11 @@ const ProductPage: React.FC = () => {
   return (
     <>
       <Breadcrumb lastLabel={product.name} />
-      <BackTo />
 
       <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
-        <div className="max-w-screen-xl mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8 w-full">
-          <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+        <div className="max-w-screen-lg mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8 w-full">
+          <BackTo />
+          <div className="flex flex-col lg:flex-row gap-4 items-stretch">
             <div
               className="w-full lg:w-1/2 flex justify-center"
               onMouseDown={handleMouseDown}
