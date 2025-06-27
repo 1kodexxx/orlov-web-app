@@ -1,13 +1,16 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { allProducts } from "@/data/products";
 
 interface BreadcrumbProps {
-  /** Если нужно заменить текст последнего элемента хлебных крошек */
+  /** Если нужно вручную заменить последний элемент хлебных крошек */
   lastLabel?: string;
 }
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ lastLabel }) => {
   const location = useLocation();
+  const { id } = useParams();
+
   const pathnames = location.pathname.split("/").filter((x) => x);
 
   const labelMap: { [key: string]: string } = {
@@ -17,14 +20,30 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ lastLabel }) => {
     contacts: "Контакты",
     delivery: "Доставка",
     reviews: "Отзывы",
-    // и т.д.
+    cart: "Корзина",
   };
+
+  const isProductPage = location.pathname.startsWith("/catalog/") && id;
+
+  // Если на странице товара — ищем товар по slug
+  let productName = "";
+  if (isProductPage) {
+    const product = allProducts.find((p) => p.slug === id);
+    productName = product ? product.name : "Товар не найден";
+  }
 
   const items = [
     { label: "Главная", href: "/" },
     ...pathnames.map((value, index) => {
       const href = "/" + pathnames.slice(0, index + 1).join("/");
-      return { label: labelMap[value] || value, href };
+      let label = labelMap[value] || value;
+
+      // Если это последний элемент и мы на странице товара — показываем русское название
+      if (index === pathnames.length - 1 && isProductPage) {
+        label = productName;
+      }
+
+      return { label, href };
     }),
   ];
 
@@ -33,7 +52,8 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ lastLabel }) => {
       <ol className="flex justify-center items-center gap-2 text-sm text-text-secondary">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
-          // если последняя и передан override:
+
+          // Если передан lastLabel — он имеет приоритет
           const displayLabel = isLast && lastLabel ? lastLabel : item.label;
 
           return (

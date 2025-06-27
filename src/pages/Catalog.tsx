@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { allProducts } from "@/data/products";
 
 import ProductsList from "@/components/shop/ProductsList";
-import { Breadcrumb } from "@/components/common/";
 import { ProductFilterPanel } from "@/components/shop/filters/";
 
 const parsePrice = (price: number | string) => {
@@ -97,7 +96,6 @@ const Catalog = () => {
 
   return (
     <>
-      <Breadcrumb />
       <ProductFilterPanel
         onCategorySelect={handleCategorySelect}
         onSearch={setSearchQuery}

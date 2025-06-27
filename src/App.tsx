@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "@/components/common/";
-import ProductPage from "@/components/shop/productPage/ProductPage";
-import { Footer, NavBar } from "@/components/layout";
+import ProductPage from "@/pages/ProductPage";
+import { Footer, NavBar, CatalogLayout } from "@/components/layout";
 
 import {
   Home,
@@ -23,12 +23,17 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/catalog" element={<Catalog />} />
           <Route path="/contacts" element={<Contacts />} />
           <Route path="/delivery" element={<Delivery />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/catalog/:id" element={<ProductPage />} />
+
+          {/* Каталог */}
+          <Route path="/catalog" element={<CatalogLayout />}>
+            <Route index element={<Catalog />} />
+            <Route path="/catalog/:id" element={<ProductPage />} />
+          </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

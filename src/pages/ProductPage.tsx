@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Breadcrumb, Loader } from "@/components/common";
+import { Loader } from "@/components/common";
 import { allProducts, type Product } from "@/data/products";
-import BackTo from "./BackTo";
-import ProductSlider from "./ProductSlider";
-import ProductDetails from "./ProductDetails";
+import BackTo from "../components/shop/productPage/BackTo";
+import ProductSlider from "../components/shop/productPage/ProductSlider";
+import ProductDetails from "../components/shop/productPage/ProductDetails";
 
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +30,6 @@ const ProductPage: React.FC = () => {
   if (!product) {
     return (
       <>
-        <Breadcrumb lastLabel="Товар не найден" />
         <section className="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-text-secondary min-h-screen flex items-center justify-center">
           <h1 className="text-3xl font-bold">Товар не найден</h1>
         </section>
@@ -65,7 +64,6 @@ const ProductPage: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb lastLabel={product.name} />
       <BackTo />
       <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
         <div className="max-w-screen-lg mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:py-3 xl:mb-20 w-full">
