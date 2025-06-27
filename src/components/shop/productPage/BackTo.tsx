@@ -25,7 +25,7 @@ export default function BackTo() {
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        Назад в каталог
+        Назад
       </button>
     </motion.div>
   );
