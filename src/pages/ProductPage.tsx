@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Loader } from "@/components/common";
+import { Loader, Notification } from "@/components/common";
 import { allProducts, type Product } from "@/data/products";
 import BackTo from "../components/shop/productPage/BackTo";
 import ProductSlider from "../components/shop/productPage/ProductSlider";
@@ -12,6 +12,13 @@ const ProductPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [slideIndex, setSlideIndex] = useState(0);
   const [touchStartX, setTouchStartX] = useState(0);
+
+  // ✅ Уведомление на уровне страницы
+  const [notification, setNotification] = useState<{
+    variant: "success" | "error";
+    title: string;
+    description?: string;
+  } | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 300);
@@ -29,11 +36,9 @@ const ProductPage: React.FC = () => {
   const product: Product | undefined = allProducts.find((p) => p.slug === id);
   if (!product) {
     return (
-      <>
-        <section className="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-text-secondary min-h-screen flex items-center justify-center">
-          <h1 className="text-3xl font-normal">Товар не найден</h1>
-        </section>
-      </>
+      <section className="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-text-secondary min-h-screen flex items-center justify-center">
+        <h1 className="text-3xl font-normal">Товар не найден</h1>
+      </section>
     );
   }
 
@@ -65,6 +70,19 @@ const ProductPage: React.FC = () => {
   return (
     <>
       <BackTo />
+
+      {/* ✅ Глобальное уведомление на уровне страницы */}
+      {notification && (
+        <div className="fixed top-4 right-4 z-50">
+          <Notification
+            variant={notification.variant}
+            title={notification.title}
+            description={notification.description}
+            onClose={() => setNotification(null)}
+          />
+        </div>
+      )}
+
       <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
         <div className="max-w-screen-lg mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:py-3 xl:mb-20 w-full">
           <div className="flex flex-col lg:flex-row gap-4 items-stretch">
@@ -82,7 +100,11 @@ const ProductPage: React.FC = () => {
             </div>
 
             <div className="w-full lg:w-1/2 flex">
-              <ProductDetails product={product} />
+              {/* ✅ Передаём setNotification в ProductDetails */}
+              <ProductDetails
+                product={product}
+                setNotification={setNotification}
+              />
             </div>
           </div>
         </div>

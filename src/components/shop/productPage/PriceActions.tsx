@@ -1,28 +1,19 @@
 import React from "react";
 import { Button } from "@/components/common";
-import { useCart } from "@/context/CartContext";
-import type { Product } from "@/data/products";
 
 interface PriceActionsProps {
   price: number;
   isVisible: boolean;
-  product: Product;
   delay?: number;
+  onBuy: () => void; // ✅ только onBuy
 }
 
 const PriceActions: React.FC<PriceActionsProps> = ({
   price,
   isVisible,
   delay = 0,
-  product,
+  onBuy,
 }) => {
-  const { addToCart } = useCart();
-
-  const handleAddToCart = () => {
-    addToCart(product);
-    // TODO: notification "Товар добавлен"
-  };
-
   // Классы с анимацией появления
   const priceClass = isVisible
     ? `text-2xl sm:text-3xl font-medium text-text-primary transition-all duration-700 ease-out opacity-100 translate-y-0 delay-[${delay}ms]`
@@ -45,7 +36,7 @@ const PriceActions: React.FC<PriceActionsProps> = ({
           className={buttonClass}
           style={{ transitionDelay: `${delay + 100}ms` }}>
           <Button
-            onClick={handleAddToCart}
+            onClick={onBuy} // ✅ просто передаём
             initialText="Добавить в корзину 🛒"
             hoverText="Купить! ✨"
             variant="light"

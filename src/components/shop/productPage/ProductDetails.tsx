@@ -1,20 +1,57 @@
 import { useState, useEffect } from "react";
 import { ColorSelector, ModelSelector, PriceActions } from "./";
 import type { Product } from "@/data/products";
+import { useCart } from "@/context/CartContext";
 
 interface ProductDetailsProps {
   product: Product;
+  setNotification: React.Dispatch<
+    React.SetStateAction<{
+      variant: "success" | "error";
+      title: string;
+      description?: string;
+    } | null>
+  >;
 }
 
-export default function ProductDetails({ product }: ProductDetailsProps) {
+export default function ProductDetails({
+  product,
+  setNotification,
+}: ProductDetailsProps) {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const t = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(t);
   }, []);
+
+  const handleBuy = () => {
+    if (!selectedColor || !selectedModel) {
+      setNotification({
+        variant: "error",
+        title: "Пожалуйста, выберите цвет и модель",
+        description: "Перед покупкой необходимо выбрать параметры товара.",
+      });
+      return;
+    }
+
+    addToCart({
+      ...product,
+      selectedColor,
+      selectedModel,
+      quantity: 1,
+    });
+
+    setNotification({
+      variant: "success",
+      title: "Товар добавлен в корзину!",
+      description: `Модель: ${selectedModel}, Цвет: ${selectedColor}`,
+    });
+  };
 
   return (
     <div className="flex-1 flex flex-col space-y-6">
@@ -102,12 +139,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         />
       </div>
 
-      {/* Блок цены */}
+      {/* Блок цены и кнопки */}
       <PriceActions
         price={product.price}
         isVisible={isVisible}
         delay={400}
-        product={product}
+        onBuy={handleBuy}
       />
     </div>
   );

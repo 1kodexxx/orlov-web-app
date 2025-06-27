@@ -2,19 +2,33 @@ import { createContext, useContext, useState } from "react";
 import type { Product } from "@/data/products";
 import type { ReactNode } from "react";
 
+// ✅ Расширяем CartItem
 interface CartItem extends Product {
   quantity: number;
+  selectedColor: string;
+  selectedModel: string;
 }
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (slug: string) => void;
-  increaseQuantity: (slug: string) => void;
-  decreaseQuantity: (slug: string) => void;
+  addToCart: (item: CartItem) => void; // ✅ Меняем тип аргумента
+  removeFromCart: (
+    slug: string,
+    selectedColor: string,
+    selectedModel: string
+  ) => void;
+  increaseQuantity: (
+    slug: string,
+    selectedColor: string,
+    selectedModel: string
+  ) => void;
+  decreaseQuantity: (
+    slug: string,
+    selectedColor: string,
+    selectedModel: string
+  ) => void;
 }
 
-// Создаём контекст без значений по умолчанию
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 interface CartProviderProps {
@@ -24,41 +38,76 @@ interface CartProviderProps {
 export const CartProvider = ({ children }: CartProviderProps) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  // Добавить товар в корзину
-  const addToCart = (product: Product) => {
+  // ✅ Обновлённый addToCart
+  const addToCart = (item: CartItem) => {
     setCartItems((prev) => {
-      const existing = prev.find((item) => item.slug === product.slug);
+      const existing = prev.find(
+        (cartItem) =>
+          cartItem.slug === item.slug &&
+          cartItem.selectedColor === item.selectedColor &&
+          cartItem.selectedModel === item.selectedModel
+      );
+
       if (existing) {
-        return prev.map((item) =>
-          item.slug === product.slug
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+        return prev.map((cartItem) =>
+          cartItem.slug === item.slug &&
+          cartItem.selectedColor === item.selectedColor &&
+          cartItem.selectedModel === item.selectedModel
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+
+      return [...prev, { ...item, quantity: 1 }];
     });
   };
 
-  // Убрать товар полностью
-  const removeFromCart = (slug: string) => {
-    setCartItems((prev) => prev.filter((item) => item.slug !== slug));
-  };
-
-  // Увеличить кол-во
-  const increaseQuantity = (slug: string) => {
+  const removeFromCart = (
+    slug: string,
+    selectedColor: string,
+    selectedModel: string
+  ) => {
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.slug === slug ? { ...item, quantity: item.quantity + 1 } : item
+      prev.filter(
+        (item) =>
+          !(
+            item.slug === slug &&
+            item.selectedColor === selectedColor &&
+            item.selectedModel === selectedModel
+          )
       )
     );
   };
 
-  // Уменьшить кол-во или удалить, если 0
-  const decreaseQuantity = (slug: string) => {
+  const increaseQuantity = (
+    slug: string,
+    selectedColor: string,
+    selectedModel: string
+  ) => {
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.slug === slug &&
+        item.selectedColor === selectedColor &&
+        item.selectedModel === selectedModel
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
+  };
+
+  const decreaseQuantity = (
+    slug: string,
+    selectedColor: string,
+    selectedModel: string
+  ) => {
     setCartItems((prev) =>
       prev
         .map((item) =>
-          item.slug === slug ? { ...item, quantity: item.quantity - 1 } : item
+          item.slug === slug &&
+          item.selectedColor === selectedColor &&
+          item.selectedModel === selectedModel
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
         )
         .filter((item) => item.quantity > 0)
     );
@@ -78,7 +127,6 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   );
 };
 
-// Хук для использования контекста
 export const useCart = (): CartContextType => {
   const context = useContext(CartContext);
   if (!context) {
