@@ -5,7 +5,7 @@ interface ButtonProps {
   initialText: string;
   hoverText: string;
   to?: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   variant?: "light" | "dark";
 }
 
@@ -19,8 +19,8 @@ const Button: React.FC<ButtonProps> = ({
   const isDark = variant === "dark";
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    if (onClick) onClick();
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (onClick) onClick(e);
     if (to) navigate(to);
   };
 

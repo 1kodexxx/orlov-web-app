@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ColorSelector, ModelSelector, PriceActions } from "./";
 import type { Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
+import Confetti from "@/animations/Сonfetti";
 
 interface ProductDetailsProps {
   product: Product;
@@ -34,6 +35,10 @@ export default function ProductDetails({
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
+  const [confettiTrigger, setConfettiTrigger] = useState(false);
+  const [clickX, setClickX] = useState(0);
+  const [clickY, setClickY] = useState(0);
+
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -41,7 +46,7 @@ export default function ProductDetails({
     return () => clearTimeout(t);
   }, []);
 
-  const handleBuy = () => {
+  const handleBuy = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!selectedColor || !selectedModel) {
       setNotification({
         variant: "error",
@@ -50,6 +55,12 @@ export default function ProductDetails({
       });
       return;
     }
+
+    // Салют в точке клика
+    setClickX(e.clientX);
+    setClickY(e.clientY);
+    setConfettiTrigger(false);
+    setTimeout(() => setConfettiTrigger(true), 0);
 
     addToCart({
       ...product,
@@ -66,7 +77,7 @@ export default function ProductDetails({
   };
 
   return (
-    <div className="flex-1 flex flex-col space-y-6">
+    <div className="flex-1 flex flex-col space-y-6 relative">
       {/* Блок заголовка */}
       <div
         className={`transition-all duration-700 ease-out ${
@@ -153,6 +164,14 @@ export default function ProductDetails({
         isVisible={isVisible}
         delay={400}
         onBuy={handleBuy}
+      />
+
+      {/* Компонент салюта */}
+      <Confetti
+        trigger={confettiTrigger}
+        x={clickX}
+        y={clickY}
+        onComplete={() => setConfettiTrigger(false)}
       />
     </div>
   );
