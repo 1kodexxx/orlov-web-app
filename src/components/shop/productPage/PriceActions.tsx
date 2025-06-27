@@ -36,7 +36,7 @@ export default function PriceActions({
           <Button
             to="/cart"
             initialText="Добавить в корзину 🛒"
-            hoverText="К оформлению 🎉"
+            hoverText="Купить! ✨"
             variant="light"
           />
         </div>

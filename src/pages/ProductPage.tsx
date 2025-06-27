@@ -31,7 +31,7 @@ const ProductPage: React.FC = () => {
     return (
       <>
         <section className="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-text-secondary min-h-screen flex items-center justify-center">
-          <h1 className="text-3xl font-bold">Товар не найден</h1>
+          <h1 className="text-3xl font-normal">Товар не найден</h1>
         </section>
       </>
     );
