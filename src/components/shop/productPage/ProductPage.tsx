@@ -45,6 +45,7 @@ const ProductPage: React.FC = () => {
     e.preventDefault();
     setTouchStartX(e.clientX);
   };
+
   const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
     const diff = e.clientX - touchStartX;
     if (diff > 50) handlePrev();
@@ -54,6 +55,7 @@ const ProductPage: React.FC = () => {
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setTouchStartX(e.touches[0].clientX);
   };
+
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchEndX - touchStartX;
@@ -67,10 +69,10 @@ const ProductPage: React.FC = () => {
       <BackTo />
 
       <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
-        <div className="max-w-screen-xl mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8 w-full lg:-mt-12">
-          <div className="flex flex-col lg:flex-row gap-8 lg:items-stretch">
+        <div className="max-w-screen-xl mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:px-8 w-full">
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
             <div
-              className="w-full md:w-2/3 lg:w-1/2 relative overflow-hidden select-none"
+              className="w-full lg:w-1/2 flex justify-center"
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onTouchStart={handleTouchStart}
@@ -82,7 +84,9 @@ const ProductPage: React.FC = () => {
               />
             </div>
 
-            <ProductDetails product={product} />
+            <div className="w-full lg:w-1/2 flex">
+              <ProductDetails product={product} />
+            </div>
           </div>
         </div>
       </section>

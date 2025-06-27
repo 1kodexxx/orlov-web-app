@@ -18,7 +18,7 @@ export default function ProductSlider({
 
   return (
     <div
-      className="w-full md:w-2/3 lg:w-1/2 relative overflow-hidden select-none"
+      className="relative overflow-hidden select-none flex items-center justify-center max-w-[360px] max-h-[600px] w-full"
       onMouseDown={(e) => setStartX(e.clientX)}
       onMouseUp={(e) => {
         const diff = e.clientX - startX;
@@ -32,17 +32,18 @@ export default function ProductSlider({
         else if (diff < -50) next();
       }}>
       <div
-        className="flex transition-transform duration-300"
+        className="flex transition-transform duration-300 w-full h-full"
         style={{ transform: `translateX(-${index * 100}%)` }}>
         {Array.from({ length: slides }).map((_, i) => (
           <img
             key={i}
             src={image}
             alt={`${name} ${i + 1}`}
-            className="w-full h-full object-contain object-center rounded flex-shrink-0"
+            className="w-full h-full object-contain object-center flex-shrink-0"
           />
         ))}
       </div>
+
       <button
         onClick={prev}
         className="absolute top-1/2 left-2 -translate-y-1/2 bg-background-paper bg-opacity-60 hover:bg-opacity-90 p-2 rounded-full"
@@ -60,6 +61,7 @@ export default function ProductSlider({
           />
         </svg>
       </button>
+
       <button
         onClick={next}
         className="absolute top-1/2 right-2 -translate-y-1/2 bg-background-paper bg-opacity-60 hover:bg-opacity-90 p-2 rounded-full"
