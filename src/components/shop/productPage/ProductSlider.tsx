@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ProductSliderProps {
   image: string;
@@ -13,12 +13,21 @@ export default function ProductSlider({
 }: ProductSliderProps) {
   const [index, setIndex] = useState(0);
   const [startX, setStartX] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(t);
+  }, []);
+
   const prev = () => setIndex((index + slides - 1) % slides);
   const next = () => setIndex((index + 1) % slides);
 
   return (
     <div
-      className="relative overflow-hidden select-none flex items-center justify-center max-w-[395px] max-h-[600px] w-full"
+      className={`relative overflow-hidden select-none flex items-center justify-center max-w-[395px] max-h-[600px] w-full transition-opacity duration-700 ease-out ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
       onMouseDown={(e) => setStartX(e.clientX)}
       onMouseUp={(e) => {
         const diff = e.clientX - startX;
