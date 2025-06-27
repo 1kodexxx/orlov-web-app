@@ -1,17 +1,31 @@
 import React, { useEffect, useState } from "react";
 
+type VariantType = "success" | "error";
+
+interface VariantStyle {
+  border: string;
+  bg: string;
+  iconColor: string;
+  titleColor: string;
+  icon: React.ReactElement;
+}
+
 interface NotificationProps {
-  variant?: "success" | "error" | "info" | "warning";
+  variant?: VariantType;
   title: string;
   description?: string;
   onClose?: () => void;
+  onGoToCart?: () => void;
+  onContinueShopping?: () => void;
+  showActions?: boolean; // Показывать ли кнопки (только в success)
 }
 
-const variantStyles = {
+const variantStyles: Record<VariantType, VariantStyle> = {
   success: {
     border: "border-[#EFE393]",
     bg: "bg-[#222222]",
     iconColor: "text-[#EFE393]",
+    titleColor: "text-[#EFE393]",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -32,6 +46,7 @@ const variantStyles = {
     border: "border-red-400",
     bg: "bg-[#222222]",
     iconColor: "text-red-400",
+    titleColor: "text-red-400",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -48,46 +63,6 @@ const variantStyles = {
       </svg>
     ),
   },
-  info: {
-    border: "border-blue-400",
-    bg: "bg-[#222222]",
-    iconColor: "text-blue-400",
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="currentColor"
-        className="w-6 h-6">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M11.25 9V6.75m0 6v-2.25m0 6h.008v.008H11.25V18zM12 21a9 9 0 100-18 9 9 0 000 18z"
-        />
-      </svg>
-    ),
-  },
-  warning: {
-    border: "border-yellow-400",
-    bg: "bg-[#222222]",
-    iconColor: "text-yellow-400",
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="currentColor"
-        className="w-6 h-6">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 9v3m0 3h.01M21 12A9 9 0 1112 3a9 9 0 019 9z"
-        />
-      </svg>
-    ),
-  },
 };
 
 const Notification: React.FC<NotificationProps> = ({
@@ -95,6 +70,9 @@ const Notification: React.FC<NotificationProps> = ({
   title,
   description,
   onClose,
+  onGoToCart,
+  onContinueShopping,
+  showActions = true,
 }) => {
   const styles = variantStyles[variant];
   const [visible, setVisible] = useState(false);
@@ -107,31 +85,50 @@ const Notification: React.FC<NotificationProps> = ({
   return (
     <div
       role="alert"
-      className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-80 rounded-lg border ${
+      className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-96 rounded-lg border ${
         styles.border
       } ${styles.bg} p-4 shadow-lg transition-all duration-500 ease-out ${
         visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-      }`}
-      style={{ pointerEvents: "auto" }}>
+      }`}>
       <div className="flex items-start gap-4">
         <div className={styles.iconColor}>{styles.icon}</div>
 
         <div className="flex-1">
-          <strong className="font-medium text-[#EFE393]">{title}</strong>
+          <strong className={`font-medium ${styles.titleColor}`}>
+            {title}
+          </strong>
 
           {description && (
             <p
               className="mt-0.5 text-sm text-[#CCCCCC]"
               dangerouslySetInnerHTML={{ __html: description }}></p>
           )}
+
+          {variant === "success" && showActions && (
+            <div className="mt-3 flex items-center gap-4">
+              <button
+                type="button"
+                onClick={onContinueShopping}
+                className="flex-1 rounded border border-transparent px-3 py-2 text-sm font-medium text-[#EFE393] transition-colors hover:bg-[#2C2C2C] text-center">
+                Продолжить покупки
+              </button>
+
+              <button
+                type="button"
+                onClick={onGoToCart}
+                className="flex-1 rounded border border-[#EFE393] px-3 py-2 text-sm font-medium text-[#EFE393] transition-colors hover:bg-[#2C2C2C] text-center">
+                Перейти в корзину
+              </button>
+            </div>
+          )}
         </div>
 
         {onClose && (
           <button
+            onClick={onClose}
             className="-m-3 rounded-full p-1.5 text-[#CCCCCC] transition-colors hover:bg-[#2C2C2C] hover:text-[#EFE393]"
             type="button"
-            aria-label="Dismiss alert"
-            onClick={onClose}>
+            aria-label="Dismiss alert">
             <span className="sr-only">Dismiss popup</span>
 
             <svg

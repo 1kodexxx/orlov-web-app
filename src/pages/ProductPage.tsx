@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Loader, Notification } from "@/components/common";
 import { allProducts, type Product } from "@/data/products";
 import BackTo from "../components/shop/productPage/BackTo";
@@ -8,12 +8,12 @@ import ProductDetails from "../components/shop/productPage/ProductDetails";
 
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(true);
   const [slideIndex, setSlideIndex] = useState(0);
   const [touchStartX, setTouchStartX] = useState(0);
 
-  // ✅ Уведомление на уровне страницы
   const [notification, setNotification] = useState<{
     variant: "success" | "error";
     title: string;
@@ -71,16 +71,22 @@ const ProductPage: React.FC = () => {
     <>
       <BackTo />
 
-      {/* ✅ Глобальное уведомление на уровне страницы */}
       {notification && (
-        <div className="fixed top-4 right-4 z-50">
-          <Notification
-            variant={notification.variant}
-            title={notification.title}
-            description={notification.description}
-            onClose={() => setNotification(null)}
-          />
-        </div>
+        <Notification
+          variant={notification.variant}
+          title={notification.title}
+          description={notification.description}
+          onClose={() => setNotification(null)}
+          onGoToCart={() => {
+            navigate("/cart");
+            setNotification(null);
+          }}
+          onContinueShopping={() => {
+            navigate("/catalog");
+            setNotification(null);
+          }}
+          showActions={notification.variant === "success"}
+        />
       )}
 
       <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
