@@ -16,9 +16,10 @@ const colorOptions = [
 
 interface CartDropdownProps {
   onClose: () => void;
+  onGoToCart: () => void;
 }
 
-const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
+const CartDropdown: React.FC<CartDropdownProps> = ({ onClose, onGoToCart }) => {
   const { cartItems, removeFromCart } = useCart();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -133,7 +134,7 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
 
         <Link
           to="/cart"
-          onClick={onClose}
+          onClick={onGoToCart}
           className="block mt-4 bg-primary text-center text-[#181818] py-1 px-4 rounded text-sm font-normal hover:bg-opacity-90 transition">
           Перейти в корзину 🛒
         </Link>

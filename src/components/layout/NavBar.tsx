@@ -47,6 +47,12 @@ const NavBar = () => {
     toggleMenu();
   };
 
+  const handleGoToCart = () => {
+    setIsCartOpen(false);
+    setMobileMenuOpen(false);
+    navigate("/cart");
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -155,17 +161,18 @@ const NavBar = () => {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
                 className="absolute right-0 top-12 z-50">
-                <CartDropdown onClose={() => setIsCartOpen(false)} />
+                <CartDropdown
+                  onClose={() => setIsCartOpen(false)}
+                  onGoToCart={handleGoToCart}
+                />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        {/* Бургер-меню с промежутками и анимацией в крестик */}
         <button
           onClick={toggleMenu}
           className="lg:hidden text-primary text-2xl focus:outline-none relative w-6 h-8 flex items-center justify-center">
-          {/* Верхняя линия */}
           <motion.span
             initial={false}
             animate={
@@ -175,7 +182,6 @@ const NavBar = () => {
             className="absolute w-6 h-1 bg-primary rounded"
           />
 
-          {/* Средняя линия */}
           <motion.span
             initial={false}
             animate={mobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
@@ -183,7 +189,6 @@ const NavBar = () => {
             className="absolute w-6 h-1 bg-primary rounded"
           />
 
-          {/* Нижняя линия */}
           <motion.span
             initial={false}
             animate={
@@ -195,7 +200,6 @@ const NavBar = () => {
         </button>
       </div>
 
-      {/* Мобильное меню с анимацией max-height */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -266,7 +270,10 @@ const NavBar = () => {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
                   className="px-4 pb-4">
-                  <CartDropdown onClose={() => setIsCartOpen(false)} />
+                  <CartDropdown
+                    onClose={() => setIsCartOpen(false)}
+                    onGoToCart={handleGoToCart}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
