@@ -164,7 +164,7 @@ const NavBar = () => {
         {/* Бургер-меню с промежутками и анимацией в крестик */}
         <button
           onClick={toggleMenu}
-          className="lg:hidden text-primary text-2xl focus:outline-none relative w-8 h-8 flex items-center justify-center">
+          className="lg:hidden text-primary text-2xl focus:outline-none relative w-6 h-8 flex items-center justify-center">
           {/* Верхняя линия */}
           <motion.span
             initial={false}

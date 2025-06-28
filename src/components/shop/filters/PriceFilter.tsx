@@ -17,7 +17,8 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
 }) => {
   const isOpen = activeDropdown === "Цена";
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [mobileContentHeight, setMobileContentHeight] = useState(0);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 60000]);
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
   useEffect(() => {
     setPriceRange([0, 60000]);
     onPriceChange([0, Infinity]);
-  }, [resetSignal]);
+  }, [resetSignal, onPriceChange]);
 
   const handleSliderChange = (values: number | number[]) => {
     if (Array.isArray(values)) {
@@ -55,6 +56,14 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
     setPriceRange([0, 60000]);
     onPriceChange([0, Infinity]);
   };
+
+  useEffect(() => {
+    if (isOpen && contentRef.current) {
+      setMobileContentHeight(contentRef.current.scrollHeight);
+    } else {
+      setMobileContentHeight(0);
+    }
+  }, [isOpen, priceRange]);
 
   return (
     <div className="relative w-full sm:w-auto" ref={dropdownRef}>
@@ -124,26 +133,31 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
             ▼
           </span>
         </button>
-        {isOpen && (
-          <div className="pt-2">
+
+        <div
+          className="overflow-hidden transition-all duration-300 ease-in-out"
+          style={{ maxHeight: isOpen ? `${mobileContentHeight}px` : "0px" }}>
+          <div ref={contentRef} className="pt-2 space-y-2 px-2">
             <div className="mb-2 text-sm text-text-secondary text-center">
               {priceRange[0].toLocaleString()} ₽ –{" "}
               {priceRange[1].toLocaleString()} ₽
             </div>
-            <Slider
-              range
-              min={0}
-              max={60000}
-              step={100}
-              value={priceRange}
-              onChange={handleSliderChange}
-              trackStyle={[{ backgroundColor: "#EFE393" }]}
-              handleStyle={[
-                { borderColor: "#EFE393", backgroundColor: "#EFE393" },
-                { borderColor: "#EFE393", backgroundColor: "#EFE393" },
-              ]}
-              railStyle={{ backgroundColor: "#666" }}
-            />
+            <div className="w-full max-w-full">
+              <Slider
+                range
+                min={0}
+                max={60000}
+                step={100}
+                value={priceRange}
+                onChange={handleSliderChange}
+                trackStyle={[{ backgroundColor: "#EFE393" }]}
+                handleStyle={[
+                  { borderColor: "#EFE393", backgroundColor: "#EFE393" },
+                  { borderColor: "#EFE393", backgroundColor: "#EFE393" },
+                ]}
+                railStyle={{ backgroundColor: "#666" }}
+              />
+            </div>
             <button
               type="button"
               onClick={handleReset}
@@ -151,7 +165,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
               Сбросить
             </button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
