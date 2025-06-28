@@ -1,12 +1,12 @@
 import { Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "@/components/common/";
-import ProductPage from "@/pages/ProductPage";
 import { Footer, NavBar, CatalogLayout } from "@/components/layout";
 
 import {
   Home,
   Catalog,
-  Cart,
+  CartPage,
+  ProductPage,
   AboutUs,
   Contacts,
   Delivery,
@@ -26,7 +26,7 @@ const App = () => {
           <Route path="/contacts" element={<Contacts />} />
           <Route path="/delivery" element={<Delivery />} />
           <Route path="/reviews" element={<Reviews />} />
-          <Route path="/cart" element={<Cart />} />
+          <Route path="/cart" element={<CartPage />} />
 
           {/* Каталог */}
           <Route path="/catalog" element={<CatalogLayout />}>

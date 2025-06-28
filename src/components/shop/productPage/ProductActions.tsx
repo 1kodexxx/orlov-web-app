@@ -36,7 +36,7 @@ const PriceActions: React.FC<PriceActionsProps> = ({
           className={buttonClass}
           style={{ transitionDelay: `${delay + 100}ms` }}>
           <Button
-            onClick={onBuy} // Теперь передаёт MouseEvent
+            onClick={onBuy}
             initialText="Добавить в корзину 🛒"
             hoverText="Купить! ✨"
             variant="light"

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loader, Notification } from "@/components/common";
 import { allProducts, type Product } from "@/data/products";
-import BackTo from "../components/shop/productPage/BackTo";
-import ProductSlider from "../components/shop/productPage/ProductSlider";
-import ProductDetails from "../components/shop/productPage/ProductDetails";
+import {
+  BackTo,
+  ProductSlider,
+  ProductDetails,
+} from "@/components/shop/productPage";
 
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
