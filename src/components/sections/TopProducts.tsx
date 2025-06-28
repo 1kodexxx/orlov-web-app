@@ -7,6 +7,7 @@ import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
+import { motion } from "framer-motion";
 
 interface TopProductsProps {
   products: Product[];
@@ -27,13 +28,24 @@ const TopProducts: React.FC<TopProductsProps> = ({ products }) => {
   return (
     <section className="w-full min-h-auto sm:min-h-screen flex flex-col items-center justify-center bg-background py-12 sm:py-16 px-2 sm:px-4">
       <div className="w-full max-w-screen-xl flex flex-col items-center">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4 text-center">
-          Коллекция премиальных чехлов
-        </h2>
-        <p className="text-center text-text-secondary max-w-lg sm:max-w-2xl mb-8 sm:mb-10 px-2">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-3xl md:text-4xl font-bold text-primary mb-4 text-center">
+          Коллекции премиальных чехлов
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-lg text-text-secondary max-w-2xl mx-auto mb-12 text-center">
           Оцените изысканный дизайн и превосходное качество наших топовых
           моделей. Элитные чехлы для тех, кто выбирает стиль и надёжность.
-        </p>
+        </motion.p>
 
         <div className="relative w-full flex items-center">
           {/* Навигационные стрелки */}
