@@ -69,13 +69,16 @@ const ProductsList: React.FC<ProductsListProps> = ({
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProducts = products.slice(startIndex, startIndex + itemsPerPage);
+  const showPagination = totalPages > 1;
 
+  // Сброс страницы, если currentPage выходит за пределы
   useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
+    if (totalPages > 0 && currentPage > totalPages) {
       setCurrentPage(1);
     }
-  }, [products]);
+  }, [currentPage, totalPages, setCurrentPage]);
 
+  // Показ Loader при смене продуктов или страницы
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => setIsLoading(false), 500);
@@ -89,12 +92,9 @@ const ProductsList: React.FC<ProductsListProps> = ({
     }
   };
 
-  const showPagination = totalPages > 1;
-
   return (
     <section className="text-text-secondary bg-background body-font py-0">
       <div className="max-w-screen-xl mx-auto px-4 pb-32 min-h-[70vh] flex flex-col justify-center">
-        {/* 🔥 Контент и Loader в одном контейнере с фиксированной высотой */}
         <div className="min-h-[50vh] flex flex-col justify-center items-center">
           {isLoading ? (
             <Loader />
@@ -115,7 +115,6 @@ const ProductsList: React.FC<ProductsListProps> = ({
           )}
         </div>
 
-        {/* 🔥 Пагинация теперь скрывается во время загрузки */}
         {!isLoading && showPagination && (
           <ol className="mt-8 flex justify-center gap-2 text-xs font-medium">
             <li>

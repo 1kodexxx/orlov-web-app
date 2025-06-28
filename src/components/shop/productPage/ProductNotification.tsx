@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 type VariantType = "success" | "error";
 
@@ -17,7 +17,7 @@ interface NotificationProps {
   onClose?: () => void;
   onGoToCart?: () => void;
   onContinueShopping?: () => void;
-  showActions?: boolean; // Показывать ли кнопки (только в success)
+  showActions?: boolean;
 }
 
 const variantStyles: Record<VariantType, VariantStyle> = {
@@ -76,18 +76,45 @@ const ProductNotification: React.FC<NotificationProps> = ({
 }) => {
   const styles = variantStyles[variant];
   const [visible, setVisible] = useState(false);
+  const [shouldRender, setShouldRender] = useState(true);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 50);
     return () => clearTimeout(t);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(() => {
+      setShouldRender(false);
+      if (onClose) onClose();
+    }, 300); // Время анимации исчезновения
+  };
+
+  if (!shouldRender) return null;
+
   return (
     <div
+      ref={notificationRef}
       role="alert"
       className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-96 rounded-lg border ${
         styles.border
-      } ${styles.bg} p-4 shadow-lg transition-all duration-500 ease-out ${
+      } ${styles.bg} p-4 shadow-lg transition-all duration-300 ease-in-out ${
         visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
       }`}>
       <div className="flex items-start gap-4">
@@ -125,12 +152,11 @@ const ProductNotification: React.FC<NotificationProps> = ({
 
         {onClose && (
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="-m-3 rounded-full p-1.5 text-[#CCCCCC] transition-colors hover:bg-[#2C2C2C] hover:text-[#EFE393]"
             type="button"
             aria-label="Dismiss alert">
             <span className="sr-only">Dismiss popup</span>
-
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
