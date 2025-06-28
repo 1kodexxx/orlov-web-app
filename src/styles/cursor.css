@@ -1,4 +1,4 @@
-body {
+/* body {
   cursor: url("/cursor/cursor.png"), auto;
 }
 
@@ -21,4 +21,4 @@ input[type="number"],
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   cursor: url("/cursor/cursor-pointer.png"), pointer !important;
-}
+} */
