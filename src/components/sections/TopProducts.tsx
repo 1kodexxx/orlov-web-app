@@ -1,12 +1,11 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ProductCard from "@/components/shop/ProductCard";
 import type { Product } from "@/data/products";
 import "swiper/css";
-import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode, Navigation, Autoplay } from "swiper/modules";
+import { Navigation, Autoplay } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 
 interface TopProductsProps {
@@ -16,6 +15,14 @@ interface TopProductsProps {
 const TopProducts: React.FC<TopProductsProps> = ({ products }) => {
   const topProducts = products.slice(0, 12);
   const swiperRef = useRef<SwiperType | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   return (
     <section className="w-full min-h-auto sm:min-h-screen flex flex-col items-center justify-center bg-background py-12 sm:py-16 px-2 sm:px-4">
@@ -29,54 +36,61 @@ const TopProducts: React.FC<TopProductsProps> = ({ products }) => {
         </p>
 
         <div className="relative w-full flex items-center">
-          {/* Навигационные кнопки */}
-          <div className="absolute left-2 sm:-left-6 top-1/2 -translate-y-1/2 z-10">
-            <button
-              onClick={() => swiperRef.current?.slidePrev()}
-              className="p-2 text-primary hover:scale-110 transition">
-              <FaChevronLeft size={20} />
-            </button>
-          </div>
+          {/* Навигационные стрелки */}
+          <button
+            onClick={() => swiperRef.current?.slidePrev()}
+            className="absolute left-2 sm:-left-6 top-1/2 -translate-y-1/2 z-10 p-2 text-primary hover:scale-110 transition">
+            <FaChevronLeft size={20} />
+          </button>
+          <button
+            onClick={() => swiperRef.current?.slideNext()}
+            className="absolute right-2 sm:-right-6 top-1/2 -translate-y-1/2 z-10 p-2 text-primary hover:scale-110 transition">
+            <FaChevronRight size={20} />
+          </button>
 
-          <div className="absolute right-2 sm:-right-6 top-1/2 -translate-y-1/2 z-10">
-            <button
-              onClick={() => swiperRef.current?.slideNext()}
-              className="p-2 text-primary hover:scale-110 transition">
-              <FaChevronRight size={20} />
-            </button>
-          </div>
-
-          {/* Адаптивный автопрокручивающийся слайдер */}
           <div className="w-full px-2 sm:px-4">
-            <Swiper
-              onSwiper={(swiper) => (swiperRef.current = swiper)}
-              modules={[FreeMode, Navigation, Autoplay]}
-              loop={true}
-              speed={5000}
-              freeMode={true}
-              autoplay={{ delay: 0, disableOnInteraction: false }}
-              breakpoints={{
-                320: { slidesPerView: 1.2, spaceBetween: 16 },
-                640: { slidesPerView: 2.5, spaceBetween: 20 },
-                768: { slidesPerView: 3.5, spaceBetween: 24 },
-                1024: { slidesPerView: 5, spaceBetween: 24 },
-                1280: { slidesPerView: "auto", spaceBetween: 24 },
-              }}
-              grabCursor={true}
-              style={{ height: "auto" }}>
-              {topProducts.map((product, index) => (
-                <SwiperSlide
-                  key={`${product.slug}-${index}`}
-                  className="!w-[160px] sm:!w-[200px] md:!w-[240px] h-auto cursor-pointer select-none">
-                  <ProductCard
-                    slug={product.slug}
-                    name={product.name}
-                    image={product.image}
-                    price={product.price}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+            {isMobile ? (
+              <Swiper
+                onSwiper={(s) => (swiperRef.current = s)}
+                modules={[Navigation, Autoplay]}
+                loop={true}
+                autoplay={{ delay: 0, disableOnInteraction: false }}
+                speed={5000}
+                grabCursor={true}
+                breakpoints={{
+                  0: { slidesPerView: 1.2, spaceBetween: 16 },
+                  480: { slidesPerView: 1.5, spaceBetween: 20 },
+                }}>
+                {topProducts.map((product, i) => (
+                  <SwiperSlide
+                    key={`${product.slug}-${i}`}
+                    className="h-auto cursor-pointer select-none">
+                    <ProductCard {...product} />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            ) : (
+              <Swiper
+                onSwiper={(s) => (swiperRef.current = s)}
+                modules={[Navigation, Autoplay]}
+                loop={true}
+                autoplay={{ delay: 0, disableOnInteraction: false }}
+                speed={5000}
+                grabCursor={true}
+                breakpoints={{
+                  768: { slidesPerView: 3, spaceBetween: 24 },
+                  1024: { slidesPerView: 5, spaceBetween: 24 },
+                  1280: { slidesPerView: 6, spaceBetween: 24 },
+                }}>
+                {topProducts.map((product, i) => (
+                  <SwiperSlide
+                    key={`${product.slug}-${i}`}
+                    className="h-auto cursor-pointer select-none">
+                    <ProductCard {...product} />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            )}
           </div>
         </div>
       </div>
