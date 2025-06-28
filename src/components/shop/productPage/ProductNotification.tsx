@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 
 type VariantType = "success" | "error";
 
@@ -84,6 +84,14 @@ const ProductNotification: React.FC<NotificationProps> = ({
     return () => clearTimeout(t);
   }, []);
 
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    setTimeout(() => {
+      setShouldRender(false);
+      if (onClose) onClose();
+    }, 300);
+  }, [onClose]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -96,15 +104,7 @@ const ProductNotification: React.FC<NotificationProps> = ({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleClose = () => {
-    setVisible(false);
-    setTimeout(() => {
-      setShouldRender(false);
-      if (onClose) onClose();
-    }, 300); // Время анимации исчезновения
-  };
+  }, [handleClose]);
 
   if (!shouldRender) return null;
 

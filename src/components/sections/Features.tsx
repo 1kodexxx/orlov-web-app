@@ -18,7 +18,7 @@ const Features = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-3xl md:text-4xl font-bold text-primary mb-4 text-center">
-          Преимущества Orlov
+          Преимущества Orlov Brand
         </motion.h2>
 
         <motion.p
