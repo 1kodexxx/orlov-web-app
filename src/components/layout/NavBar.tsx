@@ -39,7 +39,10 @@ const NavBar = () => {
 
   const handleLogoClick = () => {
     navigate("/");
-    toggleMenu();
+    window.scrollTo(0, 0);
+    if (window.innerWidth < 1024) {
+      setMobileMenuOpen(false);
+    }
   };
 
   const handleSearchClick = () => {
@@ -73,6 +76,9 @@ const NavBar = () => {
 
   useEffect(() => {
     setIsCartOpen(false);
+    if (window.innerWidth < 1024) {
+      setMobileMenuOpen(false);
+    }
   }, [location.pathname]);
 
   useEffect(() => {
