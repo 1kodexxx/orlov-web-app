@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ColorSelector, ModelSelector, PriceActions } from "./";
+import { ColorSelector, ModelSelector, ProductActions } from "./";
 import type { Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import Confetti from "@/animations/Сonfetti";
@@ -126,7 +126,7 @@ export default function ProductDetails({
       </div>
 
       {/* Блок цены и кнопки */}
-      <PriceActions
+      <ProductActions
         price={product.price}
         isVisible={isVisible}
         delay={400}

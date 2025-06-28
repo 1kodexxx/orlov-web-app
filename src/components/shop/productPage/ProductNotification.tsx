@@ -65,7 +65,7 @@ const variantStyles: Record<VariantType, VariantStyle> = {
   },
 };
 
-const Notification: React.FC<NotificationProps> = ({
+const ProductNotification: React.FC<NotificationProps> = ({
   variant = "success",
   title,
   description,
@@ -151,4 +151,4 @@ const Notification: React.FC<NotificationProps> = ({
   );
 };
 
-export default Notification;
+export default ProductNotification;

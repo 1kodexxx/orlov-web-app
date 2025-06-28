@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Loader, Notification } from "@/components/common";
+import { Loader } from "@/components/common";
 import { allProducts, type Product } from "@/data/products";
 import {
   BackTo,
   ProductSlider,
   ProductDetails,
+  ProductNotification,
 } from "@/components/shop/productPage";
 
 const ProductPage: React.FC = () => {
@@ -74,7 +75,7 @@ const ProductPage: React.FC = () => {
       <BackTo />
 
       {notification && (
-        <Notification
+        <ProductNotification
           variant={notification.variant}
           title={notification.title}
           description={notification.description}
