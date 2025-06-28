@@ -74,25 +74,25 @@ const ProductPage: React.FC = () => {
     <>
       <BackTo />
 
-      {notification && (
-        <ProductNotification
-          variant={notification.variant}
-          title={notification.title}
-          description={notification.description}
-          onClose={() => setNotification(null)}
-          onGoToCart={() => {
-            navigate("/cart");
-            setNotification(null);
-          }}
-          onContinueShopping={() => {
-            navigate("/catalog");
-            setNotification(null);
-          }}
-          showActions={notification.variant === "success"}
-        />
-      )}
+      <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center relative">
+        {notification && (
+          <ProductNotification
+            variant={notification.variant}
+            title={notification.title}
+            description={notification.description}
+            onClose={() => setNotification(null)}
+            onGoToCart={() => {
+              navigate("/cart");
+              setNotification(null);
+            }}
+            onContinueShopping={() => {
+              navigate("/catalog");
+              setNotification(null);
+            }}
+            showActions={notification.variant === "success"}
+          />
+        )}
 
-      <section className="bg-background body-font overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
         <div className="max-w-screen-lg mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:py-3 xl:mb-20 w-full">
           <div className="flex flex-col lg:flex-row gap-4 items-stretch">
             <div
