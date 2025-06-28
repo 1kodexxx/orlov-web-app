@@ -106,14 +106,33 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
                 <li key={o.id}>
                   <label
                     htmlFor={o.id}
-                    className="inline-flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      id={o.id}
-                      checked={selectedOptions.includes(o.id)}
-                      onChange={() => handleCheckboxChange(o.id)}
-                      className="w-5 h-5 rounded-sm border-secondary shadow-sm bg-background-paper cursor-pointer"
-                    />
+                    className="inline-flex items-center gap-2 cursor-pointer select-none">
+                    <div className="relative w-5 h-5 flex items-center justify-center">
+                      <input
+                        type="checkbox"
+                        id={o.id}
+                        checked={selectedOptions.includes(o.id)}
+                        onChange={() => handleCheckboxChange(o.id)}
+                        className="peer hidden"
+                      />
+                      <div className="w-5 h-5 border-2 border-secondary rounded-sm bg-background transition-colors peer-checked:bg-primary peer-checked:border-primary flex items-center justify-center">
+                        {selectedOptions.includes(o.id) && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            strokeWidth="3"
+                            stroke="#1a1a1a"
+                            className="w-4 h-4">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
                     <span className="text-sm font-medium text-text-secondary">
                       {o.label}
                     </span>
@@ -139,12 +158,34 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
         {isOpen && (
           <div className="pt-2 space-y-2">
             {options.map((o) => (
-              <label key={o.id} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={selectedOptions.includes(o.id)}
-                  onChange={() => handleCheckboxChange(o.id)}
-                />
+              <label
+                key={o.id}
+                className="flex items-center gap-2 cursor-pointer select-none">
+                <div className="relative w-5 h-5 flex items-center justify-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedOptions.includes(o.id)}
+                    onChange={() => handleCheckboxChange(o.id)}
+                    className="peer hidden"
+                  />
+                  <div className="w-5 h-5 border-2 border-secondary rounded-sm bg-background transition-colors peer-checked:bg-primary peer-checked:border-primary flex items-center justify-center">
+                    {selectedOptions.includes(o.id) && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        strokeWidth="3"
+                        stroke="#1a1a1a"
+                        className="w-4 h-4">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                </div>
                 <span>{o.label}</span>
               </label>
             ))}
