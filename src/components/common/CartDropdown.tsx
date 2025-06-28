@@ -46,6 +46,8 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
   return (
     <div
       ref={dropdownRef}
+      // Останавливаем mousedown внутри дропдауна
+      onMouseDown={(e) => e.stopPropagation()}
       className="bg-[#181818] rounded-lg shadow-lg border border-gray-700 z-50 w-96 max-w-[95vw] sm:max-w-md">
       <div className="p-4 relative">
         {/* Крестик для закрытия */}
@@ -54,12 +56,13 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
             e.stopPropagation();
             onClose();
           }}
-          className="absolute top-2 right-2 text-gray-400 hover:text-white transition"
+          className="absolute top-0 right-0 m-4 text-gray-400 hover:text-white transition"
           aria-label="Закрыть">
           <FaTimes />
         </button>
 
-        <div className="flex justify-between items-center mb-4">
+        {/* Отступ, чтобы счётчик не пересекался с крестиком */}
+        <div className="flex justify-between items-center mb-4 pr-10">
           <h3 className="text-lg font-semibold text-primary">Ваша корзина</h3>
           <span className="text-sm text-gray-500">{cartItems.length} шт.</span>
         </div>
