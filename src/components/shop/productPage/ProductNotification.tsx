@@ -112,7 +112,7 @@ const ProductNotification: React.FC<NotificationProps> = ({
     <div
       ref={notificationRef}
       role="alert"
-      className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[50] w-96 rounded-lg border ${
+      className={`absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[40] w-96 rounded-lg border ${
         styles.border
       } ${styles.bg} p-4 shadow-lg transition-all duration-300 ease-in-out ${
         visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
