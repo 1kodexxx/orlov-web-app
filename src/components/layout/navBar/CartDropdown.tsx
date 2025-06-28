@@ -1,6 +1,8 @@
+// src/components/layout/navBar/CartDropdown.tsx
+
 import { useCart } from "@/context/CartContext";
 import { Link } from "react-router-dom";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaTimes } from "react-icons/fa";
 
 const colorOptions = [
   { name: "Жёлтый", hex: "#facc15" },
@@ -23,8 +25,19 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
     .toFixed(2);
 
   return (
-    <div className="absolute right-0 top-12 w-96 bg-[#181818] rounded-lg shadow-lg border border-gray-700 z-50">
-      <div className="p-4">
+    <div className="bg-[#181818] rounded-lg shadow-lg border border-gray-700 z-50 w-96 max-w-[95vw] sm:max-w-md">
+      <div className="p-4 relative">
+        {/* Крестик для закрытия */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          className="absolute top-2 right-2 text-gray-400 hover:text-white transition"
+          aria-label="Закрыть">
+          <FaTimes />
+        </button>
+
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-primary">Ваша корзина</h3>
           <span className="text-sm text-gray-500">{cartItems.length} шт.</span>
@@ -37,7 +50,6 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
             </p>
           ) : (
             cartItems.map((item, index) => {
-              // Найти название цвета по hex
               const colorObj = colorOptions.find(
                 (c) => c.hex === item.selectedColor
               );
@@ -54,7 +66,7 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
                       className="h-24 object-contain rounded"
                     />
                     <div>
-                      <h4 className="font-medium text-primary mb-1 text-sm">
+                      <h4 className="font-normal text-primary mb-1 text-sm">
                         {item.name}
                       </h4>
                       <p className="text-sm text-gray-300">
@@ -102,7 +114,7 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
         <Link
           to="/cart"
           onClick={onClose}
-          className="block mt-4 bg-primary text-center text-[#181818] py-2 rounded hover:bg-opacity-90 transition">
+          className="block mt-4 bg-primary text-center text-[#181818] py-1 px-4 rounded text-sm font-normal hover:bg-opacity-90 transition">
           Перейти в корзину
         </Link>
       </div>

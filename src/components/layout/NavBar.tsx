@@ -20,7 +20,12 @@ const navItems = [
 const NavBar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const cartRef = useRef<HTMLDivElement>(null);
+  const [previousTotalItems, setPreviousTotalItems] = useState(0);
+  const [animateBadge, setAnimateBadge] = useState(false);
+  const [animatePrice, setAnimatePrice] = useState(false);
+
+  const desktopCartRef = useRef<HTMLDivElement>(null);
+  const mobileCartRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { cartItems } = useCart();
@@ -42,10 +47,14 @@ const NavBar = () => {
     toggleMenu();
   };
 
-  // Закрытие при клике вне корзины
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (cartRef.current && !cartRef.current.contains(event.target as Node)) {
+      if (
+        desktopCartRef.current &&
+        !desktopCartRef.current.contains(event.target as Node) &&
+        mobileCartRef.current &&
+        !mobileCartRef.current.contains(event.target as Node)
+      ) {
         setIsCartOpen(false);
       }
     };
@@ -56,10 +65,20 @@ const NavBar = () => {
     };
   }, []);
 
-  // Закрытие при смене страницы
   useEffect(() => {
     setIsCartOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (totalItems > previousTotalItems) {
+      setAnimateBadge(true);
+      setAnimatePrice(true);
+
+      setTimeout(() => setAnimateBadge(false), 300);
+      setTimeout(() => setAnimatePrice(false), 300);
+    }
+    setPreviousTotalItems(totalItems);
+  }, [totalItems]);
 
   return (
     <header className="w-full sticky top-0 z-50 bg-background shadow-md">
@@ -96,37 +115,51 @@ const NavBar = () => {
           </span>
 
           <div
-            ref={cartRef}
             className="relative flex items-center cursor-pointer"
             onClick={() => setIsCartOpen((prev) => !prev)}>
             <div className="relative">
               <BiShoppingBag className="text-2xl" />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs min-w-[16px] h-[16px] flex items-center justify-center rounded-full px-[4px]">
-                  {totalItems}
-                </span>
-              )}
+              <AnimatePresence>
+                {totalItems > 0 && (
+                  <motion.span
+                    key="badge"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: animateBadge ? 1.15 : 1, opacity: 1 }}
+                    exit={{ scale: 0.7, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 250, damping: 16 }}
+                    className="absolute -top-2 -right-2 bg-red-600 text-white text-xs min-w-[16px] h-[16px] flex items-center justify-center rounded-full px-[4px]">
+                    {totalItems}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </div>
-            <span className="ml-2 text-base font-medium text-[#CCCCCC]">
-              {totalPrice} ₽
-            </span>
 
-            <AnimatePresence>
-              {isCartOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}>
-                  <CartDropdown onClose={() => setIsCartOpen(false)} />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <motion.span
+              animate={animatePrice ? { scale: 1.1 } : { scale: 1 }}
+              transition={{ type: "spring", stiffness: 250, damping: 16 }}
+              className="ml-2 text-base font-medium text-[#CCCCCC]">
+              {totalPrice} ₽
+            </motion.span>
           </div>
 
           <span className="cursor-pointer hover:scale-110 transition">
             <FaUserTie />
           </span>
+
+          {/* Десктопный дропдаун */}
+          <AnimatePresence>
+            {isCartOpen && (
+              <motion.div
+                ref={desktopCartRef}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-0 top-12 z-50">
+                <CartDropdown onClose={() => setIsCartOpen(false)} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <button
@@ -140,6 +173,7 @@ const NavBar = () => {
         </button>
       </div>
 
+      {/* Мобильное меню */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -159,41 +193,62 @@ const NavBar = () => {
                 </NavLink>
               ))}
             </div>
+
             <div className="flex justify-around py-4 text-primary text-2xl relative">
               <FaSearchDollar
                 onClick={handleSearchClick}
                 className="cursor-pointer hover:scale-110 transition"
               />
-              <span
-                onClick={() => setIsCartOpen((prev) => !prev)}
-                ref={cartRef}
-                className="relative flex items-center cursor-pointer">
+
+              <div
+                className="relative flex items-center cursor-pointer"
+                onClick={() => setIsCartOpen((prev) => !prev)}>
                 <div className="relative">
                   <BiShoppingBag />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs min-w-[16px] h-[16px] flex items-center justify-center rounded-full px-[4px]">
-                      {totalItems}
-                    </span>
-                  )}
+                  <AnimatePresence>
+                    {totalItems > 0 && (
+                      <motion.span
+                        key="mobile-badge"
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: animateBadge ? 1.15 : 1, opacity: 1 }}
+                        exit={{ scale: 0.7, opacity: 0 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 250,
+                          damping: 16,
+                        }}
+                        className="absolute -top-2 -right-2 bg-red-600 text-white text-xs min-w-[16px] h-[16px] flex items-center justify-center rounded-full px-[4px]">
+                        {totalItems}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
                 </div>
-                <span className="ml-1 text-sm font-medium text-[#CCCCCC]">
-                  {totalPrice} ₽
-                </span>
 
-                <AnimatePresence>
-                  {isCartOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}>
-                      <CartDropdown onClose={() => setIsCartOpen(false)} />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </span>
+                <motion.span
+                  animate={animatePrice ? { scale: 1.1 } : { scale: 1 }}
+                  transition={{ type: "spring", stiffness: 250, damping: 16 }}
+                  className="ml-1 text-sm font-medium text-[#CCCCCC]">
+                  {totalPrice} ₽
+                </motion.span>
+              </div>
+
               <FaUserTie className="cursor-pointer hover:scale-110 transition" />
             </div>
+
+            {/* Мобильный дропдаун */}
+            <AnimatePresence>
+              {isCartOpen && (
+                <motion.div
+                  ref={mobileCartRef}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="px-4 pb-4">
+                  <CartDropdown onClose={() => setIsCartOpen(false)} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
