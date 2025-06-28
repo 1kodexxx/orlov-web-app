@@ -102,7 +102,7 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
         <Link
           to="/cart"
           onClick={onClose}
-          className="block mt-4 bg-primary text-center text-white py-2 rounded hover:bg-opacity-90 transition">
+          className="block mt-4 bg-primary text-center text-[#181818] py-2 rounded hover:bg-opacity-90 transition">
           Перейти в корзину
         </Link>
       </div>
