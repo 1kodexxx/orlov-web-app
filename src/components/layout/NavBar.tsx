@@ -1,7 +1,7 @@
 // src/components/layout/navBar/NavBar.tsx
 
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { FaUserTie, FaSearchDollar, FaBars, FaTimes } from "react-icons/fa";
+import { FaUserTie, FaSearchDollar } from "react-icons/fa";
 import { BiShoppingBag } from "react-icons/bi";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/context/CartContext";
@@ -47,7 +47,6 @@ const NavBar = () => {
     toggleMenu();
   };
 
-  // Закрытие дропдауна по клику вне
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -66,12 +65,10 @@ const NavBar = () => {
     };
   }, []);
 
-  // Закрыть корзину при смене маршрута
   useEffect(() => {
     setIsCartOpen(false);
   }, [location.pathname]);
 
-  // Анимация бейджа и цены при добавлении
   useEffect(() => {
     const prev = prevTotalItemsRef.current;
     if (totalItems > prev) {
@@ -149,7 +146,6 @@ const NavBar = () => {
             <FaUserTie />
           </span>
 
-          {/* Десктопный дропдаун */}
           <AnimatePresence>
             {isCartOpen && (
               <motion.div
@@ -165,24 +161,47 @@ const NavBar = () => {
           </AnimatePresence>
         </div>
 
+        {/* Бургер-меню с промежутками и анимацией в крестик */}
         <button
           onClick={toggleMenu}
-          className="lg:hidden text-primary text-2xl focus:outline-none transition-transform duration-300">
-          {mobileMenuOpen ? (
-            <FaTimes className="transform rotate-90" />
-          ) : (
-            <FaBars />
-          )}
+          className="lg:hidden text-primary text-2xl focus:outline-none relative w-8 h-8 flex items-center justify-center">
+          {/* Верхняя линия */}
+          <motion.span
+            initial={false}
+            animate={
+              mobileMenuOpen ? { rotate: 45, y: 0 } : { rotate: 0, y: -8 }
+            }
+            transition={{ duration: 0.3 }}
+            className="absolute w-6 h-1 bg-primary rounded"
+          />
+
+          {/* Средняя линия */}
+          <motion.span
+            initial={false}
+            animate={mobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="absolute w-6 h-1 bg-primary rounded"
+          />
+
+          {/* Нижняя линия */}
+          <motion.span
+            initial={false}
+            animate={
+              mobileMenuOpen ? { rotate: -45, y: 0 } : { rotate: 0, y: 8 }
+            }
+            transition={{ duration: 0.3 }}
+            className="absolute w-6 h-1 bg-primary rounded"
+          />
         </button>
       </div>
 
-      {/* Мобильное меню */}
+      {/* Мобильное меню с анимацией max-height */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+            initial={{ maxHeight: 0, opacity: 0 }}
+            animate={{ maxHeight: 1000, opacity: 1 }}
+            exit={{ maxHeight: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="lg:hidden bg-background overflow-hidden border-t border-gray-700">
             <div className="px-6 py-4 space-y-4">
@@ -238,7 +257,6 @@ const NavBar = () => {
               <FaUserTie className="cursor-pointer hover:scale-110 transition" />
             </div>
 
-            {/* Мобильный дропдаун */}
             <AnimatePresence>
               {isCartOpen && (
                 <motion.div
