@@ -6,7 +6,7 @@ import { BiShoppingBag } from "react-icons/bi";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
-import CartDropdown from "./navBar/CartDropdown";
+import CartDropdown from "../common/CartDropdown";
 
 const navItems = [
   { label: "Главная", path: "/" },
@@ -20,10 +20,10 @@ const navItems = [
 const NavBar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [previousTotalItems, setPreviousTotalItems] = useState(0);
   const [animateBadge, setAnimateBadge] = useState(false);
   const [animatePrice, setAnimatePrice] = useState(false);
 
+  const prevTotalItemsRef = useRef<number>(0);
   const desktopCartRef = useRef<HTMLDivElement>(null);
   const mobileCartRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -47,6 +47,7 @@ const NavBar = () => {
     toggleMenu();
   };
 
+  // Закрытие дропдауна по клику вне
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -65,19 +66,21 @@ const NavBar = () => {
     };
   }, []);
 
+  // Закрыть корзину при смене маршрута
   useEffect(() => {
     setIsCartOpen(false);
   }, [location.pathname]);
 
+  // Анимация бейджа и цены при добавлении
   useEffect(() => {
-    if (totalItems > previousTotalItems) {
+    const prev = prevTotalItemsRef.current;
+    if (totalItems > prev) {
       setAnimateBadge(true);
       setAnimatePrice(true);
-
       setTimeout(() => setAnimateBadge(false), 300);
       setTimeout(() => setAnimatePrice(false), 300);
     }
-    setPreviousTotalItems(totalItems);
+    prevTotalItemsRef.current = totalItems;
   }, [totalItems]);
 
   return (

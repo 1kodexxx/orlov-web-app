@@ -3,6 +3,7 @@
 import { useCart } from "@/context/CartContext";
 import { Link } from "react-router-dom";
 import { FaTrash, FaTimes } from "react-icons/fa";
+import { useRef, useEffect } from "react";
 
 const colorOptions = [
   { name: "Жёлтый", hex: "#facc15" },
@@ -19,13 +20,33 @@ interface CartDropdownProps {
 
 const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
   const { cartItems, removeFromCart } = useCart();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const totalPrice = cartItems
     .reduce((sum, item) => sum + item.price * item.quantity, 0)
     .toFixed(2);
 
+  // Закрытие по клику вне компонента
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
+
   return (
-    <div className="bg-[#181818] rounded-lg shadow-lg border border-gray-700 z-50 w-96 max-w-[95vw] sm:max-w-md">
+    <div
+      ref={dropdownRef}
+      className="bg-[#181818] rounded-lg shadow-lg border border-gray-700 z-50 w-96 max-w-[95vw] sm:max-w-md">
       <div className="p-4 relative">
         {/* Крестик для закрытия */}
         <button

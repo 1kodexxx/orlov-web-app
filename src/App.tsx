@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "@/components/common/";
-import { Footer, NavBar, CatalogLayout } from "@/components/layout";
+import { Footer, CatalogLayout } from "@/components/layout";
+import NavBar from "@/components/layout/NavBar";
 
 import {
   Home,
