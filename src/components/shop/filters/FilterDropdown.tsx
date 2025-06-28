@@ -19,7 +19,9 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
 }) => {
   const isOpen = activeDropdown === title;
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [mobileContentHeight, setMobileContentHeight] = useState(0);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,7 +45,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   useEffect(() => {
     setSelectedOptions([]);
     onSelect([]);
-  }, [resetSignal]);
+  }, [resetSignal, onSelect]);
 
   const handleCheckboxChange = (id: string) => {
     let updatedOptions: string[] = [];
@@ -62,6 +64,14 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
     setSelectedOptions([]);
     onSelect([]);
   };
+
+  useEffect(() => {
+    if (isOpen && contentRef.current) {
+      setMobileContentHeight(contentRef.current.scrollHeight);
+    } else {
+      setMobileContentHeight(0);
+    }
+  }, [isOpen, selectedOptions]);
 
   return (
     <div className="relative w-full sm:w-auto" ref={dropdownRef}>
@@ -155,8 +165,12 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
             ▼
           </span>
         </button>
-        {isOpen && (
-          <div className="pt-2 space-y-2">
+        <div
+          className="overflow-hidden transition-all duration-300 ease-in-out"
+          style={{
+            maxHeight: isOpen ? `${mobileContentHeight}px` : "0px",
+          }}>
+          <div ref={contentRef} className="pt-2 space-y-2">
             {options.map((o) => (
               <label
                 key={o.id}
@@ -196,7 +210,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
               Сбросить
             </button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
