@@ -4,6 +4,7 @@ import { useCart } from "@/context/CartContext";
 import { Link } from "react-router-dom";
 import { FaTrash, FaTimes } from "react-icons/fa";
 import { useRef, useEffect } from "react";
+import { Scrollbars } from "react-custom-scrollbars-2";
 
 const colorOptions = [
   { name: "Жёлтый", hex: "#facc15" },
@@ -21,36 +22,77 @@ interface CartDropdownProps {
 const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
   const { cartItems, removeFromCart } = useCart();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const viewRef = useRef<HTMLDivElement>(null);
 
+  // drag-to-scroll state
+  const isDragging = useRef(false);
+  const startY = useRef(0);
+  const startScrollTop = useRef(0);
+
+  const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems
     .reduce((sum, item) => sum + item.price * item.quantity, 0)
     .toFixed(2);
 
-  // Закрытие по клику вне компонента
+  // Закрытие при клике вне дропдауна
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const handleClickOutside = (e: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(e.target as Node)
       ) {
         onClose();
       }
-    }
-
+    };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
 
+  // drag-to-scroll левой кнопкой + свайп на мобильных
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view) return;
+
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      isDragging.current = true;
+      startY.current = e.clientY;
+      startScrollTop.current = view.scrollTop;
+      document.body.style.userSelect = "none";
+    };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDragging.current) return;
+      e.preventDefault();
+      const dy = e.clientY - startY.current;
+      view.scrollTop = startScrollTop.current + dy;
+    };
+    const onMouseUp = () => {
+      if (isDragging.current) {
+        isDragging.current = false;
+        document.body.style.userSelect = "";
+      }
+    };
+
+    view.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+    return () => {
+      view.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+  }, []);
+
   return (
     <div
       ref={dropdownRef}
-      // Останавливаем mousedown внутри дропдауна
       onMouseDown={(e) => e.stopPropagation()}
       className="bg-[#181818] rounded-lg shadow-lg border border-gray-700 z-50 w-96 max-w-[95vw] sm:max-w-md">
       <div className="p-4 relative">
-        {/* Крестик для закрытия */}
+        {/* кнопка закрытия */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -61,19 +103,61 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
           <FaTimes />
         </button>
 
-        {/* Отступ, чтобы счётчик не пересекался с крестиком */}
+        {/* заголовок и общее количество */}
         <div className="flex justify-between items-center mb-4 pr-10">
           <h3 className="text-lg font-semibold text-primary">Ваша корзина</h3>
-          <span className="text-sm text-gray-500">{cartItems.length} шт.</span>
+          <span className="text-sm text-gray-500">{totalCount} шт.</span>
         </div>
 
-        <div className="divide-y divide-gray-600 max-h-72 overflow-y-auto pr-2 custom-scrollbar">
-          {cartItems.length === 0 ? (
-            <p className="text-sm text-gray-500 text-center py-4">
-              Корзина пуста
-            </p>
-          ) : (
-            cartItems.map((item, index) => {
+        {/* если пусто — просто текст, без скроллбара */}
+        {cartItems.length === 0 ? (
+          <p className="text-sm text-gray-500 text-center py-4">
+            Корзина пуста
+          </p>
+        ) : (
+          <Scrollbars
+            autoHeight
+            autoHeightMax={288} // 18 rem
+            style={{ width: "100%" }}
+            renderView={(props) => (
+              <div
+                {...props}
+                ref={viewRef}
+                style={{
+                  ...props.style,
+                  paddingRight: 16,
+                  WebkitOverflowScrolling: "touch",
+                }}
+              />
+            )}
+            renderTrackVertical={(props) => (
+              <div
+                {...props}
+                style={{
+                  ...props.style,
+                  position: "absolute",
+                  width: 8,
+                  right: 2,
+                  top: 2,
+                  bottom: 2,
+                  borderRadius: 4,
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                }}
+              />
+            )}
+            renderThumbVertical={(props) => (
+              <div
+                {...props}
+                style={{
+                  ...props.style,
+                  borderRadius: 4,
+                  backgroundColor: "rgba(255,255,255,0.25)",
+                  cursor: 'url("/cursor/cursor-pointer.png"), pointer',
+                }}
+              />
+            )}
+            autoHide={false}>
+            {cartItems.map((item, index) => {
               const colorObj = colorOptions.find(
                 (c) => c.hex === item.selectedColor
               );
@@ -124,10 +208,11 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ onClose }) => {
                   </div>
                 </div>
               );
-            })
-          )}
-        </div>
+            })}
+          </Scrollbars>
+        )}
 
+        {/* итог и кнопка */}
         <div className="flex justify-between items-center mt-4">
           <span className="font-semibold text-white">Итого:</span>
           <span className="font-bold text-lg text-primary">
