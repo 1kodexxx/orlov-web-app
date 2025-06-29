@@ -45,9 +45,14 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
 
   const handleSearch = () => {
     const categoryParam = selectedCat === "Все категории" ? "" : selectedCat;
-    navigate(`/catalog`, {
-      state: { category: categoryParam, query: searchQuery },
-    });
+    const searchParam = searchQuery;
+
+    const params = new URLSearchParams();
+
+    if (categoryParam) params.set("category", categoryParam);
+    if (searchParam) params.set("query", searchParam);
+
+    navigate(`/catalog?${params.toString()}`);
     onClose();
   };
 

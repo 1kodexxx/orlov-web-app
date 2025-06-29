@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { allProducts } from "@/data/products";
 import { ProductsList } from "@/components/shop/";
 import { ProductFilterPanel } from "@/components/shop/filters/";
@@ -11,13 +11,15 @@ const parsePrice = (price: number | string) => {
 
 const Catalog = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const state = location.state as { category?: string; query?: string } | null;
+  const params = new URLSearchParams(location.search);
+  const categoryParam = params.get("category") || "";
+  const queryParam = params.get("query") || "";
 
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    state?.category || ""
-  );
-  const [searchQuery, setSearchQuery] = useState<string>(state?.query || "");
+  const [selectedCategory, setSelectedCategory] =
+    useState<string>(categoryParam);
+  const [searchQuery, setSearchQuery] = useState<string>(queryParam);
   const [sortOption, setSortOption] = useState<string>("");
   const [resetSignal, setResetSignal] = useState<number>(0);
 
@@ -27,6 +29,14 @@ const Catalog = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, Infinity]);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Синхронизация URL и состояния
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set("category", selectedCategory);
+    if (searchQuery) params.set("query", searchQuery);
+    navigate(`/catalog?${params.toString()}`, { replace: true });
+  }, [selectedCategory, searchQuery]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -110,8 +120,8 @@ const Catalog = () => {
         onCollectionSelect={setSelectedCollection}
         onPriceChange={setPriceRange}
         resetSignal={resetSignal}
-        initialCategory={state?.category || ""}
-        initialQuery={state?.query || ""}
+        initialCategory={categoryParam}
+        initialQuery={queryParam}
       />
       <ProductsList
         products={filteredProducts}
