@@ -4,22 +4,28 @@ import { useLocation } from "react-router-dom";
 interface SearchProps {
   placeholder?: string;
   onSearch: (query: string) => void;
+  value: string;
 }
 
 const Search: React.FC<SearchProps> = ({
   placeholder = "Поиск...",
   onSearch,
+  value,
 }) => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(value);
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
+
+  useEffect(() => {
+    setQuery(value);
+  }, [value]);
 
   const text = placeholder;
 
   useEffect(() => {
     let index = 0;
-    const speed = 200; // скорость печати
+    const speed = 200;
 
     const type = () => {
       setAnimatedPlaceholder(text.slice(0, index + 1));
@@ -29,7 +35,7 @@ const Search: React.FC<SearchProps> = ({
         setTimeout(() => {
           index = 0;
           setAnimatedPlaceholder("");
-        }, 1000); // пауза перед новым циклом
+        }, 1000);
       }
     };
 

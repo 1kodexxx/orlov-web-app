@@ -1,3 +1,4 @@
+// src/components/shop/filters/PriceFilter.tsx
 import React, { useEffect, useRef, useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -40,21 +41,24 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
     };
   }, [isOpen, onToggle]);
 
+  // Сброс слайдера только по resetSignal
   useEffect(() => {
     setPriceRange([0, 60000]);
-    onPriceChange([0, Infinity]);
-  }, [resetSignal, onPriceChange]);
+  }, [resetSignal]);
+
+  // Передаём обновлённые значения в родителя
+  useEffect(() => {
+    onPriceChange(priceRange);
+  }, [priceRange]);
 
   const handleSliderChange = (values: number | number[]) => {
     if (Array.isArray(values)) {
       setPriceRange([values[0], values[1]]);
-      onPriceChange([values[0], values[1]]);
     }
   };
 
   const handleReset = () => {
     setPriceRange([0, 60000]);
-    onPriceChange([0, Infinity]);
   };
 
   useEffect(() => {
@@ -63,7 +67,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
     } else {
       setMobileContentHeight(0);
     }
-  }, [isOpen, priceRange]);
+  }, [isOpen]);
 
   return (
     <div className="relative w-full sm:w-auto" ref={dropdownRef}>

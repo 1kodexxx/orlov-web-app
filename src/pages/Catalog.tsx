@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { allProducts } from "@/data/products";
-
 import { ProductsList } from "@/components/shop/";
 import { ProductFilterPanel } from "@/components/shop/filters/";
 
@@ -10,8 +10,14 @@ const parsePrice = (price: number | string) => {
 };
 
 const Catalog = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const location = useLocation();
+
+  const state = location.state as { category?: string; query?: string } | null;
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    state?.category || ""
+  );
+  const [searchQuery, setSearchQuery] = useState<string>(state?.query || "");
   const [sortOption, setSortOption] = useState<string>("");
   const [resetSignal, setResetSignal] = useState<number>(0);
 
@@ -22,7 +28,6 @@ const Catalog = () => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // 🔥 Сбрасываем страницу на первую при любом изменении фильтров
   useEffect(() => {
     setCurrentPage(1);
   }, [
@@ -105,6 +110,8 @@ const Catalog = () => {
         onCollectionSelect={setSelectedCollection}
         onPriceChange={setPriceRange}
         resetSignal={resetSignal}
+        initialCategory={state?.category || ""}
+        initialQuery={state?.query || ""}
       />
       <ProductsList
         products={filteredProducts}

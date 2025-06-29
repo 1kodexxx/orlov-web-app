@@ -30,6 +30,8 @@ interface ProductFilterPanelProps {
   onCollectionSelect: (selected: string[]) => void;
   onPriceChange: (range: [number, number]) => void;
   resetSignal: number;
+  initialCategory?: string;
+  initialQuery?: string;
 }
 
 const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
@@ -41,9 +43,17 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   onCollectionSelect,
   onPriceChange,
   resetSignal,
+  initialCategory = "",
+  initialQuery = "",
 }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>("");
+  const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
+  const [searchValue, setSearchValue] = useState<string>(initialQuery);
+
+  useEffect(() => {
+    onCategorySelect(initialCategory);
+    onSearch(initialQuery);
+  }, [initialCategory, initialQuery]);
 
   useEffect(() => {
     onPopularitySelect([]);
@@ -69,7 +79,13 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
     <section className="text-text-secondary bg-background body-font m-0">
       <div className="max-w-screen-xl mx-auto px-4">
         <div className="mb-2">
-          <Search onSearch={onSearch} />
+          <Search
+            value={searchValue}
+            onSearch={(query) => {
+              setSearchValue(query);
+              onSearch(query);
+            }}
+          />
         </div>
 
         <CategoryButtons
