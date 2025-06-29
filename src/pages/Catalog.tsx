@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { allProducts } from "@/data/products";
-import { ProductsList } from "@/components/shop/";
-import { ProductFilterPanel } from "@/components/shop/filters/";
+import { ProductsList } from "@/components/shop";
+import { ProductFilterPanel } from "@/components/shop/filters";
+import { categoryLabelToSlug, categorySlugToLabel } from "@/utils/categories";
 
 const parsePrice = (price: number | string) => {
   if (typeof price === "number") return price;
@@ -16,29 +17,30 @@ const Catalog = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Считываем параметры из URL каждый раз при их изменении
+  // Читаем slug из URL → мапим в русскую метку
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const categoryParam = params.get("category") || "";
+    const slug = params.get("category") || "";
+    const label = categorySlugToLabel[slug] || "";
     const queryParam = params.get("query") || "";
 
-    setSelectedCategory(categoryParam);
+    setSelectedCategory(label);
     setSearchQuery(queryParam);
   }, [location.search]);
 
   const [sortOption, setSortOption] = useState<string>("");
   const [resetSignal, setResetSignal] = useState<number>(0);
-
   const [selectedPopularity, setSelectedPopularity] = useState<string[]>([]);
   const [selectedMaterial, setSelectedMaterial] = useState<string[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, Infinity]);
-
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  // При изменении фильтров пишем обратно в URL уже английский slug
   useEffect(() => {
     const params = new URLSearchParams();
-    if (selectedCategory) params.set("category", selectedCategory);
+    const slug = categoryLabelToSlug[selectedCategory] || "";
+    if (slug) params.set("category", slug);
     if (searchQuery) params.set("query", searchQuery);
     navigate(`/catalog?${params.toString()}`, { replace: true });
   }, [selectedCategory, searchQuery]);
@@ -69,29 +71,23 @@ const Catalog = () => {
       const matchesCategory = selectedCategory
         ? product.categories.includes(selectedCategory)
         : true;
-
       const matchesSearch = product.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-
       const matchesPopularity =
         selectedPopularity.length > 0
           ? selectedPopularity.includes(product.popularity)
           : true;
-
       const matchesMaterial =
         selectedMaterial.length > 0
           ? selectedMaterial.includes(product.material)
           : true;
-
       const matchesCollection =
         selectedCollection.length > 0
           ? selectedCollection.includes(product.collection)
           : true;
-
       const price = parsePrice(product.price);
       const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
-
       return (
         matchesCategory &&
         matchesSearch &&

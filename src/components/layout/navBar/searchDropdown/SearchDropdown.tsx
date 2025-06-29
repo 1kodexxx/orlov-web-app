@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaSearch, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { categoryLabelToSlug } from "@/utils/categories";
 
 interface SearchDropdownProps {
   onClose: () => void;
@@ -44,13 +45,11 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
   }, [onClose]);
 
   const handleSearch = () => {
-    const categoryParam = selectedCat === "Все категории" ? "" : selectedCat;
-    const searchParam = searchQuery;
-
+    // вместо русского метки берём её slug
+    const slug = categoryLabelToSlug[selectedCat] || "";
     const params = new URLSearchParams();
-    if (categoryParam) params.set("category", categoryParam);
-    if (searchParam) params.set("query", searchParam);
-
+    if (slug) params.set("category", slug);
+    if (searchQuery) params.set("query", searchQuery);
     navigate(`/catalog?${params.toString()}`);
     onClose();
   };
