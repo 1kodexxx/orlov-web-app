@@ -1,8 +1,12 @@
+import ContactSection from "@/components/sections/deliveryPage/ContactSection";
+import DeliverySection from "@/components/sections/deliveryPage/DeliverySection";
+
 const Delivery = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background text-text-primary text-3xl font-semibold">
-      Доставка
-    </div>
+    <>
+      <DeliverySection />
+      <ContactSection />
+    </>
   );
 };
 

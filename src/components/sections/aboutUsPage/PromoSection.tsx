@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Button } from "../common";
+import { Button } from "../../common";
 
 interface PromoSectionProps {
   title: React.ReactNode;

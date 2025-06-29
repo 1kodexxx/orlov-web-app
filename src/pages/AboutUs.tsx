@@ -2,6 +2,7 @@ import { PromoSection, Features, TopProducts } from "@/components/sections";
 import { allProducts } from "@/data/products";
 import PromoSectionImage1 from "@/assets/PromoSection1.png";
 import PromoSectionImage2 from "@/assets/PromoSection2.png";
+import GallerySection from "@/components/sections/aboutUsPage/GallerySection";
 
 const AboutUs = () => {
   return (
@@ -21,6 +22,7 @@ const AboutUs = () => {
       />
       <Features />
       <TopProducts products={allProducts} />
+      <GallerySection />
     </>
   );
 };
