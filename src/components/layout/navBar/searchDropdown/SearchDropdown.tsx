@@ -1,3 +1,4 @@
+// src/components/layout/common/SearchDropdown.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { FaSearch, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -25,19 +26,24 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
   const [isCatOpen, setIsCatOpen] = useState(false);
   const [selectedCat, setSelectedCat] = useState(categories[0]);
   const [searchQuery, setSearchQuery] = useState("");
-  const catRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   // Закрытие по клику вне
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (catRef.current && !catRef.current.contains(e.target as Node)) {
-        setIsCatOpen(false);
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        onClose();
       }
     };
-    if (isCatOpen) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isCatOpen]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
 
   const handleSearch = () => {
     navigate(
@@ -50,13 +56,14 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
 
   return (
     <div
+      ref={dropdownRef}
       className="
-        relative flex items-center w-[400px] max-w-[95vw]
+        relative flex flex-nowrap items-center w-[400px] max-w-[95vw]
         bg-background border border-secondary
-        rounded-2xl overflow-visible
+        rounded-2xl overflow-visible sm:w-full
       ">
       {/* Селект категорий */}
-      <div className="relative" ref={catRef}>
+      <div className="relative flex-shrink-0">
         <button
           onClick={() => setIsCatOpen((v) => !v)}
           className="
@@ -66,6 +73,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
             hover:bg-secondary/80
             transition-colors duration-200
             rounded-l-2xl
+            whitespace-nowrap min-w-[120px]
           ">
           {selectedCat}
           <FaChevronDown
@@ -79,7 +87,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
         {isCatOpen && (
           <ul
             className="
-              absolute top-full mt-1 w-48 max-h-60 overflow-y-auto
+              absolute top-full left-0 mt-1 w-48 max-h-60 overflow-y-auto
               bg-background-paper border border-secondary
               rounded-xl shadow-lg z-50
             ">
@@ -109,9 +117,9 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Что ищем сегодня?"
+        placeholder="Введите запрос"
         className="
-          flex-grow px-4 py-2
+          flex-grow min-w-0 px-4 py-2
           bg-background text-text-primary text-sm
           placeholder:text-text-secondary
           outline-none

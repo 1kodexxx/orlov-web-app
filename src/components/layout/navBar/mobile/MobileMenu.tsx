@@ -1,11 +1,10 @@
 // src/components/layout/navBar/MobileMenu.tsx
 import { NavLink } from "react-router-dom";
-import { FaSearchDollar } from "react-icons/fa";
+import { FaSearchDollar, FaUserTie } from "react-icons/fa";
 import { BiShoppingBag } from "react-icons/bi";
-import { FaUserTie } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
-import CartDropdown from "../cartDropdown/CartDropdown";
-import SearchDropdown from "../searchDropdown/SearchDropdown";
+import { CartDropdown } from "../cartDropdown/";
+import { SearchDropdown } from "../searchDropdown";
 import { useState, useRef, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 
@@ -43,9 +42,9 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
     toggle();
   };
 
-  // click outside
+  // закрытие дропдаунов кликом вне
   useEffect(() => {
-    const h = (e: MouseEvent) => {
+    const onClickOutside = (e: MouseEvent) => {
       if (
         mobileCartRef.current &&
         !mobileCartRef.current.contains(e.target as Node)
@@ -54,11 +53,11 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
         setIsSearchOpen(false);
       }
     };
-    document.addEventListener("mousedown", h);
-    return () => document.removeEventListener("mousedown", h);
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // animate badge+price
+  // анимация бейджа и цены
   useEffect(() => {
     const prev = prevTotalItemsRef.current;
     if (totalItems > prev) {
@@ -75,10 +74,12 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
       {isOpen && (
         <motion.div
           initial={{ maxHeight: 0, opacity: 0 }}
-          animate={{ maxHeight: 1000, opacity: 1 }}
+          animate={{ maxHeight: 2000, opacity: 1 }}
           exit={{ maxHeight: 0, opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="lg:hidden bg-background overflow-hidden border-t border-gray-700">
+          // overflow-visible вместо overflow-hidden!
+          className="lg:hidden bg-background overflow-visible border-t border-gray-700">
+          {/* Ссылки */}
           <div className="px-6 py-4 space-y-4">
             {navItems.map(({ label, path }) => (
               <NavLink
@@ -91,6 +92,7 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
             ))}
           </div>
 
+          {/* Иконки + поиск */}
           <div className="flex justify-around py-4 text-primary text-2xl relative">
             <FaSearchDollar
               onClick={() => {
@@ -99,13 +101,14 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
               }}
               className="cursor-pointer hover:scale-110 transition"
             />
+
             <div
               className="relative flex items-center cursor-pointer"
               onClick={() => {
                 setIsCartOpen((p) => !p);
                 setIsSearchOpen(false);
               }}>
-              <BiShoppingBag />
+              <BiShoppingBag className="text-2xl" />
               <AnimatePresence>
                 {totalItems > 0 && (
                   <motion.span
@@ -129,9 +132,13 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
                 {totalPrice} ₽
               </motion.span>
             </div>
-            <FaUserTie className="cursor-pointer hover:scale-110 transition" />
+
+            <div className="relative flex items-center">
+              <FaUserTie className="cursor-pointer hover:scale-110 transition" />
+            </div>
           </div>
 
+          {/* Корзина */}
           <AnimatePresence>
             {isCartOpen && (
               <motion.div
@@ -149,6 +156,7 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
             )}
           </AnimatePresence>
 
+          {/* Поиск */}
           <AnimatePresence>
             {isSearchOpen && (
               <motion.div
@@ -156,7 +164,8 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="px-4 pb-4">
+                // даём высокую позицию по Z
+                className="px-4 pb-4 relative z-50">
                 <SearchDropdown onClose={() => setIsSearchOpen(false)} />
               </motion.div>
             )}
