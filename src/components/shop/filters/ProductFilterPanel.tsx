@@ -51,15 +51,23 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
   const [searchValue, setSearchValue] = useState<string>(initialQuery);
 
+  // 👉 Синхронизация с параметрами URL
   useEffect(() => {
     onCategorySelect(initialCategory);
     onSearch(initialQuery);
   }, [initialCategory, initialQuery]);
 
+  // 👉 Автоматически выделяет кнопку категории при изменении URL
+  useEffect(() => {
+    setActiveCategory(initialCategory);
+  }, [initialCategory]);
+
+  // 👉 Автоматически обновляет поле поиска при изменении URL
   useEffect(() => {
     setSearchValue(initialQuery);
   }, [initialQuery]);
 
+  // 👉 Сброс доп. фильтров
   useEffect(() => {
     onPopularitySelect([]);
     onMaterialSelect([]);
