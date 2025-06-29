@@ -7,7 +7,7 @@ import { useCart } from "@/context/CartContext";
 import CartDropdown from "../cartDropdown/CartDropdown";
 import SearchDropdown from "../searchDropdown/SearchDropdown";
 
-const NavActions: React.FC = () => {
+const DesktopMenuButtons: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [animateBadge, setAnimateBadge] = useState(false);
@@ -141,4 +141,4 @@ const NavActions: React.FC = () => {
   );
 };
 
-export default NavActions;
+export default DesktopMenuButtons;

@@ -1,11 +1,9 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import Logo from "./Logo";
-import DesktopMenu from "./desktop/DesktopMenu";
-import NavActions from "./desktop/DesktopMenuButtons";
-import MobileMenuButton from "./mobile/HamburgerButton";
-import MobileMenu from "./mobile/MobileMenu";
+import { Logo } from "./";
+import { DesktopMenu, DesktopMenuButtons } from "./desktop";
+import { MobileMenu, HamburgerButton } from "./mobile";
 
 const NavBar: React.FC = () => {
   const location = useLocation();
@@ -24,9 +22,9 @@ const NavBar: React.FC = () => {
 
         <DesktopMenu />
 
-        <NavActions />
+        <DesktopMenuButtons />
 
-        <MobileMenuButton isOpen={mobileMenuOpen} toggle={toggleMenu} />
+        <HamburgerButton isOpen={mobileMenuOpen} toggle={toggleMenu} />
       </div>
 
       <MobileMenu isOpen={mobileMenuOpen} toggle={toggleMenu} />

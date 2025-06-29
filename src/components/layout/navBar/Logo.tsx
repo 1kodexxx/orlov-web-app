@@ -1,4 +1,3 @@
-// src/components/layout/navBar/Logo.tsx
 import { useNavigate } from "react-router-dom";
 
 interface LogoProps {
