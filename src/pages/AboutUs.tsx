@@ -29,7 +29,7 @@ const AboutUs = () => {
           "https://i.postimg.cc/y8VLsVmC/image1.png",
           "https://i.postimg.cc/BQJT1mXx/image2.png",
           "https://i.postimg.cc/bwkqc99B/image3.png",
-          "https://i.postimg.cc/2jg5syf3/image5.png",
+          "https://i.postimg.cc/2jg5syf3/image4.png",
           "https://i.postimg.cc/Fst9P6jL/image5.png",
           "https://i.postimg.cc/pd17knCt/image6.png",
         ]}

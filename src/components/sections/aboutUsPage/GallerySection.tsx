@@ -1,13 +1,32 @@
-// src/components/GallerySection.tsx
-
 import React from "react";
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 
 interface GallerySectionProps {
   title: string;
   description: string;
   images?: string[]; // опционально
 }
+
+const containerVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.2,
+      when: "beforeChildren",
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const textVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+};
 
 const GallerySection: React.FC<GallerySectionProps> = ({
   title,
@@ -17,100 +36,109 @@ const GallerySection: React.FC<GallerySectionProps> = ({
   if (images.length < 6) {
     return (
       <section className="w-full min-h-screen flex items-center justify-center bg-background py-16 px-4">
-        <p className="text-primary text-lg">Галерея загружается...</p>
+        <motion.p
+          className="text-primary text-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}>
+          Галерея загружается...
+        </motion.p>
       </section>
     );
   }
 
   return (
     <motion.section
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      initial="hidden"
+      animate="show"
+      variants={containerVariants}
       className="w-full min-h-screen flex flex-col items-center bg-background py-16 px-4">
-      <div className="w-full max-w-[1244px] mx-auto flex flex-col gap-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-center space-y-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4 text-center">
+      <motion.div
+        variants={textVariants}
+        className="w-full max-w-[1245px] mx-auto flex flex-col gap-8">
+        <div className="text-center space-y-6">
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold text-primary mb-4"
+            variants={textVariants}>
             {title}
-          </h2>
-          <p className="text-lg text-text-secondary max-w-2xl mx-auto mb-12 text-center">
+          </motion.h2>
+          <motion.p
+            className="text-lg text-text-secondary max-w-2xl mx-auto mb-12"
+            variants={textVariants}>
             {description}
-          </p>
-        </motion.div>
-
-        <div className="flex flex-wrap -m-1 md:-m-2">
-          <div className="flex flex-wrap w-full md:w-1/2">
-            <div className="p-1 md:p-2 w-1/2">
-              <motion.img
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
-                alt="Галерея"
-                className="w-full h-full object-cover object-center block rounded-lg"
-                src={images[0]}
-              />
-            </div>
-            <div className="p-1 md:p-2 w-1/2">
-              <motion.img
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.6 }}
-                alt="Галерея"
-                className="w-full h-full object-cover object-center block rounded-lg"
-                src={images[1]}
-              />
-            </div>
-            <div className="p-1 md:p-2 w-full">
-              <motion.img
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.8 }}
-                alt="Галерея"
-                className="w-full h-full object-cover object-center block rounded-lg"
-                src={images[2]}
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-wrap w-full md:w-1/2">
-            <div className="p-1 md:p-2 w-full">
-              <motion.img
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 1 }}
-                alt="Галерея"
-                className="w-full h-full object-cover object-center block rounded-lg"
-                src={images[3]}
-              />
-            </div>
-            <div className="p-1 md:p-2 w-1/2">
-              <motion.img
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 1.2 }}
-                alt="Галерея"
-                className="w-full h-full object-cover object-center block rounded-lg"
-                src={images[4]}
-              />
-            </div>
-            <div className="p-1 md:p-2 w-1/2">
-              <motion.img
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 1.4 }}
-                alt="Галерея"
-                className="w-full h-full object-cover object-center block rounded-lg"
-                src={images[5]}
-              />
-            </div>
-          </div>
+          </motion.p>
         </div>
-      </div>
+
+        <motion.div
+          className="flex flex-wrap -m-1 md:-m-2"
+          variants={containerVariants}>
+          <div className="flex flex-wrap w-full md:w-1/2">
+            <motion.div className="p-1 md:p-2 w-1/2" variants={itemVariants}>
+              <motion.img
+                src={images[0]}
+                alt="Галерея"
+                className="w-full h-full object-cover object-center block rounded-lg"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+              />
+            </motion.div>
+            <motion.div className="p-1 md:p-2 w-1/2" variants={itemVariants}>
+              <motion.img
+                src={images[1]}
+                alt="Галерея"
+                className="w-full h-full object-cover object-center block rounded-lg"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
+              />
+            </motion.div>
+            <motion.div className="p-1 md:p-2 w-full" variants={itemVariants}>
+              <motion.img
+                src={images[2]}
+                alt="Галерея"
+                className="w-full h-full object-cover object-center block rounded-lg"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.6 }}
+              />
+            </motion.div>
+          </div>
+
+          <div className="flex flex-wrap w-full md:w-1/2">
+            <motion.div className="p-1 md:p-2 w-full" variants={itemVariants}>
+              <motion.img
+                src={images[3]}
+                alt="Галерея"
+                className="w-full h-full object-cover object-center block rounded-lg"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.8 }}
+              />
+            </motion.div>
+            <motion.div className="p-1 md:p-2 w-1/2" variants={itemVariants}>
+              <motion.img
+                src={images[4]}
+                alt="Галерея"
+                className="w-full h-full object-cover object-center block rounded-lg"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 1 }}
+              />
+            </motion.div>
+            <motion.div className="p-1 md:p-2 w-1/2" variants={itemVariants}>
+              <motion.img
+                src={images[5]}
+                alt="Галерея"
+                className="w-full h-full object-cover object-center block rounded-lg"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 1.2 }}
+              />
+            </motion.div>
+          </div>
+        </motion.div>
+      </motion.div>
     </motion.section>
   );
 };
