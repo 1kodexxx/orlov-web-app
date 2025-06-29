@@ -13,13 +13,19 @@ const Catalog = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const params = new URLSearchParams(location.search);
-  const categoryParam = params.get("category") || "";
-  const queryParam = params.get("query") || "";
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const [selectedCategory, setSelectedCategory] =
-    useState<string>(categoryParam);
-  const [searchQuery, setSearchQuery] = useState<string>(queryParam);
+  // Считываем параметры из URL каждый раз при их изменении
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const categoryParam = params.get("category") || "";
+    const queryParam = params.get("query") || "";
+
+    setSelectedCategory(categoryParam);
+    setSearchQuery(queryParam);
+  }, [location.search]);
+
   const [sortOption, setSortOption] = useState<string>("");
   const [resetSignal, setResetSignal] = useState<number>(0);
 
@@ -30,7 +36,6 @@ const Catalog = () => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Синхронизация URL и состояния
   useEffect(() => {
     const params = new URLSearchParams();
     if (selectedCategory) params.set("category", selectedCategory);
@@ -120,8 +125,8 @@ const Catalog = () => {
         onCollectionSelect={setSelectedCollection}
         onPriceChange={setPriceRange}
         resetSignal={resetSignal}
-        initialCategory={categoryParam}
-        initialQuery={queryParam}
+        initialCategory={selectedCategory}
+        initialQuery={searchQuery}
       />
       <ProductsList
         products={filteredProducts}

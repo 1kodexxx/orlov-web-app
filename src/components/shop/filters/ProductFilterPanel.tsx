@@ -57,6 +57,10 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   }, [initialCategory, initialQuery]);
 
   useEffect(() => {
+    setSearchValue(initialQuery);
+  }, [initialQuery]);
+
+  useEffect(() => {
     onPopularitySelect([]);
     onMaterialSelect([]);
     onCollectionSelect([]);
@@ -158,14 +162,12 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
             />
           </div>
 
-          {/* Блок сортировки и кнопки сброса для десктопа */}
           <div className="hidden sm:flex items-center gap-4 w-auto">
             <SortBy onSortChange={onSortChange} />
             <ResetFiltersButton onReset={handleResetAll} />
           </div>
         </div>
 
-        {/* Блок кнопки сброса для мобильной версии */}
         <div className="mt-4 sm:hidden w-full flex justify-center">
           <ResetFiltersButton onReset={handleResetAll} />
         </div>

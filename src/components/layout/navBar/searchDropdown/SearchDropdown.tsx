@@ -48,7 +48,6 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
     const searchParam = searchQuery;
 
     const params = new URLSearchParams();
-
     if (categoryParam) params.set("category", categoryParam);
     if (searchParam) params.set("query", searchParam);
 
