@@ -26,12 +26,12 @@ const AboutUs = () => {
         title="Галерея стиля и безупречного качества"
         description="Оцените гармонию формы, цвета и деталей. Здесь вы найдете вдохновение, которое отражает премиальность и индивидуальность каждого изделия."
         images={[
-          "https://i.postimg.cc/y8VLsVmC/image1.png",
-          "https://i.postimg.cc/BQJT1mXx/image2.png",
-          "https://i.postimg.cc/bwkqc99B/image3.png",
-          "https://i.postimg.cc/2jg5syf3/image4.png",
-          "https://i.postimg.cc/Fst9P6jL/image5.png",
-          "https://i.postimg.cc/pd17knCt/image6.png",
+          "https://i.postimg.cc/hGS2rKyt/case2.webp",
+          "https://i.postimg.cc/hGS2rKyt/case2.webp",
+          "https://i.postimg.cc/tRfmjQTB/case1.webp",
+          "https://i.postimg.cc/tRfmjQTB/case1.webp",
+          "https://i.postimg.cc/hGS2rKyt/case2.webp",
+          "https://i.postimg.cc/hGS2rKyt/case2.webp",
         ]}
       />
     </>
