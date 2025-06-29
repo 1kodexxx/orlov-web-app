@@ -86,7 +86,13 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
                 key={path}
                 to={path}
                 onClick={toggle}
-                className="block text-text-secondary text-sm hover:text-primary transition">
+                className={({ isActive }) =>
+                  `block text-sm transition ${
+                    isActive
+                      ? "text-primary font-semibold"
+                      : "text-text-secondary hover:text-primary"
+                  }`
+                }>
                 {label}
               </NavLink>
             ))}
