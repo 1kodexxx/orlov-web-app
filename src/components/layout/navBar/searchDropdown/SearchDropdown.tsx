@@ -60,8 +60,8 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
         <button
           onClick={() => setIsCatOpen((v) => !v)}
           className="
-            flex items-center gap-2 px-4 py-2 text-sm font-medium
-            bg-secondary border-r border-secondary
+            flex items-center gap-2 px-4 py-2 text-sm font-normal
+            bg-background border-r border-secondary
             text-text-primary
             hover:bg-secondary/80
             transition-colors duration-200
