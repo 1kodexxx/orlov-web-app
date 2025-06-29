@@ -1,3 +1,5 @@
+// src/components/layout/navBar/GallerySection.tsx
+
 import React from "react";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
@@ -19,8 +21,13 @@ const containerVariants: Variants = {
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 50, scale: 0.9 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
 };
 
 const textVariants: Variants = {
@@ -28,10 +35,14 @@ const textVariants: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
 };
 
+const hoverEffect = {
+  whileHover: { scale: 1.05, transition: { duration: 0.3 } },
+};
+
 const GallerySection: React.FC<GallerySectionProps> = ({
   title,
   description,
-  images = [], // значение по умолчанию
+  images = [],
 }) => {
   if (images.length < 6) {
     return (
@@ -50,7 +61,8 @@ const GallerySection: React.FC<GallerySectionProps> = ({
   return (
     <motion.section
       initial="hidden"
-      animate="show"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.2 }}
       variants={containerVariants}
       className="w-full min-h-screen flex flex-col items-center bg-background py-16 px-4">
       <motion.div
@@ -73,67 +85,71 @@ const GallerySection: React.FC<GallerySectionProps> = ({
           className="flex flex-wrap -m-1 md:-m-2"
           variants={containerVariants}>
           <div className="flex flex-wrap w-full md:w-1/2">
-            <motion.div className="p-1 md:p-2 w-1/2" variants={itemVariants}>
+            <motion.div
+              className="p-1 md:p-2 w-1/2"
+              variants={itemVariants}
+              whileHover={hoverEffect.whileHover}>
               <motion.img
                 src={images[0]}
                 alt="Галерея"
                 className="w-full h-full object-cover object-center block rounded-lg"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
               />
             </motion.div>
-            <motion.div className="p-1 md:p-2 w-1/2" variants={itemVariants}>
+
+            <motion.div
+              className="p-1 md:p-2 w-1/2"
+              variants={itemVariants}
+              whileHover={hoverEffect.whileHover}>
               <motion.img
                 src={images[1]}
                 alt="Галерея"
                 className="w-full h-full object-cover object-center block rounded-lg"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
               />
             </motion.div>
-            <motion.div className="p-1 md:p-2 w-full" variants={itemVariants}>
+
+            <motion.div
+              className="p-1 md:p-2 w-full"
+              variants={itemVariants}
+              whileHover={hoverEffect.whileHover}>
               <motion.img
                 src={images[2]}
                 alt="Галерея"
                 className="w-full h-full object-cover object-center block rounded-lg"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.6 }}
               />
             </motion.div>
           </div>
 
           <div className="flex flex-wrap w-full md:w-1/2">
-            <motion.div className="p-1 md:p-2 w-full" variants={itemVariants}>
+            <motion.div
+              className="p-1 md:p-2 w-full"
+              variants={itemVariants}
+              whileHover={hoverEffect.whileHover}>
               <motion.img
                 src={images[3]}
                 alt="Галерея"
                 className="w-full h-full object-cover object-center block rounded-lg"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.8 }}
               />
             </motion.div>
-            <motion.div className="p-1 md:p-2 w-1/2" variants={itemVariants}>
+
+            <motion.div
+              className="p-1 md:p-2 w-1/2"
+              variants={itemVariants}
+              whileHover={hoverEffect.whileHover}>
               <motion.img
                 src={images[4]}
                 alt="Галерея"
                 className="w-full h-full object-cover object-center block rounded-lg"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 1 }}
               />
             </motion.div>
-            <motion.div className="p-1 md:p-2 w-1/2" variants={itemVariants}>
+
+            <motion.div
+              className="p-1 md:p-2 w-1/2"
+              variants={itemVariants}
+              whileHover={hoverEffect.whileHover}>
               <motion.img
                 src={images[5]}
                 alt="Галерея"
                 className="w-full h-full object-cover object-center block rounded-lg"
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 1.2 }}
               />
             </motion.div>
           </div>
