@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import CartDropdown from "../common/CartDropdown";
+import SearchDropdown from "../common/SearchDropdown";
 
 const navItems = [
   { label: "Главная", path: "/" },
@@ -20,6 +21,7 @@ const navItems = [
 const NavBar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [animateBadge, setAnimateBadge] = useState(false);
   const [animatePrice, setAnimatePrice] = useState(false);
 
@@ -46,12 +48,13 @@ const NavBar = () => {
   };
 
   const handleSearchClick = () => {
-    navigate("/catalog?focus=search");
-    toggleMenu();
+    setIsSearchOpen((prev) => !prev);
+    setIsCartOpen(false);
   };
 
   const handleGoToCart = () => {
     setIsCartOpen(false);
+    setIsSearchOpen(false);
     setMobileMenuOpen(false);
     navigate("/cart");
   };
@@ -65,6 +68,7 @@ const NavBar = () => {
         !mobileCartRef.current.contains(event.target as Node)
       ) {
         setIsCartOpen(false);
+        setIsSearchOpen(false);
       }
     };
 
@@ -76,6 +80,7 @@ const NavBar = () => {
 
   useEffect(() => {
     setIsCartOpen(false);
+    setIsSearchOpen(false);
     if (window.innerWidth < 1024) {
       setMobileMenuOpen(false);
     }
@@ -120,15 +125,18 @@ const NavBar = () => {
         </ul>
 
         <div className="hidden lg:flex gap-4 items-center text-primary text-lg md:text-xl relative">
-          <span
-            onClick={handleSearchClick}
-            className="cursor-pointer hover:scale-110 transition">
-            <FaSearchDollar />
-          </span>
+          <div
+            className="relative flex items-center cursor-pointer"
+            onClick={handleSearchClick}>
+            <FaSearchDollar className="hover:scale-110 transition" />
+          </div>
 
           <div
             className="relative flex items-center cursor-pointer"
-            onClick={() => setIsCartOpen((prev) => !prev)}>
+            onClick={() => {
+              setIsCartOpen((prev) => !prev);
+              setIsSearchOpen(false);
+            }}>
             <div className="relative">
               <BiShoppingBag className="text-2xl" />
               <AnimatePresence>
@@ -158,6 +166,7 @@ const NavBar = () => {
             <FaUserTie />
           </span>
 
+          {/* CartDropdown */}
           <AnimatePresence>
             {isCartOpen && (
               <motion.div
@@ -174,8 +183,23 @@ const NavBar = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* SearchDropdown */}
+          <AnimatePresence>
+            {isSearchOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-16 top-12 z-50">
+                <SearchDropdown onClose={() => setIsSearchOpen(false)} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
+        {/* Mobile menu button */}
         <button
           onClick={toggleMenu}
           className="lg:hidden text-primary text-2xl focus:outline-none relative w-6 h-8 flex items-center justify-center">
@@ -187,14 +211,12 @@ const NavBar = () => {
             transition={{ duration: 0.3 }}
             className="absolute w-6 h-1 bg-primary rounded"
           />
-
           <motion.span
             initial={false}
             animate={mobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
             transition={{ duration: 0.3 }}
             className="absolute w-6 h-1 bg-primary rounded"
           />
-
           <motion.span
             initial={false}
             animate={
@@ -206,6 +228,7 @@ const NavBar = () => {
         </button>
       </div>
 
+      {/* Mobile menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -231,10 +254,12 @@ const NavBar = () => {
                 onClick={handleSearchClick}
                 className="cursor-pointer hover:scale-110 transition"
               />
-
               <div
                 className="relative flex items-center cursor-pointer"
-                onClick={() => setIsCartOpen((prev) => !prev)}>
+                onClick={() => {
+                  setIsCartOpen((prev) => !prev);
+                  setIsSearchOpen(false);
+                }}>
                 <div className="relative">
                   <BiShoppingBag />
                   <AnimatePresence>
@@ -263,10 +288,10 @@ const NavBar = () => {
                   {totalPrice} ₽
                 </motion.span>
               </div>
-
-              <FaUserTie className="cursor-pointer hover:scale-110 transition" />
+              <FaUserTie className="cursor-pointer hover:scale-110 transition" />{" "}
             </div>
 
+            {/* Mobile CartDropdown */}
             <AnimatePresence>
               {isCartOpen && (
                 <motion.div
@@ -280,6 +305,20 @@ const NavBar = () => {
                     onClose={() => setIsCartOpen(false)}
                     onGoToCart={handleGoToCart}
                   />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Mobile SearchDropdown */}
+            <AnimatePresence>
+              {isSearchOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="px-4 pb-4">
+                  <SearchDropdown onClose={() => setIsSearchOpen(false)} />
                 </motion.div>
               )}
             </AnimatePresence>
