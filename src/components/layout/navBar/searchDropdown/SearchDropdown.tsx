@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaSearch, FaChevronDown } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { categoryLabelToSlug } from "@/utils/categories";
 
 interface SearchDropdownProps {
   onClose: () => void;
+  onToggleMenu: () => void; // Новый проп
 }
 
 const categories = [
@@ -22,12 +23,16 @@ const categories = [
   "СССР",
 ];
 
-const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
+const SearchDropdown: React.FC<SearchDropdownProps> = ({
+  onClose,
+  onToggleMenu,
+}) => {
   const [isCatOpen, setIsCatOpen] = useState(false);
   const [selectedCat, setSelectedCat] = useState(categories[0]);
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -45,13 +50,20 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
   }, [onClose]);
 
   const handleSearch = () => {
-    // вместо русского метки берём её slug
     const slug = categoryLabelToSlug[selectedCat] || "";
     const params = new URLSearchParams();
     if (slug) params.set("category", slug);
     if (searchQuery) params.set("query", searchQuery);
     navigate(`/catalog?${params.toString()}`);
+
+    // Закрыть дропдаун
     onClose();
+
+    // Если на странице Catalog — свернуть меню и проскроллить вверх
+    if (location.pathname === "/catalog") {
+      onToggleMenu();
+      window.scrollTo(0, 0);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -100,7 +112,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ onClose }) => {
         onChange={(e) => setSearchQuery(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Введите запрос"
-        className="flex-grow min-w-0 px-4 py-2 bg-background text-text-primary text-sm placeholder:text-text-secondary outline-none"
+        className="flex-grow min-w-0 px-4 py-2 bg-background text-[#CCCCCC] text-sm placeholder:text-text-secondary outline-none"
       />
 
       <button

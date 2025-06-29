@@ -1,4 +1,5 @@
 // src/components/layout/navBar/MobileMenu.tsx
+
 import { NavLink } from "react-router-dom";
 import { FaSearchDollar, FaUserTie } from "react-icons/fa";
 import { BiShoppingBag } from "react-icons/bi";
@@ -42,7 +43,6 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
     toggle();
   };
 
-  // закрытие дропдаунов кликом вне
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (
@@ -57,7 +57,6 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // анимация бейджа и цены
   useEffect(() => {
     const prev = prevTotalItemsRef.current;
     if (totalItems > prev) {
@@ -77,14 +76,13 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
           animate={{ maxHeight: 2000, opacity: 1 }}
           exit={{ maxHeight: 0, opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          // overflow-visible вместо overflow-hidden!
           className="lg:hidden bg-background overflow-visible border-t border-gray-700">
-          {/* Ссылки */}
           <div className="px-6 py-4 space-y-4">
             {navItems.map(({ label, path }) => (
               <NavLink
                 key={path}
                 to={path}
+                end
                 onClick={toggle}
                 className={({ isActive }) =>
                   `block text-sm transition ${
@@ -98,7 +96,6 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
             ))}
           </div>
 
-          {/* Иконки + поиск */}
           <div className="flex justify-around py-4 text-primary text-2xl relative">
             <FaSearchDollar
               onClick={() => {
@@ -144,7 +141,6 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
             </div>
           </div>
 
-          {/* Корзина */}
           <AnimatePresence>
             {isCartOpen && (
               <motion.div
@@ -162,7 +158,6 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
             )}
           </AnimatePresence>
 
-          {/* Поиск */}
           <AnimatePresence>
             {isSearchOpen && (
               <motion.div
@@ -170,9 +165,11 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                // даём высокую позицию по Z
                 className="px-4 pb-4 relative z-50">
-                <SearchDropdown onClose={() => setIsSearchOpen(false)} />
+                <SearchDropdown
+                  onClose={() => setIsSearchOpen(false)}
+                  onToggleMenu={toggle}
+                />
               </motion.div>
             )}
           </AnimatePresence>
