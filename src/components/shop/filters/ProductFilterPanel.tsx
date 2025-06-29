@@ -5,6 +5,7 @@ import {
   PriceFilter,
   SortBy,
   CategoryButtons,
+  ResetFiltersButton,
 } from "./";
 
 const categories = [
@@ -73,6 +74,18 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   const handleResetCategory = () => {
     setActiveCategory("");
     onCategorySelect("");
+  };
+
+  const handleResetAll = () => {
+    setActiveCategory("");
+    setSearchValue("");
+    onCategorySelect("");
+    onSearch("");
+    onSortChange("");
+    onPopularitySelect([]);
+    onMaterialSelect([]);
+    onCollectionSelect([]);
+    onPriceChange([0, Infinity]);
   };
 
   return (
@@ -145,9 +158,16 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
             />
           </div>
 
-          <div className="w-auto">
+          {/* Блок сортировки и кнопки сброса для десктопа */}
+          <div className="hidden sm:flex items-center gap-4 w-auto">
             <SortBy onSortChange={onSortChange} />
+            <ResetFiltersButton onReset={handleResetAll} />
           </div>
+        </div>
+
+        {/* Блок кнопки сброса для мобильной версии */}
+        <div className="mt-4 sm:hidden w-full flex justify-center">
+          <ResetFiltersButton onReset={handleResetAll} />
         </div>
       </div>
     </section>
