@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import ProductCard from "@/components/shop/ProductCard";
+import { ProductCard } from "@/components/shop/";
 import type { Product } from "@/data/products";
 import "swiper/css";
 import "swiper/css/navigation";

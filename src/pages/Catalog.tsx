@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { allProducts } from "@/data/products";
 
-import ProductsList from "@/components/shop/ProductsList";
+import { ProductsList } from "@/components/shop/";
 import { ProductFilterPanel } from "@/components/shop/filters/";
 
 const parsePrice = (price: number | string) => {
