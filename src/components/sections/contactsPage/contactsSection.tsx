@@ -42,8 +42,11 @@ const ContactFormSection: React.FC = () => {
           <motion.p
             variants={itemVariants}
             className="text-text-secondary text-center md:text-left">
-            Мы используем индивидуальный подход для решения ваших задач и всегда
-            готовы помочь вам в кратчайшие сроки.
+            Наша команда всегда готова помочь Вам 24/7. Если у Вас есть вопросы
+            о продукции, заказах или сотрудничестве – свяжитесь с нами любым
+            удобным способом! Мы гарантируем оперативность и внимательное
+            отношение к деталям. Ценим доверие клиентов к нашей компании и
+            предлагаем форматы общения для достижения совместного результата.
           </motion.p>
 
           <form className="space-y-4">
@@ -93,7 +96,7 @@ const ContactFormSection: React.FC = () => {
               </label>
               <textarea
                 placeholder="Введите сообщение..."
-                className="w-full border border-[#e5d870] p-3 rounded-lg bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-[#e5d870]"
+                className="w-full h-16 border border-[#e5d870] p-3 rounded-lg bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-[#e5d870]"
                 rows={6}
                 required
               />
