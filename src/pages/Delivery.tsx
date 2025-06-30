@@ -4,7 +4,6 @@ const Delivery = () => {
   return (
     <>
       <DeliverySection />
-      {/* <ContactSection /> */}
     </>
   );
 };
