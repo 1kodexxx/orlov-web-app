@@ -7,7 +7,7 @@ const deliveryOptions = [
 ];
 
 const TableSection: React.FC = () => (
-  <section className="py-16 px-4 max-w-[1280px] mx-auto">
+  <section className="min-h-screen flex flex-col justify-center py-16 px-4 max-w-[1280px] mx-auto">
     {/* Desktop table */}
     <div className="hidden md:block relative overflow-x-auto shadow-md sm:rounded-2xl bg-background-paper">
       <table className="w-full text-base text-left text-text-secondary">

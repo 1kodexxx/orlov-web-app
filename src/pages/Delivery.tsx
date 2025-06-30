@@ -1,13 +1,9 @@
-import {
-  DeliverySection,
-  TableSection,
-} from "@/components/sections/deliveryPage";
+import { DeliverySection } from "@/components/sections/deliveryPage";
 
 const Delivery = () => {
   return (
     <>
       <DeliverySection />
-      <TableSection />
     </>
   );
 };
