@@ -43,6 +43,7 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
     toggle();
   };
 
+  // закрываем выпадашки по клику вне
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (
@@ -57,6 +58,7 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
+  // анимация бейджа и цены
   useEffect(() => {
     const prev = prevTotalItemsRef.current;
     if (totalItems > prev) {
@@ -82,8 +84,7 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
               <NavLink
                 key={path}
                 to={path}
-                end
-                onClick={toggle}
+                end={path === "/"}
                 className={({ isActive }) =>
                   `block text-sm transition ${
                     isActive
@@ -122,7 +123,11 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
                       opacity: 1,
                     }}
                     exit={{ scale: 0.7, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 250, damping: 16 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 250,
+                      damping: 16,
+                    }}
                     className="absolute -top-2 -right-2 bg-red-600 text-white text-xs min-w-[16px] h-[16px] flex items-center justify-center rounded-full px-[4px]">
                     {totalItems}
                   </motion.span>
@@ -130,7 +135,11 @@ const MobileMenu: React.FC<Props> = ({ isOpen, toggle }) => {
               </AnimatePresence>
               <motion.span
                 animate={animatePrice ? { scale: 1.1 } : { scale: 1 }}
-                transition={{ type: "spring", stiffness: 250, damping: 16 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 250,
+                  damping: 16,
+                }}
                 className="ml-1 text-sm font-medium text-[#CCCCCC]">
                 {totalPrice} ₽
               </motion.span>
