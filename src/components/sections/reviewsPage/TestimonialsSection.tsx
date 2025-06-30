@@ -1,97 +1,102 @@
-// src/components/sections/TestimonialsSection.tsx
+// src/components/sections/reviewsPage/TestimonialsSection.tsx
 
 import React from "react";
 import { motion } from "framer-motion";
-
-interface Testimonial {
-  text: string;
-  author: string;
-  role: string;
-  avatar: string;
-}
-
-const testimonials: Testimonial[] = [
-  {
-    text: "Orlov — это больше, чем бренд. Это культурный код, который я с гордостью транслирую своим клиентам и партнёрам. Продукция безупречного качества и с глубоким смыслом.",
-    author: "Александр Петров",
-    role: "Генеральный директор Prestige Consulting",
-    avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-  },
-  {
-    text: "Мы заказали эксклюзивные аксессуары для официальной делегации. Качество, внимание к деталям и уважение к традициям превзошли ожидания. Orlov Brand — это образец государственного стиля.",
-    author: "Ольга Смирнова",
-    role: "Сотрудник государственной структуры",
-    avatar: "https://randomuser.me/api/portraits/women/26.jpg",
-  },
-  {
-    text: "Меня поразила философия бренда Orlov. Это не просто изделия — это осознанный выбор в пользу российской идентичности и высокого вкуса.",
-    author: "Сергей Волков",
-    role: "Предприниматель и общественный деятель",
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-  },
-  {
-    text: "Как студентка, я нашла в Orlov Brand уникальный баланс доступности и премиальности. Носить такие аксессуары — значит быть частью истории и культуры своей страны.",
-    author: "Анастасия Кузнецова",
-    role: "Студентка МГУ",
-    avatar: "https://randomuser.me/api/portraits/women/65.jpg",
-  },
-  {
-    text: "Я долго искал подарки с характером и глубокой идеей. Orlov Brand создает именно такие изделия — изысканные, наполненные смыслом, и идеально выполненные.",
-    author: "Виктор Михайлов",
-    role: "Дипломат",
-    avatar: "https://randomuser.me/api/portraits/men/18.jpg",
-  },
-  {
-    text: "Orlov — это выбор тех, кто ценит аутентичность и безупречный стиль. Как иностранный партнёр, я с гордостью использую аксессуары этого бренда.",
-    author: "Томас Беккер",
-    role: "Бизнес-партнёр из Германии",
-    avatar: "https://randomuser.me/api/portraits/men/22.jpg",
-  },
-  {
-    text: "Продукция Orlov Brand — это не просто аксессуары, это знаки уважения к культуре и истории. Команда бренда тонко чувствует, как воплотить традиции в современном дизайне.",
-    author: "Дмитрий Иванов",
-    role: "Креативный директор Национального культурного фонда",
-    avatar: "https://randomuser.me/api/portraits/men/41.jpg",
-  },
-  {
-    text: "Каждое изделие Orlov — это история, которую хочется рассказывать. Бренд достойно представляет российское наследие и высокое качество на международном уровне.",
-    author: "Елена Морозова",
-    role: "Руководитель департамента федерального агентства",
-    avatar: "https://randomuser.me/api/portraits/women/30.jpg",
-  },
-  {
-    text: "Высокое качество исполнения, элегантный дизайн и ценности бренда полностью соответствуют моему мировоззрению. Orlov Brand стал для меня выбором №1 для личных и деловых подарков.",
-    author: "Павел Сидоров",
-    role: "Частный инвестор",
-    avatar: "https://randomuser.me/api/portraits/men/43.jpg",
-  },
-];
+import { testimonials } from "@/data/reviews";
+import "swiper/css";
+import "swiper/css/navigation";
 
 const TestimonialsSection: React.FC = () => {
   return (
     <section className="w-full bg-background py-16 px-4 flex flex-col items-center">
+      {/* ВЕРХНЯЯ СЕКЦИЯ */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         className="w-full max-w-[1245px] mx-auto text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-          Отзывы о нас
+          Почему выбирают нас?
         </h2>
         <p className="text-text-secondary max-w-2xl mx-auto">
-          Мнения наших клиентов, которые ценят культуру, традиции и безупречный
-          стиль <br />
-          Orlov Brand.
+          Узнайте, почему выбор Orlov Brand — лучшее решение для вас.
         </p>
       </motion.div>
 
+      {/* БЛОКИ ПРЕИМУЩЕСТВ */}
+      <div className="w-full max-w-[1244px] grid gap-6 sm:grid-cols-3 mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="bg-background-paper rounded-2xl shadow p-6 text-center flex flex-col items-center">
+          <div className="text-4xl mb-4">🚚</div>
+          <h3 className="font-semibold text-lg mb-2">
+            Отслеживание заказов в реальном времени
+          </h3>
+          <p className="text-text-secondary mb-2">
+            Узнайте, когда прибудет ваша покупка, или запланируйте доставку.
+          </p>
+          <a
+            href="#"
+            className="text-primary underline hover:no-underline mb-1">
+            Отследить заказ →
+          </a>
+          <a href="#" className="text-primary underline hover:no-underline">
+            Запланировать доставку →
+          </a>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="bg-background-paper rounded-2xl shadow p-6 text-center flex flex-col items-center">
+          <div className="text-4xl mb-4">🛍️</div>
+          <h3 className="font-semibold text-lg mb-2">Ваш личный маркетплейс</h3>
+          <p className="text-text-secondary mb-2">
+            Получайте бонусы за каждую покупку и доступ к эксклюзивным
+            предложениям.
+          </p>
+          <a
+            href="#"
+            className="text-primary underline hover:no-underline mb-1">
+            Подать заявку →
+          </a>
+          <a href="#" className="text-primary underline hover:no-underline">
+            Управлять покупками →
+          </a>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+          className="bg-background-paper rounded-2xl shadow p-6 text-center flex flex-col items-center">
+          <div className="text-4xl mb-4">🎧</div>
+          <h3 className="font-semibold text-lg mb-2">Премиальная поддержка</h3>
+          <p className="text-text-secondary mb-2">
+            Многоуровневая поддержка клиентов по всем вопросам и заказам.
+          </p>
+          <p className="text-text-secondary mb-1">📞 +7 (495) 123-45-67</p>
+          <p className="text-text-secondary">📧 support@orlovbrand.ru</p>
+        </motion.div>
+      </div>
+
+      {/* СПИСОК ОТЗЫВОВ */}
       <div className="w-full max-w-[1244px] grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mx-auto">
         {testimonials.map((testimonial, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.2 }}
+            transition={{
+              duration: 0.6,
+              delay: index < 6 ? 1 + index * 0.2 : 0.2,
+            }}
             viewport={{ once: true }}
             className="bg-background-paper rounded-2xl shadow p-6 flex flex-col justify-between">
             <p className="mb-4 text-[#CCCCCC]">"{testimonial.text}"</p>
