@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 
 // Экспорт конфигурации Vite
 export default defineConfig({
+  base: "/",
   plugins: [react(), svgr()],
   resolve: {
     alias: {
