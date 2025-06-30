@@ -1,4 +1,4 @@
-import ContactsSection from "@/components/sections/contactsPage/contactsSection";
+import ContactsSection from "@/components/sections/contactsPage/ContactsSection";
 import TeamSection from "@/components/sections/contactsPage/TeamSection";
 
 const Contacts = () => {
