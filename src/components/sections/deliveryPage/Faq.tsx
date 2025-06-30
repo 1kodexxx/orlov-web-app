@@ -20,7 +20,7 @@ const Faq: React.FC = () => {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section className="py-12 px-6 max-w-[1310px] mx-auto bg-background-paper rounded-xl shadow-md">
+    <section className="py-12 px-6 max-w-[1260px] mx-auto bg-background-paper rounded-xl shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-primary">
         Часто задаваемые вопросы
       </h2>

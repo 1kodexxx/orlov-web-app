@@ -37,7 +37,7 @@ const steps = [
 
 const DeliverySection: React.FC = () => {
   return (
-    <section className="bg-background-default text-text-primary py-16 px-6 max-w-[1310px] mx-auto space-y-10">
+    <section className="bg-background-default text-text-primary py-16 px-4 max-w-[1279px] mx-auto space-y-10">
       {/* Вводное описание */}
       <div className="text-center mx-auto max-w-2xl">
         <h2 className="text-3xl font-bold mb-4 text-primary">

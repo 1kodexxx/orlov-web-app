@@ -1,7 +1,7 @@
 import React from "react";
 
 const TableSection: React.FC = () => (
-  <section className="py-12 px-6 max-w-[1310px] mx-auto bg-background-paper rounded-xl shadow-md">
+  <section className="py-12 px-6 max-w-[1257px] mx-auto bg-background-paper rounded-xl shadow-md">
     <h2 className="text-2xl font-bold mb-4 text-primary">Варианты доставки</h2>
     <table className="w-full text-left border-collapse">
       <thead>

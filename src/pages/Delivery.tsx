@@ -1,4 +1,4 @@
-import DeliverySection from "../components/sections/deliveryPage/DeliverySection.tsx";
+import { DeliverySection } from "@/components/sections/deliveryPage";
 
 const Delivery = () => {
   return (
