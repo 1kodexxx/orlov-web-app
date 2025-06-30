@@ -1,34 +1,51 @@
 import React from "react";
 
+const deliveryOptions = [
+  { region: "Москва и область", time: "1–2 дня", price: "300 ₽" },
+  { region: "Россия (другие регионы)", time: "3–7 дней", price: "500 ₽" },
+  { region: "Международная", time: "7–21 день", price: "от 1500 ₽" },
+];
+
 const TableSection: React.FC = () => (
-  <section className="py-12 px-6 max-w-[1257px] mx-auto bg-background-paper rounded-xl shadow-md">
-    <h2 className="text-2xl font-bold mb-4 text-primary">Варианты доставки</h2>
-    <table className="w-full text-left border-collapse">
-      <thead>
-        <tr className="border-b border-secondary">
-          <th className="py-2">Регион</th>
-          <th className="py-2">Сроки</th>
-          <th className="py-2">Стоимость</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr className="border-b border-secondary">
-          <td className="py-2">Москва и область</td>
-          <td className="py-2">1–2 дня</td>
-          <td className="py-2">300 ₽</td>
-        </tr>
-        <tr className="border-b border-secondary">
-          <td className="py-2">Россия (другие регионы)</td>
-          <td className="py-2">3–7 дней</td>
-          <td className="py-2">500 ₽</td>
-        </tr>
-        <tr>
-          <td className="py-2">Международная</td>
-          <td className="py-2">7–21 день</td>
-          <td className="py-2">от 1500 ₽</td>
-        </tr>
-      </tbody>
-    </table>
+  <section className="py-16 px-4 max-w-[1280px] mx-auto">
+    {/* Desktop table */}
+    <div className="hidden md:block relative overflow-x-auto shadow-md sm:rounded-2xl bg-background-paper">
+      <table className="w-full text-base text-left text-text-secondary">
+        <thead className="text-sm text-text-primary  bg-secondary">
+          <tr>
+            <th className="px-6 py-4">Регион</th>
+            <th className="px-6 py-4">Сроки</th>
+            <th className="px-6 py-4">Стоимость</th>
+          </tr>
+        </thead>
+        <tbody>
+          {deliveryOptions.map((opt, i) => (
+            <tr
+              key={i}
+              className="border-b border-secondary hover:bg-background-default transition-colors">
+              <td className="px-6 py-4">{opt.region}</td>
+              <td className="px-6 py-4">{opt.time}</td>
+              <td className="px-6 py-4">{opt.price}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    {/* Mobile cards */}
+    <div className="md:hidden space-y-6">
+      {deliveryOptions.map((opt, i) => (
+        <div
+          key={i}
+          className="p-4 bg-background-paper rounded-2xl shadow-md hover:shadow-lg transition-shadow">
+          <p className="text-text-primary font-semibold mb-2">{opt.region}</p>
+          <div className="flex justify-between text-text-secondary">
+            <span>Сроки: {opt.time}</span>
+            <span>Цена: {opt.price}</span>
+          </div>
+        </div>
+      ))}
+    </div>
   </section>
 );
 
