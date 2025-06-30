@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ColorSelector, ModelSelector, ProductActions } from "./";
 import type { Product } from "@/data/products";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/useCart";
 import { Confetti } from "@/animations";
 
 interface ProductDetailsProps {

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/useCart";
 import {
   CartItemList,
   CartSummary,

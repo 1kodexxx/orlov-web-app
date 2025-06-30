@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CartDropdown } from "../cartDropdown/";
 import { SearchDropdown } from "../searchDropdown";
 import { useState, useRef, useEffect } from "react";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/useCart";
 
 const navItems = [
   { label: "Главная", path: "/" },

@@ -1,17 +1,23 @@
 import { FaTrash } from "react-icons/fa";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/useCart";
+import type { CartItem as CartItemType } from "@/context/CartContext"; // Импорт типа
 
-const colorOptions = [
-  { name: "Жёлтый", hex: "#facc15" },
-  { name: "Чёрный", hex: "#404040" },
-  { name: "Зелёный", hex: "#86efac" },
-  { name: "Синий", hex: "#3b82f6" },
-  { name: "Красный", hex: "#f87171" },
-  { name: "Фиолетовый", hex: "#a855f7" },
-];
+interface CartItemProps {
+  item: CartItemType;
+}
 
-const CartItem: React.FC<{ item: any }> = ({ item }) => {
+const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const { removeFromCart } = useCart();
+
+  const colorOptions = [
+    { name: "Жёлтый", hex: "#facc15" },
+    { name: "Чёрный", hex: "#404040" },
+    { name: "Зелёный", hex: "#86efac" },
+    { name: "Синий", hex: "#3b82f6" },
+    { name: "Красный", hex: "#f87171" },
+    { name: "Фиолетовый", hex: "#a855f7" },
+  ];
+
   const colorObj = colorOptions.find((c) => c.hex === item.selectedColor);
   const colorName = colorObj?.name ?? item.selectedColor;
 

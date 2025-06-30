@@ -46,7 +46,7 @@ const TestimonialsSection: React.FC = () => {
       {/* Заголовок */}
       <div className="w-full max-w-[1245px] mx-auto text-center mb-12">
         <motion.h2
-          className="text-3xl md:text-4xl font-bold text-white mb-4"
+          className="text-3xl md:text-4xl font-bold text-primary mb-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}>

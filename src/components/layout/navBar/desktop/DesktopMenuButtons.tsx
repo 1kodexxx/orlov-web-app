@@ -3,7 +3,7 @@ import { BiShoppingBag } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/useCart";
 import CartDropdown from "../cartDropdown/CartDropdown";
 import SearchDropdown from "../searchDropdown/SearchDropdown";
 

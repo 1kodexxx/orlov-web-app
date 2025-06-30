@@ -1,17 +1,17 @@
-import { createContext, useContext, useState } from "react";
-import type { Product } from "@/data/products";
+import { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
+import type { Product } from "@/data/products";
 
-// ✅ Расширяем CartItem
-interface CartItem extends Product {
+// Тип корзины
+export interface CartItem extends Product {
   quantity: number;
   selectedColor: string;
   selectedModel: string;
 }
 
-interface CartContextType {
+export interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (item: CartItem) => void; // ✅ Меняем тип аргумента
+  addToCart: (item: CartItem) => void;
   removeFromCart: (
     slug: string,
     selectedColor: string,
@@ -29,16 +29,24 @@ interface CartContextType {
   ) => void;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+export const CartContext = createContext<CartContextType | undefined>(
+  undefined
+);
 
 interface CartProviderProps {
   children: ReactNode;
 }
 
 export const CartProvider = ({ children }: CartProviderProps) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
-  // ✅ Обновлённый addToCart
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
+
   const addToCart = (item: CartItem) => {
     setCartItems((prev) => {
       const existing = prev.find(
@@ -125,12 +133,4 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       {children}
     </CartContext.Provider>
   );
-};
-
-export const useCart = (): CartContextType => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
-  }
-  return context;
 };
