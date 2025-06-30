@@ -1,11 +1,11 @@
 // src/components/sections/reviewsPage/TestimonialsSection.tsx
 
-import React from "react";
+import React, { useState } from "react";
 import { testimonials } from "@/data/reviews";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 
-// Анимации
+// Анимация преимуществ
 const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 50 },
   visible: (custom: number) => ({
@@ -15,16 +15,19 @@ const fadeInUp: Variants = {
   }),
 };
 
+// Анимация отзывов
 const fastFadeIn: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: (custom: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: custom * 0.1, duration: 0.4, ease: "easeOut" },
+    transition: { delay: custom * 0.1, duration: 0.6, ease: "easeOut" },
   }),
 };
 
 const TestimonialsSection: React.FC = () => {
+  const [featuresAnimated, setFeaturesAnimated] = useState(false);
+
   return (
     <section className="w-full bg-background py-16 px-4 flex flex-col items-center">
       {/* ВЕРХНЯЯ СЕКЦИЯ */}
@@ -43,7 +46,14 @@ const TestimonialsSection: React.FC = () => {
       </motion.div>
 
       {/* БЛОКИ ПРЕИМУЩЕСТВ */}
-      <div className="w-full max-w-[1244px] grid gap-6 sm:grid-cols-3 mb-12">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{
+          visible: { transition: { staggerChildren: 0.2 } },
+        }}
+        onAnimationComplete={() => setFeaturesAnimated(true)}
+        className="w-full max-w-[1244px] grid gap-6 sm:grid-cols-3 mb-12">
         {[
           {
             icon: "🚚",
@@ -76,10 +86,9 @@ const TestimonialsSection: React.FC = () => {
           <motion.div
             key={index}
             custom={index}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
             variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
             className="bg-background-paper rounded-2xl shadow p-6 text-center flex flex-col items-center">
             <div className="text-4xl mb-4">{feature.icon}</div>
             <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
@@ -101,38 +110,40 @@ const TestimonialsSection: React.FC = () => {
               ))}
           </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* СПИСОК ОТЗЫВОВ */}
-      <div className="w-full max-w-[1244px] grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mx-auto">
-        {testimonials.map((testimonial, index) => (
-          <motion.div
-            key={index}
-            custom={index}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-            variants={fastFadeIn}
-            className="bg-background-paper rounded-2xl shadow p-6 flex flex-col justify-between">
-            <p className="mb-4 text-[#CCCCCC]">"{testimonial.text}"</p>
-            <div className="flex items-center gap-4">
-              <img
-                src={testimonial.avatar}
-                alt={testimonial.author}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div>
-                <p className="font-semibold text-primary">
-                  {testimonial.author}
-                </p>
-                <p className="text-sm text-text-secondary">
-                  {testimonial.role}
-                </p>
+      {featuresAnimated && (
+        <div className="w-full max-w-[1244px] grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mx-auto">
+          {testimonials.map((testimonial, index) => (
+            <motion.div
+              key={index}
+              custom={index}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              variants={fastFadeIn}
+              className="bg-background-paper rounded-2xl shadow p-6 flex flex-col justify-between">
+              <p className="mb-4 text-[#CCCCCC]">"{testimonial.text}"</p>
+              <div className="flex items-center gap-4">
+                <img
+                  src={testimonial.avatar}
+                  alt={testimonial.author}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <p className="font-semibold text-primary">
+                    {testimonial.author}
+                  </p>
+                  <p className="text-sm text-text-secondary">
+                    {testimonial.role}
+                  </p>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </section>
   );
 };
