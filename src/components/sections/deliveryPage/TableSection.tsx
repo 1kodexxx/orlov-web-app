@@ -11,7 +11,7 @@ const TableSection: React.FC = () => (
     {/* Desktop table */}
     <div className="hidden md:block relative overflow-x-auto shadow-md sm:rounded-2xl bg-background-paper">
       <table className="w-full text-base text-left text-text-secondary">
-        <thead className="text-sm text-text-primary  bg-secondary">
+        <thead className="text-sm text-text-primary bg-secondary">
           <tr>
             <th className="px-6 py-4">Регион</th>
             <th className="px-6 py-4">Сроки</th>

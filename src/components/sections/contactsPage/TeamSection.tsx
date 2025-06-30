@@ -31,28 +31,35 @@ const team: TeamMember[] = [
     description:
       "Александр строит платформу Orlov Brand на принципах надёжности, скорости и технологического совершенства.",
     image:
-      "https://sun6-20.userapi.com/s/v1/ig2/Y3TBz7eZ0YacYJ5JEwCi5lcGmRsmGj7pm5A1WVvbOxfn7SI9SEy2WSrjjl3BeiglFTOvvbj4l6ZtJsYg8SJd1oYY.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080&from=bu&cs=1080x0",
+      "https://sun9-87.userapi.com/s/v1/ig2/Y3TBz7eZ0YacYJ5JEwCi5lcGmRsmGj7pm5A1WVvbOxfn7SI9SEy2WSrjjl3BeiglFTOvvbj4l6ZtJsYg8SJd1oYY.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080&from=bu&cs=1080x0",
     socials: { facebook: "#", twitter: "#", github: "#", website: "#" },
   },
 ];
 
-// Контейнер анимации: заставляем потомков появляться последовательно
+// Контейнер: элементы появляются при прокрутке
 const containerVariants: Variants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.2,
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
     },
   },
 };
 
-// Появление элементов: из прозрачного состояния смещаются вверх
+// Элементы: мягкое появление и подъём
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 16,
+    },
   },
 };
 
@@ -61,34 +68,35 @@ const TeamSimpleSection: React.FC = () => {
     <motion.section
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.3 }}
       variants={containerVariants}
       className="bg-background py-16 px-4">
-      <div className="max-w-[1245px] mx-auto flex flex-col lg:flex-row lg:items-stretch gap-12 h-full">
+      <div className="max-w-[1245px] mx-auto flex flex-col lg:flex-row lg:items-stretch gap-12">
         {/* Левая колонка */}
-        <div className="lg:w-1/2 flex flex-col justify-center h-full space-y-6">
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl font-extrabold text-white mb-4">
+        <motion.div
+          variants={itemVariants}
+          className="lg:w-1/2 flex flex-col justify-center space-y-6">
+          <h2 className="text-4xl font-extrabold text-white mb-4">
             Наши люди — наше величие
-          </motion.h2>
-          <motion.p variants={itemVariants} className="text-text-secondary">
+          </h2>
+          <p className="text-text-secondary">
             В ORLOV мы создаём продукты, в которых сочетаются технологии,
             культура и премиальное качество.
-          </motion.p>
-          <motion.p variants={itemVariants} className="text-text-secondary">
+          </p>
+          <p className="text-text-secondary">
             Работая с нами, вы встречаете профессионалов, решаете нестандартные
-            задачи и находите единомышленников. Мы верим, что именно люди делают
-            бренд великим.
-          </motion.p>
-        </div>
+            задачи и находите единомышленников.
+          </p>
+        </motion.div>
 
         {/* Правая колонка */}
-        <div className="lg:w-1/2 flex flex-col gap-8 justify-between h-full">
+        <div className="lg:w-1/2 flex flex-col gap-8">
           {team.map((member, index) => (
             <motion.div
               key={index}
               variants={itemVariants}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               className="flex items-center gap-6 border-b border-border pb-6">
               <motion.img
                 variants={itemVariants}
@@ -97,22 +105,10 @@ const TeamSimpleSection: React.FC = () => {
                 className="w-24 h-24 object-cover rounded-full"
               />
               <div>
-                <motion.h3
-                  variants={itemVariants}
-                  className="text-xl font-bold text-white">
-                  {member.name}
-                </motion.h3>
-                <motion.p
-                  variants={itemVariants}
-                  className="text-text-secondary mb-2">
-                  {member.role}
-                </motion.p>
-                <motion.p
-                  variants={itemVariants}
-                  className="text-text-secondary mb-4">
-                  {member.description}
-                </motion.p>
-                <motion.div variants={itemVariants} className="flex gap-4">
+                <h3 className="text-xl font-bold text-white">{member.name}</h3>
+                <p className="text-text-secondary mb-2">{member.role}</p>
+                <p className="text-text-secondary mb-4">{member.description}</p>
+                <div className="flex gap-4">
                   {member.socials.facebook && (
                     <a
                       href={member.socials.facebook}
@@ -141,7 +137,7 @@ const TeamSimpleSection: React.FC = () => {
                       <i className="fas fa-globe"></i>
                     </a>
                   )}
-                </motion.div>
+                </div>
               </div>
             </motion.div>
           ))}
