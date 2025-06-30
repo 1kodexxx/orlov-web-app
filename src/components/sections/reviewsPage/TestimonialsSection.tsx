@@ -1,59 +1,76 @@
-// src/components/sections/reviewsPage/TestimonialsSection.tsx
-
-import React, { useState } from "react";
-import { testimonials } from "@/data/reviews";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
+import { testimonials } from "@/data/reviews";
 import type { Variants } from "framer-motion";
 
-// Анимация преимуществ
-const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: (custom: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: custom * 0.2, duration: 0.8, ease: "easeOut" },
-  }),
+// Контейнер для всей секции: появляется сразу при монтировании
+const sectionVariants: Variants = {
+  hidden: { opacity: 0, y: 60 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
 };
 
-// Анимация отзывов
-const fastFadeIn: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (custom: number) => ({
+// Контейнер для преимуществ: поочерёдное появление
+const featuresContainer: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.2 } },
+};
+
+// Анимация одного преимущества
+const featureItem: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+// Анимация отзывов: поочерёдное с небольшой задержкой
+const testimonialContainer: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15, delayChildren: 0.5 } },
+};
+
+const testimonialItem: Variants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
     opacity: 1,
-    y: 0,
-    transition: { delay: custom * 0.1, duration: 0.6, ease: "easeOut" },
-  }),
+    scale: 1,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
 };
 
 const TestimonialsSection: React.FC = () => {
-  const [featuresAnimated, setFeaturesAnimated] = useState(false);
+  useEffect(() => {
+    console.log("Отзывы:", testimonials);
+  }, []);
 
   return (
-    <section className="w-full bg-background py-16 px-4 flex flex-col items-center">
-      {/* ВЕРХНЯЯ СЕКЦИЯ */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="w-full max-w-[1245px] mx-auto text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
+    <motion.section
+      className="w-full bg-background py-16 px-4 flex flex-col items-center"
+      initial="hidden"
+      animate="visible"
+      variants={sectionVariants}>
+      {/* Заголовок */}
+      <div className="w-full max-w-[1245px] mx-auto text-center mb-12">
+        <motion.h2
+          className="text-3xl md:text-4xl font-bold text-white mb-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}>
           Почему выбирают нас?
-        </h2>
-        <p className="text-text-secondary max-w-2xl mx-auto">
+        </motion.h2>
+        <motion.p
+          className="text-text-secondary max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}>
           Узнайте, почему выбор Orlov Brand — лучшее решение для вас.
-        </p>
-      </motion.div>
+        </motion.p>
+      </div>
 
-      {/* БЛОКИ ПРЕИМУЩЕСТВ */}
+      {/* Блок преимуществ */}
       <motion.div
+        className="w-full max-w-[1244px] grid gap-6 sm:grid-cols-3 mb-12"
+        variants={featuresContainer}
         initial="hidden"
-        animate="visible"
-        variants={{
-          visible: { transition: { staggerChildren: 0.2 } },
-        }}
-        onAnimationComplete={() => setFeaturesAnimated(true)}
-        className="w-full max-w-[1244px] grid gap-6 sm:grid-cols-3 mb-12">
+        animate="visible">
         {[
           {
             icon: "🚚",
@@ -82,69 +99,60 @@ const TestimonialsSection: React.FC = () => {
               "Многоуровневая поддержка клиентов по всем вопросам и заказам.",
             contacts: ["📞 +7 (495) 123-45-67", "📧 support@orlovbrand.ru"],
           },
-        ].map((feature, index) => (
+        ].map((feature, idx) => (
           <motion.div
-            key={index}
-            custom={index}
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            className="bg-background-paper rounded-2xl shadow p-6 text-center flex flex-col items-center">
+            key={idx}
+            className="bg-background-paper rounded-2xl shadow p-6 text-center flex flex-col items-center"
+            variants={featureItem}>
             <div className="text-4xl mb-4">{feature.icon}</div>
-            <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
+            <h3 className="font-semibold text-lg mb-2 text-white">
+              {feature.title}
+            </h3>
             <p className="text-text-secondary mb-2">{feature.description}</p>
-            {feature.links &&
-              feature.links.map((link, idx) => (
-                <a
-                  key={idx}
-                  href={link.href}
-                  className="text-primary underline hover:no-underline mb-1">
-                  {link.label}
-                </a>
-              ))}
-            {feature.contacts &&
-              feature.contacts.map((contact, idx) => (
-                <p key={idx} className="text-text-secondary mb-1">
-                  {contact}
-                </p>
-              ))}
+            {feature.links?.map((link, i) => (
+              <a
+                key={i}
+                href={link.href}
+                className="text-primary underline hover:no-underline mb-1 block">
+                {link.label}
+              </a>
+            ))}
+            {feature.contacts?.map((contact, i) => (
+              <p key={i} className="text-text-secondary mb-1">
+                {contact}
+              </p>
+            ))}
           </motion.div>
         ))}
       </motion.div>
 
-      {/* СПИСОК ОТЗЫВОВ */}
-      {featuresAnimated && (
-        <div className="w-full max-w-[1244px] grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mx-auto">
-          {testimonials.map((testimonial, index) => (
-            <motion.div
-              key={index}
-              custom={index}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.1 }}
-              variants={fastFadeIn}
-              className="bg-background-paper rounded-2xl shadow p-6 flex flex-col justify-between">
-              <p className="mb-4 text-[#CCCCCC]">"{testimonial.text}"</p>
-              <div className="flex items-center gap-4">
-                <img
-                  src={testimonial.avatar}
-                  alt={testimonial.author}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <p className="font-semibold text-primary">
-                    {testimonial.author}
-                  </p>
-                  <p className="text-sm text-text-secondary">
-                    {testimonial.role}
-                  </p>
-                </div>
+      {/* Список отзывов */}
+      <motion.div
+        className="w-full max-w-[1244px] grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mx-auto"
+        variants={testimonialContainer}
+        initial="hidden"
+        animate="visible">
+        {testimonials.map((t, idx) => (
+          <motion.div
+            key={idx}
+            className="bg-background-paper rounded-2xl shadow p-6 flex flex-col justify-between"
+            variants={testimonialItem}>
+            <p className="mb-4 text-gray-300">“{t.text}”</p>
+            <div className="flex items-center gap-4">
+              <img
+                src={t.avatar}
+                alt={t.author}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+              <div>
+                <p className="font-semibold text-white">{t.author}</p>
+                <p className="text-sm text-text-secondary">{t.role}</p>
               </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
-    </section>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+    </motion.section>
   );
 };
 
