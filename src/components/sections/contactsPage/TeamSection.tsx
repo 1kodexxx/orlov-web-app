@@ -42,18 +42,19 @@ const containerVariants: Variants = {
   visible: {
     transition: {
       when: "beforeChildren",
-      staggerChildren: 0.2,
-      delayChildren: 0.1,
+      staggerChildren: 0.3,
+      delayChildren: 0.2,
     },
   },
 };
 
-// Элементы: плавное появление через scale + opacity (без движения)
+// Элементы: плавное появление через scale + opacity
 const cardVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.95 },
+  hidden: { opacity: 0, scale: 0.95, y: 30 },
   visible: {
     opacity: 1,
     scale: 1,
+    y: 0,
     transition: { duration: 0.7, ease: "easeOut" },
   },
 };
@@ -86,14 +87,14 @@ const TeamSimpleSection: React.FC = () => {
 
         {/* Правая колонка */}
         <motion.div
-          variants={cardVariants}
+          variants={containerVariants}
           className="lg:w-1/2 flex flex-col gap-8">
           {team.map((member, index) => (
             <motion.div
               key={index}
               variants={cardVariants}
               whileHover={{ scale: 1.03 }}
-              className="flex items-center gap-6 border-b border-border pb-6  select-none">
+              className="flex items-center gap-6 border-b border-border pb-6 select-none">
               <img
                 src={member.image}
                 alt={member.name}

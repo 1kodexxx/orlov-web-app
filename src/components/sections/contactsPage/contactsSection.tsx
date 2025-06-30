@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { FaVk, FaTelegramPlane, FaWhatsapp } from "react-icons/fa";
 import type { Variants } from "framer-motion";
 
 // Контейнер для всей секции
@@ -140,11 +141,11 @@ const ContactFormSection: React.FC = () => {
             className="space-y-4 flex flex-col items-start">
             <p className="text-xs text-text-secondary">
               Отправляя эту форму, вы соглашаетесь с{" "}
-              <a href="#" className="text-primary hover:underline">
+              <a className="text-primary hover:underline cursor-pointer">
                 Условиями обслуживания
               </a>{" "}
               и{" "}
-              <a href="#" className="text-primary hover:underline">
+              <a className="text-primary hover:underline cursor-pointer">
                 Политикой конфиденциальности
               </a>
               .
@@ -152,7 +153,7 @@ const ContactFormSection: React.FC = () => {
 
             <button
               type="submit"
-              className="bg-primary text-background py-3 px-6 rounded-lg  transition-colors duration-200">
+              className="bg-primary text-background py-3 px-6 rounded-lg transition-colors duration-200">
               Отправить сообщение
             </button>
           </motion.div>
@@ -198,6 +199,36 @@ const ContactFormSection: React.FC = () => {
                 className="text-[#ccc] hover:underline">
                 orlov_brand_777@vk.com
               </a>
+            </motion.div>
+
+            <motion.div variants={contactItemVariants}>
+              <h4 className="font-semibold text-primary mb-2">Соцсети:</h4>
+              <div className="flex items-center gap-4 text-gold text-2xl">
+                <a
+                  href="https://vk.com/orlov_brand_rus777"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="VK"
+                  className="text-[#ccc] hover:text-white transition">
+                  <FaVk />
+                </a>
+                <a
+                  href="https://t.me/ORLOV_brand777"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Telegram"
+                  className="text-[#ccc] hover:text-white transition">
+                  <FaTelegramPlane />
+                </a>
+                <a
+                  href="https://wa.me/89210428777"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="WhatsApp"
+                  className="text-[#ccc] hover:text-white transition">
+                  <FaWhatsapp />
+                </a>
+              </div>
             </motion.div>
           </motion.div>
         </motion.div>

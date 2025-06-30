@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { ScrollToTop } from "@/components/common/";
+import { ScrollToTop, ScrollToTopButton } from "@/components/common/";
 import { Footer, CatalogLayout } from "@/components/layout";
 import { NavBar } from "@/components/layout/navBar";
 
@@ -39,6 +39,7 @@ const App = () => {
         </Routes>
       </main>
       <Footer />
+      <ScrollToTopButton />
     </div>
   );
 };
