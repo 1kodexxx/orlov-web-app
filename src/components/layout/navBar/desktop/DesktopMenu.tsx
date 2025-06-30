@@ -1,7 +1,7 @@
 // src/components/layout/navBar/DesktopMenu.tsx
-
 import { NavLink, useLocation } from "react-router-dom";
-import { motion, LayoutGroup } from "framer-motion";
+import { useRef, useLayoutEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const navItems = [
   { label: "Главная", path: "/" },
@@ -14,37 +14,60 @@ const navItems = [
 
 const DesktopMenu: React.FC = () => {
   const { pathname } = useLocation();
+  const containerRef = useRef<HTMLUListElement>(null);
+  const itemRefs = useRef<Array<HTMLLIElement | null>>([]);
+  const [underline, setUnderline] = useState({ left: 0, width: 0 });
+
+  useLayoutEffect(() => {
+    // пересчёт позиции полоски
+    const recalc = () => {
+      const idx = navItems.findIndex((item) => item.path === pathname);
+      const cu = containerRef.current?.getBoundingClientRect();
+      const it = itemRefs.current[idx]?.getBoundingClientRect();
+      if (cu && it) {
+        setUnderline({ left: it.left - cu.left, width: it.width });
+      }
+    };
+
+    recalc();
+    window.addEventListener("resize", recalc);
+    return () => window.removeEventListener("resize", recalc);
+  }, [pathname]); // зависимости: pathname
 
   return (
-    <LayoutGroup>
-      <ul className="hidden lg:flex absolute left-1/2 -translate-x-1/2 gap-4 md:gap-6 flex-wrap">
-        {navItems.map(({ label, path }) => (
-          <li key={path} className="relative">
-            <NavLink
-              to={path}
-              end={path === "/"}
-              className={({ isActive }) =>
-                `text-xs md:text-base font-normal transition-all duration-300 ${
-                  isActive
-                    ? "text-primary"
-                    : "text-text-secondary hover:text-primary"
-                }`
-              }>
-              {label}
-            </NavLink>
+    <ul
+      ref={containerRef}
+      className="hidden lg:flex  inset-x-0 justify-center gap-4 md:gap-6 relative">
+      {navItems.map(({ label, path }, i) => (
+        <li
+          key={path}
+          ref={(el) => {
+            itemRefs.current[i] = el;
+          }}
+          className="relative">
+          <NavLink
+            to={path}
+            end={path === "/"}
+            className={({ isActive }) =>
+              `text-xs md:text-base font-normal transition-colors duration-200 ${
+                isActive
+                  ? "text-primary"
+                  : "text-text-secondary hover:text-primary"
+              }`
+            }>
+            {label}
+          </NavLink>
+        </li>
+      ))}
 
-            {pathname === path && (
-              <motion.span
-                layoutId="nav-underline"
-                className="absolute left-0 -bottom-1 h-[2px] bg-primary"
-                style={{ width: "100%" }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              />
-            )}
-          </li>
-        ))}
-      </ul>
-    </LayoutGroup>
+      <motion.div
+        className="absolute bottom-0 h-[1.2px] bg-primary"
+        initial={false}
+        animate={{ left: underline.left, width: underline.width }}
+        style={{ left: underline.left, width: underline.width }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+      />
+    </ul>
   );
 };
 
