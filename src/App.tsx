@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { ScrollToTop, ScrollToTopButton } from "@/components/common/";
+import { ScrollToTop, ScrollToTopButton, Loader } from "@/components/common/";
 import { Footer, CatalogLayout } from "@/components/layout";
 import { NavBar } from "@/components/layout/navBar";
 
@@ -22,7 +22,11 @@ const App = () => {
       <main className="flex-1">
         <ScrollToTop />
         <Suspense
-          fallback={<div className="text-center py-20">Загрузка...</div>}>
+          fallback={
+            <div className="min-h-[calc(100vh-3rem)] flex items-center justify-center">
+              <Loader />
+            </div>
+          }>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about-us" element={<AboutUs />} />
