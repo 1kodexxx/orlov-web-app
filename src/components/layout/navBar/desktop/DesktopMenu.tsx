@@ -1,4 +1,3 @@
-// src/components/layout/navBar/DesktopMenu.tsx
 import { NavLink, useLocation } from "react-router-dom";
 import { useRef, useLayoutEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -17,27 +16,31 @@ const DesktopMenu: React.FC = () => {
   const containerRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<Array<HTMLLIElement | null>>([]);
   const [underline, setUnderline] = useState({ left: 0, width: 0 });
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   useLayoutEffect(() => {
-    // пересчёт позиции полоски
     const recalc = () => {
       const idx = navItems.findIndex((item) => item.path === pathname);
       const cu = containerRef.current?.getBoundingClientRect();
       const it = itemRefs.current[idx]?.getBoundingClientRect();
-      if (cu && it) {
+
+      if (idx !== -1 && cu && it) {
         setUnderline({ left: it.left - cu.left, width: it.width });
+        setActiveIndex(idx);
+      } else {
+        setActiveIndex(null); // если маршрут не найден — скрываем линию
       }
     };
 
     recalc();
     window.addEventListener("resize", recalc);
     return () => window.removeEventListener("resize", recalc);
-  }, [pathname]); // зависимости: pathname
+  }, [pathname]);
 
   return (
     <ul
       ref={containerRef}
-      className="hidden lg:flex  inset-x-0 justify-center gap-4 md:gap-6 relative">
+      className="hidden lg:flex inset-x-0 justify-center gap-4 md:gap-6 relative">
       {navItems.map(({ label, path }, i) => (
         <li
           key={path}
@@ -60,13 +63,15 @@ const DesktopMenu: React.FC = () => {
         </li>
       ))}
 
-      <motion.div
-        className="absolute bottom-0 h-[1.2px] bg-primary"
-        initial={false}
-        animate={{ left: underline.left, width: underline.width }}
-        style={{ left: underline.left, width: underline.width }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-      />
+      {activeIndex !== null && (
+        <motion.div
+          className="absolute bottom-0 h-[1.2px] bg-primary"
+          initial={false}
+          animate={{ left: underline.left, width: underline.width }}
+          style={{ left: underline.left, width: underline.width }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        />
+      )}
     </ul>
   );
 };
