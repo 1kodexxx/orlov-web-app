@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { testimonials } from "@/data/reviews";
 import type { Variants } from "framer-motion";
@@ -37,10 +37,6 @@ const testimonialItem: Variants = {
 };
 
 const TestimonialsSection: React.FC = () => {
-  useEffect(() => {
-    console.log("Отзывы:", testimonials);
-  }, []);
-
   return (
     <motion.section
       className="w-full bg-background py-16 px-4 flex flex-col items-center"
