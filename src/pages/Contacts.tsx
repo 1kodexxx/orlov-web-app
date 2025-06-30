@@ -1,12 +1,12 @@
 import {
-  ContactsSection,
+  ContactSection,
   TeamSection,
 } from "@/components/sections/contactsPage";
 
 const Contacts = () => {
   return (
     <>
-      <ContactsSection />
+      <ContactSection />
       <TeamSection />
     </>
   );

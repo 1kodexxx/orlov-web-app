@@ -51,7 +51,7 @@ const finalFormPartVariants: Variants = {
   },
 };
 
-const ContactsSection: React.FC = () => {
+const ContactSection: React.FC = () => {
   return (
     <section className="w-full min-h-screen bg-background pt-4 md:pt-8 lg:pt-0 pb-12 px-4 flex items-center justify-center overflow-y-auto">
       <motion.div
@@ -237,4 +237,4 @@ const ContactsSection: React.FC = () => {
   );
 };
 
-export default ContactsSection;
+export default ContactSection;
