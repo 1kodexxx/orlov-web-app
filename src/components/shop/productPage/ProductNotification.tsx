@@ -70,9 +70,9 @@ const ProductNotification: React.FC<NotificationProps> = ({
   title,
   description,
   onClose,
-  onGoToCart,
-  onContinueShopping,
-  showActions = true,
+  // onGoToCart,
+  // onContinueShopping,
+  // showActions = true,
 }) => {
   const styles = variantStyles[variant];
   const [visible, setVisible] = useState(false);
@@ -139,7 +139,7 @@ const ProductNotification: React.FC<NotificationProps> = ({
                 dangerouslySetInnerHTML={{ __html: description }}></p>
             )}
 
-            {variant === "success" && showActions && (
+            {/* {variant === "success" && showActions && (
               <div className="mt-3 flex items-center gap-4 flex-col sm:flex-row">
                 <button
                   type="button"
@@ -155,7 +155,7 @@ const ProductNotification: React.FC<NotificationProps> = ({
                   Перейти в корзину
                 </button>
               </div>
-            )}
+            )} */}
           </div>
 
           {onClose && (
