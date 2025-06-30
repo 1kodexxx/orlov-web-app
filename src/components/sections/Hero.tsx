@@ -18,7 +18,10 @@ const Hero = () => {
       {/* Фон */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/background.png')" }}>
+        style={{
+          backgroundImage:
+            "url('https://i.postimg.cc/7YH33dGx/background.webp')",
+        }}>
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
