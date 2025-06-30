@@ -1,3 +1,5 @@
+// src/components/desktopMenuButtons/DesktopMenuButtons.tsx
+
 import { FaUserTie, FaSearchDollar } from "react-icons/fa";
 import { BiShoppingBag } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
@@ -103,7 +105,6 @@ const DesktopMenuButtons: React.FC = () => {
         </motion.span>
       </div>
 
-      {/* Иконка + подпись без сдвига */}
       <div className="relative flex items-center">
         <FaUserTie className="cursor-pointer hover:scale-110 transition" />
       </div>
@@ -133,7 +134,10 @@ const DesktopMenuButtons: React.FC = () => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
             className="absolute right-16 top-12 z-50">
-            <SearchDropdown onClose={() => setIsSearchOpen(false)} />
+            <SearchDropdown
+              onClose={() => setIsSearchOpen(false)}
+              onToggleMenu={() => setIsSearchOpen(false)}
+            />
           </motion.div>
         )}
       </AnimatePresence>
