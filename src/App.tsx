@@ -3,17 +3,17 @@ import { ScrollToTop, ScrollToTopButton } from "@/components/common/";
 import { Footer, CatalogLayout } from "@/components/layout";
 import { NavBar } from "@/components/layout/navBar";
 
-import {
-  Home,
-  Catalog,
-  CartPage,
-  ProductPage,
-  AboutUs,
-  Contacts,
-  Delivery,
-  Reviews,
-  NotFound,
-} from "@/pages";
+import { Suspense, lazy } from "react";
+
+const Home = lazy(() => import("@/pages/Home"));
+const Catalog = lazy(() => import("@/pages/Catalog"));
+const CartPage = lazy(() => import("@/pages/CartPage"));
+const ProductPage = lazy(() => import("@/pages/ProductPage"));
+const AboutUs = lazy(() => import("@/pages/AboutUs"));
+const Contacts = lazy(() => import("@/pages/Contacts"));
+const Delivery = lazy(() => import("@/pages/Delivery"));
+const Reviews = lazy(() => import("@/pages/Reviews"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const App = () => {
   return (
@@ -21,22 +21,25 @@ const App = () => {
       <NavBar />
       <main className="flex-1">
         <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/contacts" element={<Contacts />} />
-          <Route path="/delivery" element={<Delivery />} />
-          <Route path="/reviews" element={<Reviews />} />
-          <Route path="/cart" element={<CartPage />} />
+        <Suspense
+          fallback={<div className="text-center py-20">Загрузка...</div>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/contacts" element={<Contacts />} />
+            <Route path="/delivery" element={<Delivery />} />
+            <Route path="/reviews" element={<Reviews />} />
+            <Route path="/cart" element={<CartPage />} />
 
-          {/* Каталог */}
-          <Route path="/catalog" element={<CatalogLayout />}>
-            <Route index element={<Catalog />} />
-            <Route path="/catalog/:id" element={<ProductPage />} />
-          </Route>
+            {/* Каталог */}
+            <Route path="/catalog" element={<CatalogLayout />}>
+              <Route index element={<Catalog />} />
+              <Route path="/catalog/:id" element={<ProductPage />} />
+            </Route>
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </main>
       <Footer />
       <ScrollToTopButton />
