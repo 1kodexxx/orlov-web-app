@@ -20,7 +20,12 @@ const DesktopMenu: React.FC = () => {
 
   useLayoutEffect(() => {
     const recalc = () => {
-      const idx = navItems.findIndex((item) => item.path === pathname);
+      const idx = navItems.findIndex((item) =>
+        pathname === "/"
+          ? item.path === "/"
+          : pathname.startsWith(item.path) && item.path !== "/"
+      );
+
       const cu = containerRef.current?.getBoundingClientRect();
       const it = itemRefs.current[idx]?.getBoundingClientRect();
 
@@ -28,7 +33,7 @@ const DesktopMenu: React.FC = () => {
         setUnderline({ left: it.left - cu.left, width: it.width });
         setActiveIndex(idx);
       } else {
-        setActiveIndex(null); // если маршрут не найден — скрываем линию
+        setActiveIndex(null);
       }
     };
 
@@ -50,10 +55,9 @@ const DesktopMenu: React.FC = () => {
           className="relative">
           <NavLink
             to={path}
-            end={path === "/"}
             className={({ isActive }) =>
               `text-xs md:text-base font-normal transition-colors duration-200 ${
-                isActive
+                isActive || (pathname.startsWith(path) && path !== "/")
                   ? "text-primary"
                   : "text-text-secondary hover:text-primary"
               }`

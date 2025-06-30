@@ -152,7 +152,7 @@ const ContactFormSection: React.FC = () => {
 
             <button
               type="submit"
-              className="bg-primary text-background py-3 px-6 rounded-lg hover:bg-[#e5d870] transition-colors duration-200">
+              className="bg-primary text-background py-3 px-6 rounded-lg  transition-colors duration-200">
               Отправить сообщение
             </button>
           </motion.div>
