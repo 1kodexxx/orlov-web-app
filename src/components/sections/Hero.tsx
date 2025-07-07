@@ -46,7 +46,9 @@ const Hero = () => {
     <section
       className="relative w-full overflow-hidden flex flex-col"
       style={{
+        // динамическая высота на мобильных и fallback для ненадёжных устройств
         height: `calc(var(--vh, 1vh)*100 - ${HEADER_HEIGHT_REM}rem)`,
+        minHeight: `calc(100vh - ${HEADER_HEIGHT_REM}rem)`,
         paddingBottom: `${MARQUEE_HEIGHT_PX}px`,
       }}>
       {/* keyframes */}
