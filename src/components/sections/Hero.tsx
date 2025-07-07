@@ -2,17 +2,31 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button, Loader } from "../common";
 
+// немедленная предзагрузка логотипа
+const logoPreload = new Image();
+logoPreload.src = "/logo.png";
+
 const HEADER_HEIGHT_REM = 3; // высота header в rem
 const MARQUEE_HEIGHT_PX = 32; // высота бегущей строки в px
 
 const Hero = () => {
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [isLogoLoaded, setIsLogoLoaded] = useState(logoPreload.complete);
+  const [isBgLoaded, setIsBgLoaded] = useState(false);
 
-  // предзагрузка лого
+  // завершение предзагрузки логотипа
   useEffect(() => {
-    const img = new Image();
-    img.src = "/logo.png";
-    img.onload = () => setIsImageLoaded(true);
+    if (logoPreload.complete) {
+      setIsLogoLoaded(true);
+    } else {
+      logoPreload.onload = () => setIsLogoLoaded(true);
+    }
+  }, []);
+
+  // предзагрузка фонового изображения
+  useEffect(() => {
+    const bg = new Image();
+    bg.src = "/background.webp";
+    bg.onload = () => setIsBgLoaded(true);
   }, []);
 
   // рассчитываем --vh как 1% от window.innerHeight
@@ -44,16 +58,18 @@ const Hero = () => {
       `}</style>
 
       {/* фон */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/background.webp')" }}>
-        <div className="absolute inset-0 bg-black/55" />
-      </div>
+      {isBgLoaded && (
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500"
+          style={{ backgroundImage: "url('/background.webp')" }}>
+          <div className="absolute inset-0 bg-black/55" />
+        </div>
+      )}
 
-      {/* контент, чуть приподнятый */}
+      {/* контент */}
       <div className="relative z-10 flex-1 flex items-center w-full pb-8 transform -translate-y-4">
         <div className="max-w-screen-xl mx-auto px-4 flex flex-col-reverse md:flex-row items-center justify-between gap-8 w-full">
-          {/* текст */}
+          {/* текстовая колонка */}
           <div className="flex-1 text-primary space-y-6 transform -translate-y-2">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -99,10 +115,13 @@ const Hero = () => {
           {/* логотип */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={{
+              opacity: isLogoLoaded ? 1 : 0,
+              scale: isLogoLoaded ? 1 : 0.9,
+            }}
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex-1 flex items-center justify-center mb-8 md:mb-0 min-h-[320px] sm:min-h-[480px] md:min-h-[720px] transform -translate-y-2">
-            {isImageLoaded ? (
+            {isLogoLoaded ? (
               <img
                 src="/logo.png"
                 alt="Orlov Hero"
