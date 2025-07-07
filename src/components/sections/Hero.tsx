@@ -29,7 +29,7 @@ const Hero = () => {
     bg.onload = () => setIsBgLoaded(true);
   }, []);
 
-  // рассчитываем --vh как 1% от window.innerHeight
+  // рассчитываем --vh как 1% от window.innerHeight, учитывая visualViewport
   useEffect(() => {
     const setVh = () => {
       document.documentElement.style.setProperty(
@@ -38,8 +38,18 @@ const Hero = () => {
       );
     };
     setVh();
+    // стандартное событие
     window.addEventListener("resize", setVh);
-    return () => window.removeEventListener("resize", setVh);
+    // для корректировки при появлении/скрытии адресной строки в мобильных браузерах
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", setVh);
+    }
+    return () => {
+      window.removeEventListener("resize", setVh);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", setVh);
+      }
+    };
   }, []);
 
   return (
