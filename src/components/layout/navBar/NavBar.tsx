@@ -71,13 +71,13 @@ const NavBar: React.FC = () => {
         <DesktopMenuButtons />
 
         {/* Мобильные иконки: поиск, корзина, профиль */}
-        <div className="lg:hidden flex items-center space-x-6 text-primary text-2xl">
+        <div className="lg:hidden flex items-center space-x-6 text-primary">
           <FaSearchDollar
             onClick={() => {
               setIsSearchOpen((p) => !p);
               setIsCartOpen(false);
             }}
-            className="cursor-pointer hover:scale-110 transition"
+            className="text-2xl cursor-pointer hover:scale-110 transition"
           />
 
           <div
@@ -107,7 +107,7 @@ const NavBar: React.FC = () => {
             </motion.span>
           </div>
 
-          <FaUserTie className="cursor-pointer hover:scale-110 transition" />
+          <FaUserTie className="text-2xl cursor-pointer hover:scale-110 transition" />
         </div>
       </div>
 
