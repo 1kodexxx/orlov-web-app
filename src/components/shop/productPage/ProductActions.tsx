@@ -37,8 +37,8 @@ const PriceActions: React.FC<PriceActionsProps> = ({
           style={{ transitionDelay: `${delay + 100}ms` }}>
           <Button
             onClick={onBuy}
-            initialText="Добавить в корзину 🛒"
-            hoverText="Купить! ✨"
+            initialText="Добавить в корзину"
+            hoverText="Купить!"
             variant="light"
           />
         </div>
