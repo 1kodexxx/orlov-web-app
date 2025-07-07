@@ -22,7 +22,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
         to="/cart"
         onClick={onGoToCart}
         className="block mt-4 bg-primary text-center text-[#181818] py-1 px-4 rounded text-sm font-normal hover:bg-opacity-90 transition">
-        Перейти в корзину 🛒
+        Перейти в корзину
       </Link>
     </>
   );

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import heroImage from "@/assets/logo.svg";
-import { Button, Marquee } from "../common";
+import { Button } from "../common";
 
 const Hero = () => {
   return (
@@ -29,7 +29,7 @@ const Hero = () => {
       <div className="relative z-10 flex-1 flex items-center w-full pb-12">
         <div className="max-w-screen-xl mx-auto px-4 flex flex-col-reverse md:flex-row items-center justify-between gap-8 w-full">
           {/* Левая часть */}
-          <div className="flex-1 text-white text-left space-y-6">
+          <div className="flex-1 text-primary text-left space-y-6">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -69,8 +69,8 @@ const Hero = () => {
               className="flex flex-col md:flex-row gap-4 w-full max-w-xs md:max-w-none mx-auto md:mx-0 md:justify-start justify-center items-center text-center md:text-left">
               <div className="w-full md:w-auto">
                 <Button
-                  initialText="Перейти в каталог 💎"
-                  hoverText="Поехали! 🚀"
+                  initialText="Перейти в каталог"
+                  hoverText="Поехали!"
                   to="/catalog"
                 />
               </div>
@@ -91,9 +91,6 @@ const Hero = () => {
           </motion.div>
         </div>
       </div>
-
-      {/* Бегущая строка */}
-      <Marquee />
     </section>
   );
 };
