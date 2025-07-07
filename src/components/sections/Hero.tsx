@@ -6,9 +6,6 @@ import { Button, Loader } from "../common";
 const logoPreload = new Image();
 logoPreload.src = "/logo.png";
 
-const HEADER_HEIGHT_REM = 3; // высота header в rem
-const MARQUEE_HEIGHT_PX = 32; // высота бегущей строки в px
-
 const Hero = () => {
   const [isLogoLoaded, setIsLogoLoaded] = useState(logoPreload.complete);
   const [isBgLoaded, setIsBgLoaded] = useState(false);
@@ -38,9 +35,7 @@ const Hero = () => {
       );
     };
     setVh();
-    // стандартное событие
     window.addEventListener("resize", setVh);
-    // для корректировки при появлении/скрытии адресной строки в мобильных браузерах
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", setVh);
     }
@@ -54,13 +49,8 @@ const Hero = () => {
 
   return (
     <section
-      className="relative w-full overflow-hidden flex flex-col"
-      style={{
-        // вычисляем высоту через переменную и добавляем минимальную
-        height: `calc(var(--vh, 1vh)*100 - ${HEADER_HEIGHT_REM}rem)`,
-        minHeight: `calc(100vh - ${HEADER_HEIGHT_REM}rem)`,
-        paddingBottom: `${MARQUEE_HEIGHT_PX}px`,
-      }}>
+      className="relative w-full flex flex-col h-auto md:h-screen"
+      style={{ minHeight: "calc(var(--vh) * 100)" }}>
       {/* keyframes */}
       <style>{`
         @keyframes marquee {
@@ -72,17 +62,21 @@ const Hero = () => {
       {/* фон */}
       {isBgLoaded && (
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500"
-          style={{ backgroundImage: "url('/background.webp')" }}>
+          className="absolute inset-0 bg-center bg-cover bg-no-repeat"
+          style={{
+            backgroundImage: "url('/background.webp')",
+            opacity: 1,
+            transition: "opacity 0.5s ease-in-out",
+          }}>
           <div className="absolute inset-0 bg-black/55" />
         </div>
       )}
 
       {/* контент */}
-      <div className="relative z-10 flex-1 flex items-center w-full pb-8 transform -translate-y-4">
+      <div className="relative z-10 flex-1 flex flex-col justify-center">
         <div className="max-w-screen-xl mx-auto px-4 flex flex-col-reverse md:flex-row items-center justify-between gap-8 w-full">
           {/* текстовая колонка */}
-          <div className="flex-1 text-primary space-y-6 transform -translate-y-2">
+          <div className="flex-1 text-primary space-y-6">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -132,12 +126,12 @@ const Hero = () => {
               scale: isLogoLoaded ? 1 : 0.9,
             }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex-1 flex items-center justify-center mb-8 md:mb-0 min-h-[320px] sm:min-h-[480px] md:min-h-[720px] transform -translate-y-2">
+            className="flex-1 flex items-center justify-center w-full h-full">
             {isLogoLoaded ? (
               <img
                 src="/logo.png"
                 alt="Orlov Hero"
-                className="w-full max-w-[720px] rounded-lg object-cover"
+                className="w-full object-contain rounded-lg max-h-[80vh] md:max-h-none"
               />
             ) : (
               <Loader />
