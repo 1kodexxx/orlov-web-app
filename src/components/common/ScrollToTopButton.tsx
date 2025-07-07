@@ -1,3 +1,5 @@
+// src/components/common/ScrollToTopButton.tsx
+
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FiArrowUp } from "react-icons/fi";
@@ -9,13 +11,12 @@ const ScrollToTopButton: React.FC = () => {
     const handleScroll = () => {
       setIsVisible(window.scrollY > 100);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -25,7 +26,7 @@ const ScrollToTopButton: React.FC = () => {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
-          className="fixed bottom-6 w-full z-50 flex justify-end px-4">
+          className="fixed w-full z-50 flex justify-end px-4 bottom-20 lg:bottom-6 lg:px-0">
           <div className="max-w-[1245px] w-full flex justify-end mx-auto">
             <button
               onClick={scrollToTop}

@@ -1,13 +1,9 @@
-import {
-  ContactSection,
-  TeamSection,
-} from "@/components/sections/contactsPage";
+import { ContactSection } from "@/components/sections/contactsPage";
 
 const Contacts = () => {
   return (
     <>
       <ContactSection />
-      <TeamSection />
     </>
   );
 };
