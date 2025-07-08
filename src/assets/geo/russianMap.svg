@@ -6,7 +6,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   mapsvg:geoViewBox="19.642502 81.857875 190.345967 41.185573"
+   data-geo-view-box="19.642502 81.857875 190.345967 41.185573"
    width="1224.449"
    height="760.6203">
   

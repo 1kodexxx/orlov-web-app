@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import RussiaMapSVG from "@/assets/geo/russiaMap.svg?react";
+import RussiaMapSVG from "@/assets/geo/russianMap.svg?react";
 import { deliveryZones } from "@/data/delivery";
 import type { DeliveryZoneId } from "@/data/delivery";
 
