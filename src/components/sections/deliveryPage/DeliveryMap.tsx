@@ -50,9 +50,9 @@ export default function RussiaMap() {
   return (
     <div
       id="deliveryMap"
-      className="w-full relative mb-12 pt-10 md:pt-4 pb-20 md:pb-4"
+      className="w-full md:max-w-[1245px] mx-auto relative mb-12 pt-10 md:pt-4 pb-20 md:pb-4"
       style={{
-        height: isMobile ? "calc(100vh - 20px)" : "auto",
+        height: isMobile ? "calc(100vh - 20px)" : "700px",
         overflow: isMobile ? "auto" : "visible",
       }}>
       <div className="w-full relative touch-pan-x touch-pan-y touch-pinch-zoom md:touch-none">
@@ -60,6 +60,7 @@ export default function RussiaMap() {
           ref={svgRef}
           viewBox="0 100 1200 650"
           width="100%"
+          height={isMobile ? undefined : "100%"}
           preserveAspectRatio="xMidYMid meet"
           className="max-w-full h-auto block">
           <style>
