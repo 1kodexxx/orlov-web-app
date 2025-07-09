@@ -66,7 +66,7 @@ const ContactSection: React.FC = () => {
           <motion.h2
             variants={groupVariants}
             className="text-3xl sm:text-4xl font-bold text-primary text-center md:text-left">
-            Свяжитесь с нами
+            Контакты
           </motion.h2>
 
           {/* Группа 2: Описание */}
