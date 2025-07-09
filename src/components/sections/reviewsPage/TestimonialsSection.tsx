@@ -3,23 +3,32 @@ import { motion } from "framer-motion";
 import { testimonials } from "@/data/reviews";
 import type { Variants } from "framer-motion";
 
-// Анимации
+// Анимации появления секции
 const sectionVariants: Variants = {
   hidden: { opacity: 0, y: 60 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
 };
 
+// Анимация поочерёдного появления отзывов
 const testimonialContainer: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.15, delayChildren: 0.5 } },
 };
 
+// Базовая анимация для каждого отзыва, плюс hover с подсветкой
 const testimonialItem: Variants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
     opacity: 1,
     scale: 1,
     transition: { duration: 0.5, ease: "easeOut" },
+  },
+  hover: {
+    scale: 1.05,
+    y: -5,
+    boxShadow: "0px 20px 30px rgba(0, 0, 0, 0.15)",
+    filter: "brightness(1.3)", // подсветка
+    transition: { type: "spring", stiffness: 300, damping: 20 },
   },
 };
 
@@ -57,8 +66,11 @@ const TestimonialsSection: React.FC = () => {
         {testimonials.map((t, idx) => (
           <motion.div
             key={idx}
-            className="bg-background-paper rounded-2xl shadow p-6 flex flex-col justify-between h-full"
-            variants={testimonialItem}>
+            className="bg-background-paper rounded-2xl shadow p-6 flex flex-col justify-between h-full cursor-pointer"
+            variants={testimonialItem}
+            whileHover="hover" // запускаем вариант hover
+            whileTap={{ scale: 0.98 }} // лёгкое сжатие при клике
+          >
             <p className="mb-4 text-gray-300">“{t.text}”</p>
             <div className="flex items-center gap-4 mt-auto">
               <img
@@ -68,7 +80,7 @@ const TestimonialsSection: React.FC = () => {
               />
               <div>
                 <p className="font-semibold text-white">{t.author}</p>
-                <p className="text-sm text-text-secondary">{t.role}</p>
+                <p className="text-sm text-text-primary">{t.role}</p>
               </div>
             </div>
           </motion.div>
