@@ -21,10 +21,12 @@ const Button: React.FC<ButtonProps> = ({
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (onClick) onClick(e);
-    if (to) navigate(to);
+    if (to && to.startsWith("/")) {
+      navigate(to);
+    }
   };
 
-  const buttonElement = (
+  const buttonContent = (
     <button
       type="button"
       onClick={handleClick}
@@ -42,12 +44,21 @@ const Button: React.FC<ButtonProps> = ({
     </button>
   );
 
-  // Если передан `to`, оборачиваем в Link
-  if (to) {
-    return <Link to={to}>{buttonElement}</Link>;
+  // если внешняя ссылка — использовать <a>
+  if (to && (to.startsWith("http://") || to.startsWith("https://"))) {
+    return (
+      <a href={to} target="_blank" rel="noopener noreferrer">
+        {buttonContent}
+      </a>
+    );
   }
 
-  return buttonElement;
+  // если внутренняя — использовать <Link>
+  if (to && to.startsWith("/")) {
+    return <Link to={to}>{buttonContent}</Link>;
+  }
+
+  return buttonContent;
 };
 
 export default Button;

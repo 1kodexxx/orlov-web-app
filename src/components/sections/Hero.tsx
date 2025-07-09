@@ -54,7 +54,7 @@ const Hero = () => {
         </div>
 
         {/* content wrapper */}
-        <div className="relative z-10 flex-1 flex items-center w-full pb-8 transform -translate-y-4">
+        <div className="relative z-10 flex-1 flex items-center w-full pb-8 pt-4 transform -translate-y-4">
           <div className="max-w-screen-xl mx-auto px-4 flex flex-col-reverse md:flex-row-reverse items-center justify-between gap-8 w-full">
             {/* текстовая колонка */}
             <div className="flex-1 text-white space-y-6 transform -translate-y-2 text-center md:text-left">
