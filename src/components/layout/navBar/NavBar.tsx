@@ -77,7 +77,7 @@ const NavBar: React.FC = () => {
               setIsSearchOpen((p) => !p);
               setIsCartOpen(false);
             }}
-            className="text-2xl cursor-pointer hover:scale-110 transition"
+            className="w-6 h-6 cursor-pointer hover:scale-110 transition"
           />
 
           <div
@@ -86,7 +86,7 @@ const NavBar: React.FC = () => {
               setIsCartOpen((p) => !p);
               setIsSearchOpen(false);
             }}>
-            <BiShoppingBag className="text-2xl" />
+            <BiShoppingBag className="w-7 h-7" />
             <AnimatePresence>
               {totalItems > 0 && (
                 <motion.span
