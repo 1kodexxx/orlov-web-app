@@ -8,6 +8,7 @@ import {
   FiUser,
   FiCheckCircle,
 } from "react-icons/fi";
+import { nbspShort } from "@/utils/nbspShort";
 
 const steps = [
   {
@@ -67,13 +68,12 @@ const DeliverySection: React.FC = () => {
         <motion.h2
           variants={itemVariants}
           className="text-3xl font-bold mb-4 text-primary">
-          Доставка элитных чехлов — просто&nbsp;и&nbsp;надёжно
+          {nbspShort("Доставка элитных чехлов — просто и надёжно")}
         </motion.h2>
         <motion.p variants={itemVariants} className="text-text-secondary">
-          Мы ценим ваше время и хотим, чтобы процесс заказа был прозрачным и
-          удобным. От&nbsp;выбора до&nbsp;получения&nbsp;— всего несколько
-          простых шагов, после которых вы быстро получите свой аксессуар в
-          идеальном состоянии.
+          {nbspShort(
+            "Мы ценим ваше время и хотим, чтобы процесс заказа был прозрачным и удобным. От выбора до получения — всего несколько простых шагов, после которых вы быстро получите свой аксессуар в идеальном состоянии."
+          )}
         </motion.p>
       </motion.div>
 
@@ -93,9 +93,9 @@ const DeliverySection: React.FC = () => {
               <span className="text-3xl text-primary">{step.icon}</span>
             </div>
             <h3 className="text-xl font-semibold mb-2 text-primary">
-              {step.title}
+              {nbspShort(step.title)}
             </h3>
-            <p className="text-text-secondary">{step.text}</p>
+            <p className="text-text-secondary">{nbspShort(step.text)}</p>
           </motion.div>
         ))}
       </motion.div>

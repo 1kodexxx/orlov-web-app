@@ -60,7 +60,7 @@ const Features: FC = () => (
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.2 }}
         className="mb-4 text-center text-3xl font-bold text-primary md:text-4xl">
-        Преимущества Orlov Brand
+        {nbspShort("Преимущества Orlov Brand")}
       </motion.h2>
 
       <motion.p
@@ -82,16 +82,13 @@ const Features: FC = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 + i * 0.2 }}
-            className="
-              flex-1 flex flex-col justify-between items-center text-center
-              p-8
-            ">
+            className="flex-1 flex flex-col justify-between items-center text-center p-8">
             <div className="rounded-full bg-primary p-6 mb-6">{f.icon}</div>
 
             <h3 className="text-xl font-semibold text-primary mb-6">
               {f.title.map((line, idx) => (
                 <span key={idx} className="block">
-                  {line}
+                  {nbspShort(line)}
                 </span>
               ))}
             </h3>
@@ -105,7 +102,7 @@ const Features: FC = () => (
             <Link
               to={f.link.to}
               className="mt-auto text-primary hover:underline">
-              {f.link.text}
+              {nbspShort(f.link.text)}
             </Link>
           </motion.div>
         ))}

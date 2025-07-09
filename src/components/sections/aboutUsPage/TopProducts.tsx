@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { motion } from "framer-motion";
+import { nbspShort } from "@/utils/nbspShort";
 
 interface TopProductsProps {
   products: Product[];
@@ -34,7 +35,7 @@ const TopProducts: React.FC<TopProductsProps> = ({ products }) => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-3xl md:text-4xl font-bold text-primary mb-4 text-center">
-          Коллекции премиальных чехлов
+          {nbspShort("Коллекции премиальных чехлов")}
         </motion.h2>
 
         <motion.p
@@ -43,8 +44,9 @@ const TopProducts: React.FC<TopProductsProps> = ({ products }) => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
           className="text-lg text-text-secondary max-w-2xl mx-auto mb-12 text-center">
-          Оцените изысканный дизайн и превосходное качество наших топовых
-          моделей. Элитные чехлы для тех, кто выбирает стиль и надёжность.
+          {nbspShort(
+            "Оцените изысканный дизайн и превосходное качество наших топовых моделей. Элитные чехлы для тех, кто выбирает стиль и надёжность."
+          )}
         </motion.p>
 
         <div className="relative w-full flex items-center">
@@ -65,10 +67,10 @@ const TopProducts: React.FC<TopProductsProps> = ({ products }) => {
               <Swiper
                 onSwiper={(s) => (swiperRef.current = s)}
                 modules={[Navigation, Autoplay]}
-                loop={true}
+                loop
                 autoplay={{ delay: 0, disableOnInteraction: false }}
                 speed={5000}
-                grabCursor={true}
+                grabCursor
                 breakpoints={{
                   0: { slidesPerView: 1.2, spaceBetween: 16 },
                   480: { slidesPerView: 1.5, spaceBetween: 20 },
@@ -85,10 +87,10 @@ const TopProducts: React.FC<TopProductsProps> = ({ products }) => {
               <Swiper
                 onSwiper={(s) => (swiperRef.current = s)}
                 modules={[Navigation, Autoplay]}
-                loop={true}
+                loop
                 autoplay={{ delay: 0, disableOnInteraction: false }}
                 speed={5000}
-                grabCursor={true}
+                grabCursor
                 breakpoints={{
                   768: { slidesPerView: 3, spaceBetween: 24 },
                   1024: { slidesPerView: 5, spaceBetween: 24 },
