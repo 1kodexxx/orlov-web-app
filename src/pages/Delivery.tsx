@@ -6,8 +6,9 @@ import {
 const Delivery = () => {
   return (
     <>
-      <DeliverySection />
+      {" "}
       <DeliveryMap />
+      <DeliverySection />
     </>
   );
 };
