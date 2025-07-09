@@ -27,7 +27,7 @@ const testimonialItem: Variants = {
     scale: 1.05,
     y: -5,
     boxShadow: "0px 20px 30px rgba(0, 0, 0, 0.15)",
-    filter: "brightness(1.3)", // подсветка
+    filter: "brightness(1.2)", // подсветка
     transition: { type: "spring", stiffness: 300, damping: 20 },
   },
 };
