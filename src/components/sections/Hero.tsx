@@ -55,14 +55,14 @@ const Hero = () => {
 
         {/* content wrapper */}
         <div className="relative z-10 flex-1 flex items-center w-full pb-8 transform -translate-y-4">
-          <div className="max-w-screen-xl mx-auto px-4 flex flex-col-reverse md:flex-row items-center justify-between gap-8 w-full">
+          <div className="max-w-screen-xl mx-auto px-4 flex flex-col-reverse md:flex-row-reverse items-center justify-between gap-8 w-full">
             {/* текстовая колонка */}
-            <div className="flex-1 text-primary space-y-6 transform -translate-y-2 text-center md:text-left">
+            <div className="flex-1 text-white space-y-6 transform -translate-y-2 text-center md:text-left">
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-3xl sm:text-4xl md:text-5xl font-bold">
+                className="text-primary text-3xl sm:text-4xl md:text-5xl font-bold">
                 Добро пожаловать <br /> в Orlov Brand
               </motion.h1>
               <motion.p
