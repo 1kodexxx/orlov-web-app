@@ -1,17 +1,15 @@
-import CoatOfArmsSVG from "@/assets/coatOfArms.svg?react";
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button, Loader } from "@/components/common";
 
 const HEADER_HEIGHT_REM = 3;
 
-const Hero = () => {
+const CoatOfArms = () => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   useEffect(() => {
     const img = new Image();
-    img.src = "/logo.png";
+    img.src = "https://i.postimg.cc/QNzWgGX0/coat-Of-Arms.png";
     img.onload = () => setIsImageLoaded(true);
   }, []);
 
@@ -91,7 +89,11 @@ const Hero = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="flex-1 flex items-center justify-center mb-8 md:mb-0 w-full h-full transform -translate-y-2">
               {isImageLoaded ? (
-                <CoatOfArmsSVG className="w-full h-auto max-w-full max-h-full border-none outline-none" />
+                <img
+                  src="https://i.postimg.cc/fRZnppHN/coat-Of-Arms.webp"
+                  alt="Герб"
+                  className="w-full h-auto max-w-full max-h-full border-none outline-none"
+                />
               ) : (
                 <Loader />
               )}
@@ -103,4 +105,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default CoatOfArms;
