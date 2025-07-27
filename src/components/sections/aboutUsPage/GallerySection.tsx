@@ -21,7 +21,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     );
   }
 
-  // текстовые данные для первых трёх карточек
   const hoverItemsLeft = [
     {
       title: "Наследие мастерства",
@@ -37,7 +36,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     },
   ];
 
-  // текстовые данные для изображений 4,5,6
   const hoverItemsRight = [
     {
       title: "Изысканная элегантность",
@@ -78,7 +76,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
 
         {/* Desktop: 6 карточек */}
         <div className="hidden md:flex flex-wrap -m-1 md:-m-2">
-          {/* левая колонка: фото с hover-текстом */}
           <div className="flex flex-wrap w-full md:w-1/2">
             {hoverItemsLeft.map((item, index) => (
               <motion.div
@@ -109,7 +106,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
             ))}
           </div>
 
-          {/* правая колонка: фото 4,5,6 с hover-текстом */}
           <div className="flex flex-wrap w-full md:w-1/2">
             {hoverItemsRight.map((item, idx) => (
               <motion.div
@@ -141,7 +137,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
           </div>
         </div>
 
-        {/* Mobile: первые три карточки */}
+        {/* Mobile: маленькие карточки */}
         <div className="flex md:hidden flex-wrap -m-1">
           {[0, 1].map((index) => (
             <motion.div
@@ -157,18 +153,18 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                   alt={hoverItemsLeft[index].title}
                   className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 px-4">
-                  <h3 className="text-white text-lg font-semibold mb-1 text-center">
+                <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 px-2 py-3">
+                  <h3 className="text-white text-[12px] md:text-lg font-semibold mb-1 text-center">
                     {hoverItemsLeft[index].title}
                   </h3>
-                  <p className="text-white text-sm text-center">
+                  <p className="text-white text-[10px] md:text-base text-center">
                     {hoverItemsLeft[index].text}
                   </p>
                 </div>
               </div>
             </motion.div>
           ))}
-          {/* мобильное изображение 4 */}
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -181,11 +177,11 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 alt={hoverItemsRight[0].title}
                 className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110 max-h-[300px]"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 px-4">
-                <h3 className="text-white text-lg font-semibold mb-1 text-center">
+              <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 px-2 py-3">
+                <h3 className="text-white text-[12px] md:text-lg font-semibold mb-1 text-center">
                   {hoverItemsRight[0].title}
                 </h3>
-                <p className="text-white text-sm text-center">
+                <p className="text-white text-[10px] md:text-base text-center">
                   {hoverItemsRight[0].text}
                 </p>
               </div>
