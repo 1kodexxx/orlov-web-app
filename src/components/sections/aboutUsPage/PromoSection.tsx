@@ -80,7 +80,6 @@ const PromoSection: React.FC<PromoSectionProps> = ({
               className="mt-4 md:mt-8 flex justify-center">
               <Button
                 initialText={buttonInitialText}
-                hoverText={buttonHoverText}
                 to={buttonLink}
                 variant="dark"
               />
