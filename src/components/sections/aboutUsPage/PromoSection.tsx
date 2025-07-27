@@ -17,7 +17,6 @@ const PromoSection: React.FC<PromoSectionProps> = ({
   title,
   description,
   buttonInitialText,
-  buttonHoverText,
   buttonLink,
   imageUrl1,
   imageUrl2,
