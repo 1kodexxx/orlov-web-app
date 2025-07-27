@@ -93,7 +93,21 @@ const CoatOfArms: React.FC = () => {
               <motion.img
                 src="https://i.postimg.cc/fRZnppHN/coat-Of-Arms.webp"
                 alt="Герб"
-                whileHover={{ filter: "brightness(1.2)" }}
+                initial={{
+                  scale: 1,
+                  filter:
+                    "brightness(1) drop-shadow(0px 0px 0px rgba(0,0,0,0))",
+                }}
+                animate={{
+                  scale: 1,
+                  filter:
+                    "brightness(1) drop-shadow(0px 0px 0px rgba(0,0,0,0))",
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  filter:
+                    "brightness(1.5) drop-shadow(0 0 20px rgba(255,255,255,0.8))",
+                }}
                 transition={{ duration: 0.3 }}
                 className="w-auto h-auto md:w-auto lg:w-[450px] pt-[5px] max-w-full max-h-full border-none outline-none cursor-pointer"
               />

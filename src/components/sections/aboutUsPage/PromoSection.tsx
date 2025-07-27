@@ -31,22 +31,28 @@ const PromoSection: React.FC<PromoSectionProps> = ({
       <div className="max-w-screen-xl mx-auto px-4 py-8 w-full flex flex-col md:flex-row gap-4 items-stretch">
         {/* Блок с изображениями */}
         <div className="grid grid-cols-2 gap-4 md:grid-cols-1 lg:grid-cols-2 w-full">
-          <motion.img
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-            alt="Promo 1"
-            src={imageUrl1}
-            className="h-40 w-full object-cover sm:h-56 md:h-full"
-          />
-          <motion.img
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
-            alt="Promo 2"
-            src={imageUrl2}
-            className="h-40 w-full object-cover sm:h-56 md:h-full"
-          />
+          <motion.div className="overflow-hidden rounded-lg">
+            <motion.img
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.2, ease: "easeOut", delay: 0.2 }}
+              alt="Promo 1"
+              src={imageUrl1}
+              className="h-40 w-full object-cover sm:h-56 md:h-full"
+            />
+          </motion.div>
+          <motion.div className="overflow-hidden rounded-lg">
+            <motion.img
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.2, ease: "easeOut", delay: 0.4 }}
+              alt="Promo 2"
+              src={imageUrl2}
+              className="h-40 w-full object-cover sm:h-56 md:h-full"
+            />
+          </motion.div>
         </div>
 
         {/* Блок с текстом */}
