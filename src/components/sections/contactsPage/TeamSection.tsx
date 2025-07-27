@@ -1,18 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
+import { FaTelegramPlane } from "react-icons/fa";
 
 interface TeamMember {
   name: string;
   role: string;
   description: string;
   image: string;
-  socials: {
-    facebook?: string;
-    twitter?: string;
-    github?: string;
-    website?: string;
-  };
+  telegram: string;
 }
 
 const team: TeamMember[] = [
@@ -21,27 +17,24 @@ const team: TeamMember[] = [
     role: "Генеральный директор",
     description:
       "Иван определяет стратегию Orlov Brand и уверенно ведёт команду к достижению больших целей.",
-    image:
-      "https://sun9-72.userapi.com/s/v1/ig2/NpRL4HP3s_cNtNjZJssAe-PRLZUQATMG0xyh5TusuQHz8CEIpt9SjYVm1l0nwEakD3pj8g5aRwh5XuAotvnPnWtK.jpg?quality=95&crop=191,60,1187,1187&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080&ava=1&u=ScSI8ukKsYnSNSD1Z9G6feoUfJ7mN1EjiqUZyVtyw4U&cs=200x200",
-    socials: { facebook: "#", twitter: "#", github: "#", website: "#" },
+    image: "/ivan_avatar.jpg",
+    telegram: "https://t.me/ORLANDE_777",
   },
   {
     name: "Александр",
-    role: "Разработчик",
+    role: "Главный разработчик",
     description:
       "Александр строит платформу Orlov Brand на принципах надёжности, скорости и технологического совершенства.",
-    image:
-      "https://sun9-87.userapi.com/s/v1/ig2/Y3TBz7eZ0YacYJ5JEwCi5lcGmRsmGj7pm5A1WVvbOxfn7SI9SEy2WSrjjl3BeiglFTOvvbj4l6ZtJsYg8SJd1oYY.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080&from=bu&cs=1080x0",
-    socials: { facebook: "#", twitter: "#", github: "#", website: "#" },
+    image: "/sasha_avatar.jpg",
+    telegram: "https://t.me/pvntheraxxx",
   },
   {
-    name: "Виктория Мешкова",
+    name: "Виктория",
     role: "PR-специалист",
     description:
       "Виктория формирует имидж Orlov Brand в глазах общественности, развивает коммуникации и доносит ценности бренда миру.",
-    image:
-      "https://sun9-53.userapi.com/s/v1/ig2/ati6IrbvNWK6QRp3_HYUmkikkFRzKATMg-f0OWYNa2Ivttmdu0xa5KWT-7dLOB6EY2EYykva4FwjfGTp8p0dvSgp.jpg?quality=95&as=32x48,48x72,72x108,108x162,160x240,240x360,360x540,480x720,540x810,640x960,720x1080,1080x1620,1280x1920&from=bu&cs=1280x0", // Замените на актуальную ссылку на фото
-    socials: { facebook: "#", twitter: "#", github: "#", website: "#" },
+    image: "/vika_avatar.jpg",
+    telegram: "https://t.me/viiikaa51",
   },
 ];
 
@@ -114,34 +107,13 @@ const TeamSimpleSection: React.FC = () => {
                 <p className="text-primary mb-2">{member.role}</p>
                 <p className="text-text-secondary mb-4">{member.description}</p>
                 <div className="flex gap-4">
-                  {member.socials.facebook && (
-                    <a
-                      href={member.socials.facebook}
-                      className="text-text-secondary hover:text-white">
-                      <i className="fab fa-facebook-f"></i>
-                    </a>
-                  )}
-                  {member.socials.twitter && (
-                    <a
-                      href={member.socials.twitter}
-                      className="text-text-secondary hover:text-white">
-                      <i className="fab fa-twitter"></i>
-                    </a>
-                  )}
-                  {member.socials.github && (
-                    <a
-                      href={member.socials.github}
-                      className="text-text-secondary hover:text-white">
-                      <i className="fab fa-github"></i>
-                    </a>
-                  )}
-                  {member.socials.website && (
-                    <a
-                      href={member.socials.website}
-                      className="text-text-secondary hover:text-white">
-                      <i className="fas fa-globe"></i>
-                    </a>
-                  )}
+                  <a
+                    href={member.telegram}
+                    className="text-text-secondary hover:text-white"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <FaTelegramPlane size={20} />
+                  </a>
                 </div>
               </div>
             </motion.div>

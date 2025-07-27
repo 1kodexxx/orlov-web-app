@@ -1,10 +1,10 @@
 import {
   PromoSection,
   Features,
-  TopProducts,
+  TeamCarousel,
   GallerySection,
 } from "@/components/sections/aboutUsPage";
-import { allProducts } from "@/data/products";
+// import { allProducts } from "@/data/products";
 import PromoSectionImage1 from "@/assets/PromoSection1.png";
 import PromoSectionImage2 from "@/assets/PromoSection2.png";
 
@@ -25,7 +25,8 @@ const AboutUs = () => {
         imageUrl2={PromoSectionImage1}
       />
       <Features />
-      <TopProducts products={allProducts} />
+      {/* <TopProducts products={allProducts} /> */}
+      <TeamCarousel />
       <GallerySection
         title="Галерея стиля и безупречного качества"
         description="Оцените гармонию формы, цвета и деталей. Здесь вы найдете вдохновение, которое отражает премиальность и индивидуальность каждого изделия."
