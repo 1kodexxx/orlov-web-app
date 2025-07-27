@@ -1,7 +1,7 @@
 import {
   ContactSection,
   CoatOfArms,
-  TeamSection,
+  // TeamSection,
 } from "@/components/sections/contactsPage";
 
 const Contacts = () => {
@@ -9,7 +9,7 @@ const Contacts = () => {
     <>
       <CoatOfArms />
       <ContactSection />
-      <TeamSection />
+      {/* <TeamSection /> */}
     </>
   );
 };
