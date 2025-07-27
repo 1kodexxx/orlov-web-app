@@ -79,10 +79,10 @@ const Hero = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="text-sm md:text-base font-semibold mt-2">
+                className="text-primary text-sm md:text-base font-semibold mt-2">
                 "Когда знаешь, что доверяешь ЛУЧШЕМУ!"
                 <br />
-                <span className="text-xs md:text-sm font-light">
+                <span className="text-white text-xs md:text-sm font-light">
                   © IVAN ORLOV
                 </span>
               </motion.p>

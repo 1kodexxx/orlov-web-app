@@ -54,9 +54,12 @@ const CoatOfArms = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="text-base sm:text-lg leading-relaxed max-w-lg mx-auto md:mx-0">
-                У Вас есть вопрос или предложение? Мы всегда на связи. Свяжитесь
-                с нами удобным способом, и мы обязательно ответим как можно
-                скорее.
+                Наша команда всегда готова помочь Вам 24/7. Если у Вас есть
+                вопросы о продукции, заказах или сотрудничестве – свяжитесь с
+                нами любым удобным способом! Мы гарантируем оперативность и
+                внимательное отношение к деталям. Ценим доверие клиентов к нашей
+                компании и предлагаем форматы общения для достижения совместного
+                результата.
               </motion.p>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -92,7 +95,7 @@ const CoatOfArms = () => {
                 <img
                   src="https://i.postimg.cc/fRZnppHN/coat-Of-Arms.webp"
                   alt="Герб"
-                  className="w-full h-auto max-w-full max-h-full border-none outline-none"
+                  className="pt-[5px] w-auto h-auto md:w-[450px] lg:w-[450px] max-w-full max-h-full border-none outline-none"
                 />
               ) : (
                 <Loader />

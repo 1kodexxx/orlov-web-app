@@ -7,8 +7,8 @@ const Delivery = () => {
   return (
     <>
       {" "}
-      <DeliveryMap />
       <DeliverySection />
+      <DeliveryMap />
     </>
   );
 };

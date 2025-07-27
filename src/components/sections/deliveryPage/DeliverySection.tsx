@@ -72,7 +72,7 @@ const DeliverySection: React.FC = () => {
         </motion.h2>
         <motion.p variants={itemVariants} className="text-text-secondary">
           {nbspShort(
-            "Мы ценим ваше время и хотим, чтобы процесс заказа был прозрачным и удобным. От выбора до получения — всего несколько простых шагов, после которых вы быстро получите свой аксессуар в идеальном состоянии."
+            "Мы обеспечиваем быструю и надёжную доставку по России и . Наши товары тщательно упаковываются, чтобы гарантировать их сохранность. Выберите любой способ доставки из предложенных вариантов. Если у Вас возникли вопросы по логистике, мы предложим удобные решения в кратчайшие сроки. Мы предлагаем подробное отслеживание и прозрачную консультационную поддержку по товарам."
           )}
         </motion.p>
       </motion.div>
@@ -88,7 +88,12 @@ const DeliverySection: React.FC = () => {
           <motion.div
             key={idx}
             variants={itemVariants}
-            className="relative flex flex-col items-center p-6 bg-background-paper rounded-xl shadow-lg text-center hover:scale-[1.03] transition-transform">
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
+              filter: "brightness(1.1)",
+            }}
+            className="relative flex flex-col items-center p-6 bg-background-paper rounded-xl shadow-lg text-center transition-transform transition-filter cursor-pointer">
             <div className="w-16 h-16 flex items-center justify-center bg-secondary rounded-full mb-4">
               <span className="text-3xl text-primary">{step.icon}</span>
             </div>
