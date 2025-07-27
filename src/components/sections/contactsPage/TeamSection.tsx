@@ -34,6 +34,15 @@ const team: TeamMember[] = [
       "https://sun9-87.userapi.com/s/v1/ig2/Y3TBz7eZ0YacYJ5JEwCi5lcGmRsmGj7pm5A1WVvbOxfn7SI9SEy2WSrjjl3BeiglFTOvvbj4l6ZtJsYg8SJd1oYY.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080&from=bu&cs=1080x0",
     socials: { facebook: "#", twitter: "#", github: "#", website: "#" },
   },
+  {
+    name: "Виктория Мешкова",
+    role: "PR-специалист",
+    description:
+      "Виктория формирует имидж Orlov Brand в глазах общественности, развивает коммуникации и доносит ценности бренда миру.",
+    image:
+      "https://sun9-53.userapi.com/s/v1/ig2/ati6IrbvNWK6QRp3_HYUmkikkFRzKATMg-f0OWYNa2Ivttmdu0xa5KWT-7dLOB6EY2EYykva4FwjfGTp8p0dvSgp.jpg?quality=95&as=32x48,48x72,72x108,108x162,160x240,240x360,360x540,480x720,540x810,640x960,720x1080,1080x1620,1280x1920&from=bu&cs=1280x0", // Замените на актуальную ссылку на фото
+    socials: { facebook: "#", twitter: "#", github: "#", website: "#" },
+  },
 ];
 
 // Контейнер: плавный ритм появления
@@ -102,7 +111,7 @@ const TeamSimpleSection: React.FC = () => {
               />
               <div>
                 <h3 className="text-xl font-bold text-white">{member.name}</h3>
-                <p className="text-text-secondary mb-2">{member.role}</p>
+                <p className="text-primary mb-2">{member.role}</p>
                 <p className="text-text-secondary mb-4">{member.description}</p>
                 <div className="flex gap-4">
                   {member.socials.facebook && (

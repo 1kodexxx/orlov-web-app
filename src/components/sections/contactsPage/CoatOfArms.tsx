@@ -64,7 +64,7 @@ const CoatOfArms: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-sm md:text-base font-semibold mt-2">
+              className="text-text-primary text-sm md:text-base font-semibold mt-2">
               Наш бренд — это не только стиль, но и забота.
               <br />
               <span className="text-xs md:text-sm font-light">

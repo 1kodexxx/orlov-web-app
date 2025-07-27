@@ -60,7 +60,7 @@ const PromoSection: React.FC<PromoSectionProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.8 }}
-              className="text-3xl sm:text-4xl md:text-5xl font-bold text-background">
+              className="font-didot text-3xl sm:text-4xl md:text-5xl font-bold text-background">
               {title}
             </motion.h2>
 

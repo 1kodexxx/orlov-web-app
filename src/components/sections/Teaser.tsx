@@ -116,7 +116,7 @@ const Teaser: React.FC<InfoSectionProps> = ({
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               viewport={{ once: true }}
-              className="text-3xl sm:text-4xl font-bold">
+              className="text-3xl sm:text-4xl font-bold text-text-primary">
               {title}
             </motion.h2>
 
