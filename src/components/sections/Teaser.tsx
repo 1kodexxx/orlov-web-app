@@ -64,11 +64,7 @@ const Teaser: React.FC<InfoSectionProps> = ({
                 viewport={{ once: true }}
                 className="flex flex-row gap-4 w-full md:justify-start items-center text-left">
                 <div className="w-auto">
-                  <Button
-                    initialText={initialButtonText}
-                    hoverText={hoverButtonText}
-                    to={buttonLink}
-                  />
+                  <Button initialText={initialButtonText} to={buttonLink} />
                 </div>
               </motion.div>
             )}
@@ -141,11 +137,7 @@ const Teaser: React.FC<InfoSectionProps> = ({
                 viewport={{ once: true }}
                 className="flex flex-col gap-4 w-full justify-center items-center text-center">
                 <div className="w-full">
-                  <Button
-                    initialText={initialButtonText}
-                    hoverText={hoverButtonText}
-                    to={buttonLink}
-                  />
+                  <Button initialText={initialButtonText} to={buttonLink} />
                 </div>
               </motion.div>
             )}

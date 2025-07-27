@@ -38,7 +38,6 @@ const PriceActions: React.FC<PriceActionsProps> = ({
           <Button
             onClick={onBuy}
             initialText="Добавить в корзину"
-            hoverText="Купить!"
             variant="light"
           />
         </div>

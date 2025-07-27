@@ -93,11 +93,7 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
                 className="flex flex-col md:flex-row gap-4 mx-auto md:mx-0 justify-center md:justify-start items-center">
-                <Button
-                  initialText="Перейти в каталог"
-                  hoverText="Поехали!"
-                  to="/catalog"
-                />
+                <Button initialText="Перейти в каталог" to="/catalog" />
               </motion.div>
             </div>
 

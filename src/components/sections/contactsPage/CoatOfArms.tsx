@@ -79,7 +79,6 @@ const CoatOfArms: React.FC = () => {
               className="flex flex-col md:flex-row gap-4 mx-auto md:mx-0 justify-center md:justify-start items-center">
               <Button
                 initialText="Связаться с нами"
-                hoverText="Наш канал в TG"
                 to="https://t.me/ORLOV_brand777"
               />
             </motion.div>

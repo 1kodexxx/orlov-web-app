@@ -1,9 +1,9 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 interface ButtonProps {
   initialText: string;
-  hoverText: string;
   to?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   variant?: "light" | "dark";
@@ -11,7 +11,7 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({
   initialText,
-  hoverText,
+
   to,
   onClick,
   variant = "light",
@@ -26,39 +26,50 @@ const Button: React.FC<ButtonProps> = ({
     }
   };
 
-  const buttonContent = (
-    <button
-      type="button"
-      onClick={handleClick}
-      className={`cursor-pointer px-6 py-3 rounded-xl font-normal group transition-all duration-300 ${
-        isDark ? "bg-[#181818] text-[#EFE393]" : "bg-[#EFE393] text-[#181818]"
-      }`}>
-      <div className="relative overflow-hidden">
-        <p className="group-hover:-translate-y-7 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]">
-          {initialText}
-        </p>
-        <p className="absolute top-7 left-0 group-hover:top-0 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]">
-          {hoverText}
-        </p>
-      </div>
-    </button>
+  const content = (
+    <motion.div
+      className="relative overflow-hidden"
+      initial={{}}
+      whileHover="hover"
+      animate="rest"
+      variants={{
+        rest: { scale: 1, filter: "brightness(1)" },
+        hover: {
+          scale: 1.05,
+          filter: "brightness(1.1)",
+          transition: { duration: 0.2, ease: "easeOut" },
+        },
+      }}>
+      <p className="flex items-center justify-center m-0">{initialText}</p>
+    </motion.div>
   );
 
-  // если внешняя ссылка — использовать <a>
+  const button = (
+    <motion.button
+      type="button"
+      onClick={handleClick}
+      className={`cursor-pointer px-6 py-3 rounded-xl font-normal transition-all duration-300 shadow-sm ${
+        isDark ? "bg-[#181818] text-[#EFE393]" : "bg-[#EFE393] text-[#181818]"
+      }`}
+      whileHover={{ scale: 1.05, boxShadow: "0px 8px 20px rgba(0,0,0,0.15)" }}
+      whileTap={{ scale: 0.95 }}>
+      {content}
+    </motion.button>
+  );
+
   if (to && (to.startsWith("http://") || to.startsWith("https://"))) {
     return (
-      <a href={to} target="_blank" rel="noopener noreferrer">
-        {buttonContent}
-      </a>
+      <Link to={to} target="_blank" rel="noopener noreferrer">
+        {button}
+      </Link>
     );
   }
 
-  // если внутренняя — использовать <Link>
   if (to && to.startsWith("/")) {
-    return <Link to={to}>{buttonContent}</Link>;
+    return <Link to={to}>{button}</Link>;
   }
 
-  return buttonContent;
+  return button;
 };
 
 export default Button;
