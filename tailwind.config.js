@@ -24,6 +24,9 @@ module.exports = {
         },
       },
     },
+    fontFamily: {
+      didot: ['"GFS Didot"', "serif"],
+    },
   },
   plugins: [],
 };

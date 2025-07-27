@@ -22,7 +22,7 @@ const team: TeamMember[] = [
     description:
       "Иван определяет стратегию Orlov Brand и уверенно ведёт команду к достижению больших целей.",
     image:
-      "https://sun9-8.userapi.com/s/v1/if2/PlDstXaHzHTFd40s7ZeMo5wtEMWo_iVdZL4w30YdSc7fvLWTlKqXceA_TPT9GrIKrdNfDrStzsw6fTiCh6r42djO.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x427,720x480,1080x720,1170x780&from=bu&cs=1170x0",
+      "https://sun9-72.userapi.com/s/v1/ig2/cHImOsdcQx4d5-lYAmhK3KD6HMUqDdXLHzGvdd2Wrp_0wSf27CPtZkF8n0WgZhITNOrZvyGOgiz-FDAEgwzPniFX.jpg?quality=95&as=32x48,48x72,72x108,108x162,160x240,240x360,360x540,480x720,540x810,640x960,720x1080,1080x1620,1280x1920,1440x2159,1467x2200&from=bu&cs=1467x0",
     socials: { facebook: "#", twitter: "#", github: "#", website: "#" },
   },
   {
