@@ -21,7 +21,6 @@ const NotFound = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <Button
             initialText="На главную 🏠"
-            hoverText="Перейти ✨ "
             onClick={() => navigate("/")}
             variant="light"
           />
