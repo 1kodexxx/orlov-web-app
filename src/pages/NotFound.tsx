@@ -20,7 +20,7 @@ const NotFound = () => {
 
         <div className="flex flex-col sm:flex-row gap-4">
           <Button
-            initialText="На главную 🏠"
+            initialText="На главную "
             onClick={() => navigate("/")}
             variant="light"
           />

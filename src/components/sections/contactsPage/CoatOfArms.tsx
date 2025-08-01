@@ -1,17 +1,25 @@
+// src/components/sections/aboutUsPage/CoatOfArms.tsx
+
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button, Loader } from "@/components/common";
-
-const HEADER_HEIGHT_REM = 3;
+import { COAT_OF_ARMS } from "@/data/contactsData/coatOfArms.data";
 
 const CoatOfArms: React.FC = () => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
+  const {
+    texts: { title, paragraphs, noteBold, noteLight },
+    cta: { text: ctaText, link: ctaLink },
+    images: { preload, main },
+    config: { headerHeightRem },
+  } = COAT_OF_ARMS;
+
   useEffect(() => {
     const img = new Image();
-    img.src = "https://i.postimg.cc/QNzWgGX0/coat-Of-Arms.png";
+    img.src = preload;
     img.onload = () => setIsImageLoaded(true);
-  }, []);
+  }, [preload]);
 
   useEffect(() => {
     const setVh = () => {
@@ -29,7 +37,7 @@ const CoatOfArms: React.FC = () => {
     <section
       className="relative w-full overflow-hidden flex flex-col"
       style={{
-        minHeight: `calc(var(--vh, 1vh)*100 - ${HEADER_HEIGHT_REM}rem)`,
+        minHeight: `calc(var(--vh, 1vh)*100 - ${headerHeightRem}rem)`,
       }}>
       <style>{`
         @keyframes marquee {
@@ -46,30 +54,28 @@ const CoatOfArms: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-primary text-3xl sm:text-4xl md:text-5xl font-bold">
-              Свяжитесь с нами
+              {title}
             </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-base sm:text-lg leading-relaxed max-w-lg mx-auto md:mx-0">
-              Наша команда всегда готова помочь Вам 24/7. Если у Вас есть
-              вопросы о продукции, заказах или сотрудничестве – свяжитесь с нами
-              любым удобным способом! Мы гарантируем оперативность и
-              внимательное отношение к деталям. Ценим доверие клиентов к нашей
-              компании и предлагаем форматы общения для достижения совместного
-              результата.
-            </motion.p>
+
+            {paragraphs.map((p, i) => (
+              <motion.p
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
+                className="text-base sm:text-lg leading-relaxed max-w-lg mx-auto md:mx-0">
+                {p}
+              </motion.p>
+            ))}
+
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
               className="text-text-primary text-sm md:text-base font-semibold mt-2">
-              Наш бренд — это не только стиль, но и забота.
+              {noteBold}
               <br />
-              <span className="text-xs md:text-sm font-light">
-                Пишите — мы рядом.
-              </span>
+              <span className="text-xs md:text-sm font-light">{noteLight}</span>
             </motion.p>
 
             <motion.div
@@ -77,10 +83,7 @@ const CoatOfArms: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
               className="flex flex-col md:flex-row gap-4 mx-auto md:mx-0 justify-center md:justify-start items-center">
-              <Button
-                initialText="Связаться с нами"
-                to="https://t.me/ORLOV_brand777"
-              />
+              <Button initialText={ctaText} to={ctaLink} />
             </motion.div>
           </div>
 
@@ -91,7 +94,7 @@ const CoatOfArms: React.FC = () => {
             className="flex-1 flex items-center justify-center mb-8 md:mb-0 w-full h-full transform -translate-y-2">
             {isImageLoaded ? (
               <motion.img
-                src="https://i.postimg.cc/fRZnppHN/coat-Of-Arms.webp"
+                src={main}
                 alt="Герб"
                 initial={{
                   scale: 1,
