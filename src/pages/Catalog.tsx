@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { allProducts } from "@/data/products";
+import { allProducts } from "@/data/products.data";
 import { ProductsList } from "@/components/shop";
 import { ProductFilterPanel } from "@/components/shop/filters";
 import { categoryLabelToSlug, categorySlugToLabel } from "@/utils/categories";

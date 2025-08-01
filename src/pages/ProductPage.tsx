@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loader } from "@/components/common";
-import { allProducts, type Product } from "@/data/products";
+import { allProducts, type Product } from "@/data/products.data";
 import {
   BackTo,
   ProductSlider,

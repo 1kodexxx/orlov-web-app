@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
-import type { Product } from "@/data/products";
+import type { Product } from "@/data/products.data";
 
 // Тип корзины
 export interface CartItem extends Product {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ColorSelector, ModelSelector, ProductActions } from "./";
-import type { Product } from "@/data/products";
+import type { Product } from "@/data/products.data";
 import { useCart } from "@/context/useCart";
 import { Confetti } from "@/animations";
 

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { CartItem } from "./";
-import type { CartItem as CartItemType } from "@/data/cart";
+import type { CartItem as CartItemType } from "@/data/cart.data";
 
 interface CartItemListProps {
   cartItems: CartItemType[];

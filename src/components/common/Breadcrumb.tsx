@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { allProducts } from "@/data/products";
+import { allProducts } from "@/data/products.data";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface BreadcrumbProps {

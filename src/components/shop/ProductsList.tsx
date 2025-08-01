@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
-import type { Product } from "@/data/products";
+import type { Product } from "@/data/products.data";
 import { Loader } from "@/components/common";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";

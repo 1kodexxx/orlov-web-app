@@ -7,7 +7,7 @@ import {
   CartSummary,
   EmptyCartMessage,
 } from "@/components/shop/cartPage";
-import type { CartItem as CartItemType } from "@/data/cart";
+import type { CartItem as CartItemType } from "@/data/cart.data";
 
 const containerVariants = {
   hidden: { opacity: 0 },

@@ -11,8 +11,8 @@ declare global {
 
 import { useEffect, useRef, useState } from "react";
 import RussiaMapSVG from "@/assets/geo/russianMap.svg?react";
-import { deliveryZones } from "@/data/delivery";
-import type { DeliveryZoneId } from "@/data/delivery";
+import { deliveryZones } from "@/data/delivery.data";
+import type { DeliveryZoneId } from "@/data/delivery.data";
 
 export default function RussiaMap() {
   const [isTouchDevice, setIsTouchDevice] = useState(false);

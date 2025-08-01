@@ -1,4 +1,4 @@
-import type { Product } from "./products";
+import type { Product } from "./products.data";
 
 export interface CartItem extends Product {
   selectedColor: string;
