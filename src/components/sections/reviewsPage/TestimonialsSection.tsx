@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { testimonials } from "@/data/reviews.data";
+import { testimonials } from "@/data/reviewsData/reviews.data";
 import type { Variants } from "framer-motion";
 
 // Анимации появления секции
