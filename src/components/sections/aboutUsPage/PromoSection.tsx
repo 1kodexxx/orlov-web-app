@@ -1,27 +1,21 @@
+// src/components/sections/aboutUsPage/PromoSection.tsx
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "../../common";
+import { PROMO_SECTION } from "@/data/aboutUs/promo.data";
 
-interface PromoSectionProps {
-  title: React.ReactNode;
-  description: string;
-  buttonInitialText: string;
-  buttonHoverText: string;
-  buttonLink: string;
-  imageUrl1: string;
-  imageUrl2: string;
-  backgroundColor?: string;
-}
+const PromoSection: React.FC = () => {
+  const {
+    titleLines,
+    descriptionHtml,
+    buttonInitialText,
+    buttonLink,
+    imageUrl1,
+    imageUrl2,
+    backgroundColor,
+  } = PROMO_SECTION;
 
-const PromoSection: React.FC<PromoSectionProps> = ({
-  title,
-  description,
-  buttonInitialText,
-  buttonLink,
-  imageUrl1,
-  imageUrl2,
-  backgroundColor = "bg-primary",
-}) => {
   return (
     <motion.section
       initial={{ opacity: 0 }}
@@ -67,7 +61,13 @@ const PromoSection: React.FC<PromoSectionProps> = ({
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.8 }}
               className="font-didot text-3xl sm:text-4xl md:text-5xl font-bold text-background">
-              {title}
+              {/* Рендер строк заголовка с переносом */}
+              {titleLines.map((line, i) => (
+                <React.Fragment key={i}>
+                  {line}
+                  {i < titleLines.length - 1 && <br />}
+                </React.Fragment>
+              ))}
             </motion.h2>
 
             <motion.p
@@ -75,7 +75,7 @@ const PromoSection: React.FC<PromoSectionProps> = ({
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 1 }}
               className="text-base sm:text-lg leading-relaxed mt-4 text-background/90"
-              dangerouslySetInnerHTML={{ __html: description }}
+              dangerouslySetInnerHTML={{ __html: descriptionHtml }}
             />
 
             <motion.div

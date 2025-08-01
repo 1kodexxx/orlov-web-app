@@ -1,18 +1,36 @@
-import { motion } from "framer-motion";
+// src/components/sections/aboutUsPage/GallerySection.tsx
+
 import React from "react";
+import { motion } from "framer-motion";
+import {
+  GALLERY_SECTION,
+  HOVER_ITEMS_LEFT,
+  HOVER_ITEMS_RIGHT,
+} from "@/data/aboutUs/gallery.data";
 
 interface GallerySectionProps {
-  title: string;
-  description: string;
+  /** Можно переопределить заголовок секции; по умолчанию берётся из данных */
+  title?: string;
+  /** Можно переопределить описание секции; по умолчанию берётся из данных */
+  description?: string;
+  /** Список изображений (минимум 6 для десктоп-раскладки) */
   images?: string[];
-  captions?: string[];
+  /** (Опционально) переопределение подписей слева */
+  hoverItemsLeftOverride?: { title: string; text: string }[];
+  /** (Опционально) переопределение подписей справа */
+  hoverItemsRightOverride?: { title: string; text: string }[];
 }
 
 const GallerySection: React.FC<GallerySectionProps> = ({
-  title,
-  description,
+  title = GALLERY_SECTION.title,
+  description = GALLERY_SECTION.description,
   images = [],
+  hoverItemsLeftOverride,
+  hoverItemsRightOverride,
 }) => {
+  const hoverItemsLeft = hoverItemsLeftOverride ?? HOVER_ITEMS_LEFT;
+  const hoverItemsRight = hoverItemsRightOverride ?? HOVER_ITEMS_RIGHT;
+
   if (images.length < 6) {
     return (
       <section className="w-full min-h-screen flex items-center justify-center bg-background py-8 md:py-16 px-4">
@@ -20,36 +38,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
       </section>
     );
   }
-
-  const hoverItemsLeft = [
-    {
-      title: "Наследие мастерства",
-      text: "Каждый чехол создается вручную по древним традициям российского дворянского ремесла, передаваемым из поколения в поколение.",
-    },
-    {
-      title: "Государственный стиль",
-      text: "Изысканные мотивы и строгие линии воплощают величие исторической эстетики и подчеркивают ваш высокий статус.",
-    },
-    {
-      title: "Премиальное качество",
-      text: "Используем только лучшие материалы и современные технологии для безупречной защиты и долговечности.",
-    },
-  ];
-
-  const hoverItemsRight = [
-    {
-      title: "Изысканная элегантность",
-      text: "Утонченный дизайн в духе имперских портретов придает вашему устройству статусный вид.",
-    },
-    {
-      title: "Стойкость и надёжность",
-      text: "Прочные материалы и продуманная конструкция сохранят идеальный внешний вид на долгие годы.",
-    },
-    {
-      title: "Эксклюзивный характер",
-      text: "Ограниченные серии, посвящённые российскому культурному наследию, подчеркнут вашу уникальность.",
-    },
-  ];
 
   return (
     <section className="w-full min-h-screen flex flex-col items-center bg-background py-8 md:py-16 px-4">

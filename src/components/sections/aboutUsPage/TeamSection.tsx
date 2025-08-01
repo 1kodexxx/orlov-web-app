@@ -1,42 +1,10 @@
+// src/components/sections/aboutUsPage/TeamSimpleSection.tsx
+
 import React from "react";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { FaTelegramPlane } from "react-icons/fa";
-
-interface TeamMember {
-  name: string;
-  role: string;
-  description: string;
-  image: string;
-  telegram: string;
-}
-
-const team: TeamMember[] = [
-  {
-    name: "Иван",
-    role: "Генеральный директор",
-    description:
-      "Иван определяет стратегию Orlov Brand и уверенно ведёт команду к достижению больших целей.",
-    image: "/ivan_avatar.jpg",
-    telegram: "https://t.me/ORLANDE_777",
-  },
-  {
-    name: "Александр",
-    role: "Главный разработчик",
-    description:
-      "Александр строит платформу Orlov Brand на принципах надёжности, скорости и технологического совершенства.",
-    image: "/sasha_avatar.jpg",
-    telegram: "https://t.me/pvntheraxxx",
-  },
-  {
-    name: "Виктория",
-    role: "PR-специалист",
-    description:
-      "Виктория формирует имидж Orlov Brand в глазах общественности, развивает коммуникации и доносит ценности бренда миру.",
-    image: "/vika_avatar.jpg",
-    telegram: "https://t.me/viiikaa51",
-  },
-];
+import { TEAM, TEAM_SECTION } from "@/data/aboutUs/team.data";
 
 // Контейнер: плавный ритм появления
 const containerVariants: Variants = {
@@ -62,6 +30,8 @@ const cardVariants: Variants = {
 };
 
 const TeamSimpleSection: React.FC = () => {
+  const { title, paragraphs } = TEAM_SECTION;
+
   return (
     <motion.section
       initial="hidden"
@@ -75,23 +45,20 @@ const TeamSimpleSection: React.FC = () => {
           variants={cardVariants}
           className="lg:w-1/2 flex flex-col justify-center space-y-6">
           <h2 className="text-4xl font-extrabold text-primary mb-4 select-none">
-            Наши люди — наше величие
+            {title}
           </h2>
-          <p className="text-text-secondary select-none">
-            В ORLOV мы создаём продукты, в которых сочетаются технологии,
-            культура и премиальное качество.
-          </p>
-          <p className="text-text-secondary select-none">
-            Работая с нами, вы встречаете профессионалов, решаете нестандартные
-            задачи и находите единомышленников.
-          </p>
+          {paragraphs.map((p, i) => (
+            <p key={i} className="text-text-secondary select-none">
+              {p}
+            </p>
+          ))}
         </motion.div>
 
         {/* Правая колонка */}
         <motion.div
           variants={containerVariants}
           className="lg:w-1/2 flex flex-col gap-8">
-          {team.map((member, index) => (
+          {TEAM.map((member, index) => (
             <motion.div
               key={index}
               variants={cardVariants}
