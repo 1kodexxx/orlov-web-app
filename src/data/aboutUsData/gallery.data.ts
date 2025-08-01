@@ -1,4 +1,4 @@
-// src/components/sections/aboutUsPage/gallery.data.ts
+// src/data/aboutUsData/gallery.data.ts
 
 export interface HoverItem {
   title: string;
@@ -47,4 +47,14 @@ export const HOVER_ITEMS_RIGHT: HoverItem[] = [
     title: "Эксклюзивный характер",
     text: "Ограниченные серии, посвящённые российскому культурному наследию, подчеркнут вашу уникальность.",
   },
+];
+
+/** Изображения галереи по умолчанию */
+export const GALLERY_IMAGES: string[] = [
+  "https://i.postimg.cc/hGS2rKyt/case2.webp",
+  "https://i.postimg.cc/hGS2rKyt/case2.webp",
+  "https://i.postimg.cc/tRfmjQTB/case1.webp",
+  "https://i.postimg.cc/tRfmjQTB/case1.webp",
+  "https://i.postimg.cc/hGS2rKyt/case2.webp",
+  "https://i.postimg.cc/hGS2rKyt/case2.webp",
 ];

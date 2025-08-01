@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { FaTelegramPlane } from "react-icons/fa";
-import { TEAM, TEAM_SECTION } from "@/data/aboutUs/team.data";
+import { TEAM, TEAM_SECTION } from "@/data/aboutUsData/team.data";
 
 // Контейнер: плавный ритм появления
 const containerVariants: Variants = {

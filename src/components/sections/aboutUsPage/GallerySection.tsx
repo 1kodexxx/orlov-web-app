@@ -6,15 +6,16 @@ import {
   GALLERY_SECTION,
   HOVER_ITEMS_LEFT,
   HOVER_ITEMS_RIGHT,
-} from "@/data/aboutUs/gallery.data";
+  GALLERY_IMAGES,
+} from "@/data/aboutUsData/gallery.data";
 
 interface GallerySectionProps {
   /** Можно переопределить заголовок секции; по умолчанию берётся из данных */
   title?: string;
   /** Можно переопределить описание секции; по умолчанию берётся из данных */
   description?: string;
-  /** Список изображений (минимум 6 для десктоп-раскладки) */
-  images?: string[];
+  /** (Опционально) переопределение изображений; по умолчанию берутся из data */
+  imagesOverride?: string[];
   /** (Опционально) переопределение подписей слева */
   hoverItemsLeftOverride?: { title: string; text: string }[];
   /** (Опционально) переопределение подписей справа */
@@ -24,12 +25,13 @@ interface GallerySectionProps {
 const GallerySection: React.FC<GallerySectionProps> = ({
   title = GALLERY_SECTION.title,
   description = GALLERY_SECTION.description,
-  images = [],
+  imagesOverride,
   hoverItemsLeftOverride,
   hoverItemsRightOverride,
 }) => {
   const hoverItemsLeft = hoverItemsLeftOverride ?? HOVER_ITEMS_LEFT;
   const hoverItemsRight = hoverItemsRightOverride ?? HOVER_ITEMS_RIGHT;
+  const images = imagesOverride ?? GALLERY_IMAGES;
 
   if (images.length < 6) {
     return (

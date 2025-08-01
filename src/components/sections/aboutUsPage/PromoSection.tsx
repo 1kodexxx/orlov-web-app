@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "../../common";
-import { PROMO_SECTION } from "@/data/aboutUs/promo.data";
+import { PROMO_SECTION } from "@/data/aboutUsData/promo.data";
 
 const PromoSection: React.FC = () => {
   const {

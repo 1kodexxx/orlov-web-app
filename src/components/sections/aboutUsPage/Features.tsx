@@ -10,7 +10,7 @@ import {
   FEATURES_SECTION,
   type FeatureData,
   type FeatureIcon,
-} from "@/data/aboutUs/features.data";
+} from "@/data/aboutUsData/features.data";
 
 const ICONS: Record<FeatureIcon, React.ReactElement> = {
   crown: <FaCrown className="text-4xl text-primary-contrast" />,
