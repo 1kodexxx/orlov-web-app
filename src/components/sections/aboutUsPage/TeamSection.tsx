@@ -96,7 +96,7 @@ const TeamSimpleSection: React.FC = () => {
               key={index}
               variants={cardVariants}
               whileHover={{ scale: 1.03 }}
-              className="flex items-center gap-6 border-b border-border pb-6 select-none">
+              className="flex items-center gap-6 border-b border-border pb-6 select-none cursor-pointer">
               <img
                 src={member.image}
                 alt={member.name}

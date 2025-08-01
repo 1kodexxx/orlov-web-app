@@ -39,7 +39,7 @@ const PromoSection: React.FC<PromoSectionProps> = ({
               transition={{ duration: 0.2, ease: "easeOut", delay: 0.2 }}
               alt="Promo 1"
               src={imageUrl1}
-              className="h-40 w-full object-cover sm:h-56 md:h-full"
+              className="h-40 w-full object-cover sm:h-56 md:h-full cursor-pointer"
             />
           </motion.div>
           <motion.div className="overflow-hidden rounded-lg">
@@ -50,7 +50,7 @@ const PromoSection: React.FC<PromoSectionProps> = ({
               transition={{ duration: 0.2, ease: "easeOut", delay: 0.4 }}
               alt="Promo 2"
               src={imageUrl2}
-              className="h-40 w-full object-cover sm:h-56 md:h-full"
+              className="h-40 w-full object-cover sm:h-56 md:h-full cursor-pointer"
             />
           </motion.div>
         </div>

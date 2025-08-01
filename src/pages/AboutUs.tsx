@@ -2,11 +2,10 @@ import {
   PromoSection,
   Features,
   GallerySection,
+  TeamSection,
 } from "@/components/sections/aboutUsPage";
-// import { allProducts } from "@/data/products";
 import PromoSectionImage1 from "@/assets/PromoSection1.png";
 import PromoSectionImage2 from "@/assets/PromoSection2.png";
-import { TeamSection } from "@/components/sections/contactsPage";
 
 const AboutUs = () => {
   return (
@@ -25,7 +24,6 @@ const AboutUs = () => {
         imageUrl2={PromoSectionImage1}
       />
       <Features />
-      {/* <TopProducts products={allProducts} /> */}
       <TeamSection />
       <GallerySection
         title="Галерея стиля и безупречного качества"
