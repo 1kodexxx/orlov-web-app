@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { FaSearchDollar, FaUserTie } from "react-icons/fa";
 import { BiShoppingBag } from "react-icons/bi";
 import { AnimatePresence, motion } from "framer-motion";
@@ -11,13 +11,24 @@ import { CartDropdown } from "./cartDropdown/";
 import { SearchDropdown } from "./searchDropdown";
 import { useCart } from "@/context/useCart";
 
+// redux
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  toggleCart,
+  toggleSearch,
+  closeAll,
+  closeCart,
+  closeSearch,
+  setAnimateBadge,
+  setAnimatePrice,
+} from "@/store/slices/navbarSlice";
+
 const NavBar: React.FC = () => {
   const location = useLocation();
   const { cartItems } = useCart();
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [animateBadge, setAnimateBadge] = useState(false);
-  const [animatePrice, setAnimatePrice] = useState(false);
+  const dispatch = useAppDispatch();
+  const { isCartOpen, isSearchOpen, animateBadge, animatePrice } =
+    useAppSelector((s) => s.navbar);
 
   const mobileCartRef = useRef<HTMLDivElement>(null);
   const prevTotalItemsRef = useRef<number>(0);
@@ -28,38 +39,43 @@ const NavBar: React.FC = () => {
     .toFixed(2);
 
   const handleGoToCart = () => {
-    setIsCartOpen(false);
+    dispatch(closeCart());
   };
 
+  // клик вне дропдаунов — закрываем оба
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (
         mobileCartRef.current &&
         !mobileCartRef.current.contains(e.target as Node)
       ) {
-        setIsCartOpen(false);
-        setIsSearchOpen(false);
+        dispatch(closeAll());
       }
     };
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
-  }, []);
+  }, [dispatch]);
 
+  // анимации при увеличении количества товаров
   useEffect(() => {
     const prev = prevTotalItemsRef.current;
     if (totalItems > prev) {
-      setAnimateBadge(true);
-      setAnimatePrice(true);
-      setTimeout(() => setAnimateBadge(false), 300);
-      setTimeout(() => setAnimatePrice(false), 300);
+      dispatch(setAnimateBadge(true));
+      dispatch(setAnimatePrice(true));
+      const t1 = setTimeout(() => dispatch(setAnimateBadge(false)), 300);
+      const t2 = setTimeout(() => dispatch(setAnimatePrice(false)), 300);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
     }
     prevTotalItemsRef.current = totalItems;
-  }, [totalItems]);
+  }, [totalItems, dispatch]);
 
+  // смена роутинга — закрываем всё
   useEffect(() => {
-    setIsCartOpen(false);
-    setIsSearchOpen(false);
-  }, [location.pathname]);
+    dispatch(closeAll());
+  }, [location.pathname, dispatch]);
 
   return (
     <header className="w-full sticky top-0 z-50 bg-background shadow-md">
@@ -73,19 +89,13 @@ const NavBar: React.FC = () => {
         {/* Мобильные иконки: поиск, корзина, профиль */}
         <div className="lg:hidden flex items-center space-x-6 text-primary">
           <FaSearchDollar
-            onClick={() => {
-              setIsSearchOpen((p) => !p);
-              setIsCartOpen(false);
-            }}
+            onClick={() => dispatch(toggleSearch())}
             className="w-6 h-6 cursor-pointer hover:scale-110 transition"
           />
 
           <div
             className="relative flex items-center cursor-pointer"
-            onClick={() => {
-              setIsCartOpen((p) => !p);
-              setIsSearchOpen(false);
-            }}>
+            onClick={() => dispatch(toggleCart())}>
             <BiShoppingBag className="w-7 h-7" />
             <AnimatePresence>
               {totalItems > 0 && (
@@ -111,7 +121,7 @@ const NavBar: React.FC = () => {
         </div>
       </div>
 
-      {/* Dropdowns для мобильных иконок */}
+      {/* Dropdowns для мобильных иконок — только mobile */}
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div
@@ -119,9 +129,9 @@ const NavBar: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="px-4 pb-4 relative z-50">
+            className="px-4 pb-4 relative z-50 lg:hidden">
             <SearchDropdown
-              onClose={() => setIsSearchOpen(false)}
+              onClose={() => dispatch(closeSearch())}
               onToggleMenu={() => {}}
             />
           </motion.div>
@@ -136,9 +146,9 @@ const NavBar: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="px-4 pb-4">
+            className="px-4 pb-4 lg:hidden">
             <CartDropdown
-              onClose={() => setIsCartOpen(false)}
+              onClose={() => dispatch(closeCart())}
               onGoToCart={handleGoToCart}
             />
           </motion.div>
