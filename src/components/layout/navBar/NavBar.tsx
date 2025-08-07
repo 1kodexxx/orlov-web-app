@@ -1,5 +1,6 @@
+// src/components/layout/navBar/NavBar.tsx
+import React, { useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useRef, useEffect } from "react";
 import { FaSearchDollar, FaUserTie } from "react-icons/fa";
 import { BiShoppingBag } from "react-icons/bi";
 import { AnimatePresence, motion } from "framer-motion";
@@ -125,6 +126,7 @@ const NavBar: React.FC = () => {
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div
+            onMouseDown={(e) => e.stopPropagation()}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -132,7 +134,7 @@ const NavBar: React.FC = () => {
             className="px-4 pb-4 relative z-50 lg:hidden">
             <SearchDropdown
               onClose={() => dispatch(closeSearch())}
-              onToggleMenu={() => {}}
+              onToggleMenu={() => dispatch(closeSearch())}
             />
           </motion.div>
         )}
@@ -142,6 +144,7 @@ const NavBar: React.FC = () => {
         {isCartOpen && (
           <motion.div
             ref={mobileCartRef}
+            onMouseDown={(e) => e.stopPropagation()}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}

@@ -1,3 +1,4 @@
+// src/components/layout/navBar/searchDropdown/SearchDropdown.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { FaSearch, FaChevronDown } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -5,7 +6,7 @@ import { categoryLabelToSlug } from "@/utils/categories";
 
 interface SearchDropdownProps {
   onClose: () => void;
-  onToggleMenu: () => void; // Новый проп
+  onToggleMenu: () => void;
 }
 
 const categories = [
@@ -56,10 +57,8 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     if (searchQuery) params.set("query", searchQuery);
     navigate(`/catalog?${params.toString()}`);
 
-    // Закрыть дропдаун
     onClose();
 
-    // Если на странице Catalog — свернуть меню и проскроллить вверх
     if (location.pathname === "/catalog") {
       onToggleMenu();
       window.scrollTo(0, 0);
@@ -75,6 +74,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   return (
     <div
       ref={dropdownRef}
+      onMouseDown={(e) => e.stopPropagation()} // предотвращаем всплытие клика наружу
       className="relative flex flex-nowrap items-center w-[400px] max-w-[95vw] bg-background border border-secondary rounded-2xl overflow-visible sm:w-full">
       <div className="relative flex-shrink-0">
         <button
