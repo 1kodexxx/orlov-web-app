@@ -1,3 +1,4 @@
+// src/components/shop/cartPage/EmptyCartMessage.tsx
 import { motion } from "framer-motion";
 
 export default function EmptyCartMessage() {

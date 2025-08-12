@@ -1,3 +1,4 @@
+// src/components/shop/filters/index.ts
 export { default as ProductFilterPanel } from "./ProductFilterPanel";
 export { default as CategoryButtons } from "./CategoryButtons";
 export { default as FilterDropdown } from "./FilterDropdown";

@@ -1,3 +1,4 @@
+// src/components/shop/productPage/ProductActions.tsx
 import { useState, useEffect } from "react";
 import { ColorSelector, ModelSelector, ProductActions } from "./";
 import type { Product } from "@/data/products.data";

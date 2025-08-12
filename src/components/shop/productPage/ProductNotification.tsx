@@ -1,3 +1,4 @@
+// src/components/shop/productPage/ProductNotification.tsx
 import React, { useEffect, useRef, useState, useCallback } from "react";
 
 type VariantType = "success" | "error";

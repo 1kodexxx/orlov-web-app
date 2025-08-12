@@ -1,3 +1,4 @@
+// src/components/shop/cartPage/CartSummary.tsx
 import React from "react";
 import { motion } from "framer-motion";
 

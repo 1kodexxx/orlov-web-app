@@ -1,3 +1,4 @@
+// src/components/shop/filters/CategoryButtons.tsx
 import React, { useEffect, useRef } from "react";
 
 interface CategoryButtonsProps {

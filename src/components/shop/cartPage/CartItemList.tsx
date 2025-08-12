@@ -1,3 +1,4 @@
+// src/components/shop/cartPage/CartItemList.tsx
 import { motion } from "framer-motion";
 import { CartItem } from "./";
 import type { CartItem as CartItemType } from "@/data/cart.data";

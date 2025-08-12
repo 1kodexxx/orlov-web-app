@@ -10,6 +10,7 @@ import DesktopMenuButtons from "./desktop/DesktopMenuButtons";
 import MobileMenu from "./mobile/MobileMenu";
 import { CartDropdown } from "./cartDropdown/";
 import { SearchDropdown } from "./searchDropdown";
+import { AccountDropdown } from "./accountDropdown";
 import { useCart } from "@/context/useCart";
 
 // redux
@@ -17,9 +18,11 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   toggleCart,
   toggleSearch,
+  toggleAccount,
   closeAll,
   closeCart,
   closeSearch,
+  closeAccount,
   setAnimateBadge,
   setAnimatePrice,
 } from "@/store/slices/navbarSlice";
@@ -28,10 +31,16 @@ const NavBar: React.FC = () => {
   const location = useLocation();
   const { cartItems } = useCart();
   const dispatch = useAppDispatch();
-  const { isCartOpen, isSearchOpen, animateBadge, animatePrice } =
-    useAppSelector((s) => s.navbar);
+  const {
+    isCartOpen,
+    isSearchOpen,
+    isAccountOpen,
+    animateBadge,
+    animatePrice,
+  } = useAppSelector((s) => s.navbar);
 
   const mobileCartRef = useRef<HTMLDivElement>(null);
+  const mobileAccountRef = useRef<HTMLDivElement>(null);
   const prevTotalItemsRef = useRef<number>(0);
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -43,13 +52,15 @@ const NavBar: React.FC = () => {
     dispatch(closeCart());
   };
 
-  // клик вне дропдаунов — закрываем оба
+  // клик вне дропдаунов — закрываем всё
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
-      if (
-        mobileCartRef.current &&
-        !mobileCartRef.current.contains(e.target as Node)
-      ) {
+      const target = e.target as Node;
+      const inCart =
+        mobileCartRef.current && mobileCartRef.current.contains(target);
+      const inAccount =
+        mobileAccountRef.current && mobileAccountRef.current.contains(target);
+      if (!inCart && !inAccount) {
         dispatch(closeAll());
       }
     };
@@ -77,6 +88,11 @@ const NavBar: React.FC = () => {
   useEffect(() => {
     dispatch(closeAll());
   }, [location.pathname, dispatch]);
+
+  // TODO: сюда можно подвязать реальный logout
+  const handleSignOut = async () => {
+    // await api.auth.logout();
+  };
 
   return (
     <header className="w-full sticky top-0 z-50 bg-background shadow-md">
@@ -118,11 +134,15 @@ const NavBar: React.FC = () => {
             </motion.span>
           </div>
 
-          <FaUserTie className="text-2xl cursor-pointer hover:scale-110 transition" />
+          {/* Иконка профиля — открывает список аккаунта */}
+          <FaUserTie
+            onClick={() => dispatch(toggleAccount())}
+            className="text-2xl cursor-pointer hover:scale-110 transition"
+          />
         </div>
       </div>
 
-      {/* Dropdowns для мобильных иконок — только mobile */}
+      {/* Dropdowns для мобильных иконок */}
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div
@@ -153,6 +173,24 @@ const NavBar: React.FC = () => {
             <CartDropdown
               onClose={() => dispatch(closeCart())}
               onGoToCart={handleGoToCart}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isAccountOpen && (
+          <motion.div
+            ref={mobileAccountRef}
+            onMouseDown={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="px-4 pb-4 lg:hidden">
+            <AccountDropdown
+              onClose={() => dispatch(closeAccount())}
+              onSignOut={handleSignOut}
             />
           </motion.div>
         )}

@@ -1,3 +1,4 @@
+// src/components/shop/filters/SortBy.tsx
 import React, { useState, useRef, useEffect } from "react";
 
 interface SortByProps {

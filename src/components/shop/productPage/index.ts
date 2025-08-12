@@ -1,3 +1,4 @@
+// src/components/shop/productPage/index.ts
 export { default as BackTo } from "./BackTo";
 export { default as ColorSelector } from "./ColorSelector";
 export { default as ModelSelector } from "./ModelSelector";

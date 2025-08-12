@@ -1,3 +1,4 @@
+// src/components/shop/productPage/ColorSelector.tsx
 interface ColorSelectorProps {
   colors: string[];
   selected: string | null;

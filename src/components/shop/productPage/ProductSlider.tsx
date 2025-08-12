@@ -1,3 +1,4 @@
+// src/components/shop/productPage/ProductSlider.tsx
 import { useState, useEffect } from "react";
 
 interface ProductSliderProps {

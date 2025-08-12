@@ -1,3 +1,4 @@
+// src/components/shop/filters/FilterDropdown.tsx
 import React, { useEffect, useRef, useState } from "react";
 
 interface FilterDropdownProps {

@@ -1,3 +1,4 @@
+// src/components/shop/productPage/ModelSelector.tsx
 interface ModelSelectorProps {
   models: string[];
   selected: string | null;
