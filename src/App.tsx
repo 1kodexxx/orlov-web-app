@@ -22,16 +22,15 @@ const LoginForm = lazy(() => import("@/components/user/LoginForm"));
 const RegisterForm = lazy(() => import("@/components/user/RegisterForm"));
 const ChangePassword = lazy(() => import("@/components/user/ChangePassword"));
 
+// ⬇️ защищённый роутер
+import ProtectedRoute from "@/features/auth/ProtectedRoute";
+
 const App = () => {
   const location = useLocation();
 
-  // Страницы без NavBar и Footer (как логин/регистрация/смена пароля)
-  const HIDE_LAYOUT = new Set<string>([
-    "/login",
-    "/register",
-    "/change-password",
-  ]);
-  const hideLayout = HIDE_LAYOUT.has(location.pathname);
+  // пути, где не показываем NavBar и Footer
+  const hideLayoutPaths = ["/login", "/register", "/change-password"];
+  const hideLayout = hideLayoutPaths.includes(location.pathname);
 
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans flex flex-col">
@@ -55,15 +54,18 @@ const App = () => {
             {/* Каталог */}
             <Route path="/catalog" element={<CatalogLayout />}>
               <Route index element={<Catalog />} />
-              {/* внутри вложенного роутинга используем относительный путь */}
-              <Route path=":id" element={<ProductPage />} />
+              <Route path="/catalog/:id" element={<ProductPage />} />
             </Route>
 
             {/* Пользователь */}
             <Route path="/account" element={<Account />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegisterForm />} />
-            <Route path="/change-password" element={<ChangePassword />} />
+
+            {/* ⬇️ Смена пароля ТОЛЬКО для авторизованных */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/change-password" element={<ChangePassword />} />
+            </Route>
 
             <Route path="*" element={<NotFound />} />
           </Routes>
