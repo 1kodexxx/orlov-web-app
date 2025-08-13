@@ -1,4 +1,3 @@
-// src/shared/apiClient.ts
 let _accessToken: string | null = null;
 
 export function setAccessToken(token: string | null) {
@@ -18,16 +17,28 @@ export async function apiFetch<T>(
   init: RequestInit = {}
 ): Promise<T> {
   const token = getAccessToken();
+  const isForm = init.body instanceof FormData;
+
+  // надёжное слияние заголовков
+  const fromInit =
+    init.headers instanceof Headers
+      ? Object.fromEntries(init.headers.entries())
+      : (init.headers as Record<string, string>) ?? {};
+
+  const headers: Record<string, string> = { ...fromInit };
+
+  // ⛔️ Не ставим Content-Type для FormData — браузер сам добавит boundary
+  if (!isForm && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: "include",
     ...init,
-    headers: {
-      "Content-Type":
-        init.body instanceof FormData ? undefined! : "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(init.headers || {}),
-    } as HeadersInit,
+    headers,
   });
+
   if (!res.ok) {
     let msg = `HTTP ${res.status}`;
     try {
@@ -45,8 +56,9 @@ export async function apiFetch<T>(
     }
     throw new Error(msg);
   }
-  // 204 / no-content
+
   if (res.status === 204) return undefined as unknown as T;
+
   const ct = res.headers.get("content-type") ?? "";
   return (
     ct.includes("application/json") ? res.json() : (res.text() as unknown)
