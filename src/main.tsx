@@ -1,11 +1,11 @@
 // src/main.tsx
-import { StrictMode } from "react";
+import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "@/store";
 import { CartProvider } from "@/context/CartContext";
-import { AuthProvider } from "@/features/auth/AuthContext"; // ⬅️ добавлено
+import { AuthProvider } from "@/features/auth/useAuth"; // ⬅️ правильный импорт
 import App from "./App";
 import "./main.css";
 
@@ -14,8 +14,6 @@ createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
       <BrowserRouter>
         <AuthProvider>
-          {" "}
-          {/* ⬅️ обёртка провайдера авторизации */}
           <CartProvider>
             <App />
           </CartProvider>

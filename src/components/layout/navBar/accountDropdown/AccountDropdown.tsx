@@ -17,7 +17,6 @@ export interface AccountDropdownProps {
   isAuthenticated?: boolean;
 }
 
-// Роуты входа/регистрации
 const SIGN_IN_ROUTE = "/login";
 const SIGN_UP_ROUTE = "/register";
 
@@ -31,11 +30,9 @@ export const AccountDropdown: React.FC<AccountDropdownProps> = ({
   isAuthenticated,
 }) => {
   const navigate = useNavigate();
-
-  // Берём состояние авторизации из контекста
+  // setUser тут НЕ нужен — logout из контекста уже очищает состояние
   const { user, loading, logout } = useAuth();
 
-  // Истина авторизации: либо пришла пропсом, либо из контекста
   const authed =
     typeof isAuthenticated === "boolean" ? isAuthenticated : !!user;
 
@@ -44,12 +41,13 @@ export const AccountDropdown: React.FC<AccountDropdownProps> = ({
       if (onSignOut) {
         await onSignOut();
       } else {
+        // это вызовет /auth/logout, очистит accessToken и сбросит user в null
         await logout();
       }
       onClose();
       navigate("/", { replace: true });
-    } catch {
-      // опционально можно вывести тост/ошибку
+    } catch (err) {
+      console.error("Ошибка при выходе:", err);
       onClose();
     }
   }
@@ -79,10 +77,7 @@ export const AccountDropdown: React.FC<AccountDropdownProps> = ({
           </h3>
         </div>
 
-        {/* Пока идёт определение статуса авторизации — пусть будет гостевое меню,
-            чтобы не мигало. Как только user загрузится — отрисуется нужная ветка. */}
         {authed ? (
-          // ----- Авторизованный пользователь -----
           <ul className="space-y-1">
             <li>
               <Link to="/account" onClick={onClose} className={itemCls}>
@@ -137,7 +132,6 @@ export const AccountDropdown: React.FC<AccountDropdownProps> = ({
             </li>
           </ul>
         ) : (
-          // ----- Гость -----
           <ul className="space-y-1">
             <li>
               <Link to={SIGN_IN_ROUTE} onClick={onClose} className={itemCls}>

@@ -3,7 +3,7 @@ import { api, setAccessToken } from "@/shared/apiClient";
 
 export type Role = "admin" | "manager" | "customer";
 
-// Профиль, который отдаёт /auth/me (твой UsersService.getProfile)
+// Профиль, который отдаёт /auth/me
 export interface Me {
   id: number;
   email: string;
@@ -13,7 +13,6 @@ export interface Me {
   avatarUrl: string | null;
 }
 
-// Формы
 export interface RegisterDto {
   email: string;
   password: string;
@@ -25,7 +24,6 @@ export interface LoginDto {
   password: string;
 }
 
-// Типы, соответствующие бэкенду
 export interface JwtPayload {
   sub: number;
   email: string;
@@ -33,7 +31,6 @@ export interface JwtPayload {
   ver: number;
   jti?: string;
 }
-
 export interface PublicUser {
   id: number;
   email: string;
@@ -41,23 +38,20 @@ export interface PublicUser {
   tokenVersion: number;
 }
 
-// Ответы авторизации
 type RegisterResponse = { accessToken: string; user: JwtPayload };
 type LoginResponse = { accessToken: string; user: PublicUser };
 type RefreshResponse = { accessToken: string; user: JwtPayload };
 
-// --- API ---
-
 export async function register(dto: RegisterDto) {
   const { data } = await api.post<RegisterResponse>("/auth/register", dto);
   setAccessToken(data.accessToken);
-  return data.user; // JwtPayload
+  return data.user;
 }
 
 export async function login(dto: LoginDto) {
   const { data } = await api.post<LoginResponse>("/auth/login", dto);
   setAccessToken(data.accessToken);
-  return data.user; // PublicUser
+  return data.user;
 }
 
 export async function me(): Promise<Me> {
@@ -68,10 +62,11 @@ export async function me(): Promise<Me> {
 export async function refresh() {
   const { data } = await api.post<RefreshResponse>("/auth/refresh");
   setAccessToken(data.accessToken);
-  return data.user; // JwtPayload
+  return data.user;
 }
 
 export async function logout() {
-  await api.post("/auth/logout");
+  // ⛔️ выключаем авто-refresh для запроса logout
+  await api.post("/auth/logout", {}, { headers: { "x-skip-refresh": "1" } });
   setAccessToken("");
 }

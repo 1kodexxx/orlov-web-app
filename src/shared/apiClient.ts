@@ -1,70 +1,98 @@
 // src/shared/apiClient.ts
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError } from "axios";
+import type { InternalAxiosRequestConfig, AxiosRequestHeaders } from "axios";
 
-/** Ответ /auth/refresh */
-type RefreshResponse = {
-  accessToken: string;
-  user: {
-    sub: number;
-    email: string;
-    role: "admin" | "manager" | "customer";
-  };
-};
+const BASE_URL =
+  (import.meta as unknown as { env?: Record<string, string> })?.env
+    ?.VITE_API_URL ?? "http://localhost:3000";
 
-/** Конфиг запроса с флажком повторной попытки */
-type RetryConfig = InternalAxiosRequestConfig & { __retry?: boolean };
+const ACCESS_KEY = "access_token";
 
-/** Базовый axios-клиент */
+let accessToken: string =
+  (typeof localStorage !== "undefined" && localStorage.getItem(ACCESS_KEY)) ||
+  "";
+
+export function setAccessToken(token: string) {
+  accessToken = token || "";
+  try {
+    if (token) {
+      localStorage.setItem(ACCESS_KEY, token);
+    } else {
+      localStorage.removeItem(ACCESS_KEY);
+    }
+  } catch {
+    // ignore
+  }
+}
+
+export function getAccessToken(): string {
+  return accessToken;
+}
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // http://localhost:3000
-  withCredentials: true, // для httpOnly cookie "rt"
-  timeout: 15_000,
-  headers: { "Content-Type": "application/json" },
+  baseURL: BASE_URL,
+  withCredentials: true, // нужны cookie rt
 });
 
-// Лёгкое хранилище access-токена (можешь заменить на Redux/Zustand)
-let _access = localStorage.getItem("access_token") ?? "";
-export const setAccessToken = (t: string) => {
-  _access = t;
-  if (t) localStorage.setItem("access_token", t);
-  else localStorage.removeItem("access_token");
-};
-export const getAccessToken = () => _access;
-
-// Подмешиваем Authorization
+// === REQUEST: кладём Bearer ===
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const t = getAccessToken();
-  if (t) config.headers.Authorization = `Bearer ${t}`;
+  if (accessToken) {
+    const headers: AxiosRequestHeaders = (config.headers ??
+      {}) as AxiosRequestHeaders;
+    headers.Authorization = `Bearer ${accessToken}`;
+    config.headers = headers;
+  }
   return config;
 });
 
-// Глобальный авто-рефреш access по 401
-let isRefreshing = false;
-let waiters: Array<() => void> = [];
+// === RESPONSE: auto refresh on 401 (если не запрещено) ===
+let refreshing: Promise<string> | null = null;
 
 api.interceptors.response.use(
   (r) => r,
   async (error: AxiosError) => {
-    const original = error.config as RetryConfig | undefined;
-    if (!original) throw error;
+    const original = error.config as
+      | (InternalAxiosRequestConfig & {
+          _retry?: boolean;
+        })
+      | undefined;
 
-    if (error.response?.status === 401 && !original.__retry) {
-      original.__retry = true;
+    const status = error.response?.status;
 
-      if (isRefreshing) {
-        await new Promise<void>((res) => waiters.push(res));
-      } else {
-        isRefreshing = true;
-        try {
-          const r = await api.post<RefreshResponse>("/auth/refresh");
-          setAccessToken(r.data.accessToken);
-        } finally {
-          isRefreshing = false;
-          waiters.forEach((fn) => fn());
-          waiters = [];
+    // Надёжно читаем заголовок запрета refresh
+    const headersObj = (original?.headers ?? {}) as Record<string, unknown>;
+    const skipRefresh =
+      headersObj["x-skip-refresh"] === "1" ||
+      headersObj["X-Skip-Refresh"] === "1";
+
+    if (status === 401 && !skipRefresh && original && !original._retry) {
+      try {
+        original._retry = true;
+
+        if (!refreshing) {
+          refreshing = api
+            .post<{ accessToken: string }>("/auth/refresh")
+            .then((res) => {
+              const token = res.data?.accessToken ?? "";
+              setAccessToken(token);
+              return token;
+            })
+            .finally(() => {
+              refreshing = null;
+            });
         }
+
+        const newToken = await refreshing;
+        const hdrs: AxiosRequestHeaders = (original.headers ??
+          {}) as AxiosRequestHeaders;
+        hdrs.Authorization = `Bearer ${newToken}`;
+        original.headers = hdrs;
+
+        return api.request(original);
+      } catch (e) {
+        setAccessToken(""); // refresh не удался — локально деавторизуемся
+        throw e;
       }
-      return api(original);
     }
 
     throw error;

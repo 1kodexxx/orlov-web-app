@@ -21,10 +21,12 @@ import {
 import CartDropdown from "../cartDropdown/CartDropdown";
 import SearchDropdown from "../searchDropdown/SearchDropdown";
 import { AccountDropdown } from "../accountDropdown";
+import { useAuth } from "@/features/auth/useAuth"; // ⬅️ добавлено
 
 const DesktopMenuButtons: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { logout } = useAuth(); // ⬅️ берём logout из контекста
 
   const desktopCartRef = useRef<HTMLDivElement>(null);
   const desktopAccountRef = useRef<HTMLDivElement>(null);
@@ -84,9 +86,14 @@ const DesktopMenuButtons: React.FC = () => {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, [dispatch]);
 
-  // TODO: сюда подвяжешь настоящий logout
+  // Выход из аккаунта
   const handleSignOut = async () => {
-    // await api.auth.logout();
+    try {
+      await logout(); // ← вызов бэкенда (/auth/logout), очистка accessToken и user
+    } finally {
+      dispatch(closeAccount()); // закрыть дропдаун
+      navigate("/", { replace: true }); // отправить на главную (или куда нужно)
+    }
   };
 
   return (
@@ -178,7 +185,7 @@ const DesktopMenuButtons: React.FC = () => {
             className="absolute right-0 top-12 z-50">
             <AccountDropdown
               onClose={() => dispatch(closeAccount())}
-              onSignOut={handleSignOut}
+              onSignOut={handleSignOut} // ← теперь реально выходит
             />
           </motion.div>
         )}
