@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useAuth } from "@/features/auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import AccountView from "./AccountView";
@@ -10,9 +10,11 @@ import type {
   MyComment,
   MyCompanyReview,
 } from "./types";
-import { apiFetch, API_BASE } from "@/shared/apiClient";
+import { API_BASE, getAccessToken } from "@/shared/apiClient";
 
-/** Точное описание ответа /users/me (из бэка) */
+type ViteEnv = { VITE_API_URL?: string };
+
+/** Точное описание ответа /users/me */
 type MeResponse = {
   id: number;
   email: string;
@@ -24,36 +26,63 @@ type MeResponse = {
   city: string | null;
   homeAddress: string | null;
   deliveryAddress: string | null;
-  birthDate?: string | null;
-  pickupPoint?: string | null;
 };
 
 const AccountPage: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
+  const baseUrl = useMemo(
+    () =>
+      (((import.meta as unknown as { env: ViteEnv }).env.VITE_API_URL ??
+        "") as string) || API_BASE,
+    []
+  );
+
   /** Делает относительный URL с бэка абсолютным */
-  const toAbsoluteUrl = useCallback((u?: string | null): string | undefined => {
-    if (!u) return undefined;
-    if (/^https?:\/\//i.test(u)) return u;
+  const toAbsoluteUrl = useCallback(
+    (u?: string | null): string | undefined => {
+      if (!u) return undefined;
+      if (/^https?:\/\//i.test(u)) return u;
+      try {
+        return new URL(u.startsWith("/") ? u : `/${u}`, baseUrl).toString();
+      } catch {
+        const root = String(baseUrl).replace(/\/+$/, "");
+        const path = String(u).replace(/^\/+/, "");
+        return `${root}/${path}`;
+      }
+    },
+    [baseUrl]
+  );
 
-    // базовый origin: берём VITE_API_URL, иначе текущий сайт
-    const base = (API_BASE && API_BASE.trim()) || window.location.origin;
-
-    try {
-      // ведущий "/" гарантирует путь от корня
-      return new URL(u.startsWith("/") ? u : `/${u}`, base).toString();
-    } catch {
-      const root = base.replace(/\/+$/, "");
-      const path = String(u).replace(/^\/+/, "");
-      return `${root}/${path}`;
-    }
-  }, []);
-
-  // локальный алиас поверх apiFetch — для явной типизации
-  const api = useCallback(<T,>(path: string, init?: RequestInit) => {
-    return apiFetch<T>(path, init);
-  }, []);
+  /** Хелпер для API с авторизацией и типизацией ответа */
+  const api = useCallback(
+    <T,>(path: string, init?: RequestInit) => {
+      const token = getAccessToken();
+      return fetch(`${baseUrl}${path}`, {
+        credentials: "include",
+        ...init,
+        headers: {
+          ...(init?.body instanceof FormData
+            ? {}
+            : { "Content-Type": "application/json" }),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(init?.headers || {}),
+        },
+      }).then(async (r) => {
+        if (!r.ok) {
+          const t = await r.text();
+          throw new Error(t || `HTTP ${r.status}`);
+        }
+        if (r.status === 204) return undefined as T;
+        const ct = r.headers.get("content-type") ?? "";
+        return (
+          ct.includes("application/json") ? r.json() : r.text()
+        ) as Promise<T>;
+      });
+    },
+    [baseUrl]
+  );
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -92,8 +121,6 @@ const AccountPage: React.FC = () => {
             deliveryAddress: me.deliveryAddress ?? "",
             country: me.country ?? null,
             city: me.city ?? null,
-            birthDate: me.birthDate ?? null,
-            pickupPoint: me.pickupPoint ?? null,
           });
         }
         setOrders(o ?? []);
@@ -102,7 +129,7 @@ const AccountPage: React.FC = () => {
         setComments(c ?? []);
         setCompanyReviews(cr ?? []);
       } catch {
-        // Фолбэки, если сеть/сервер недоступны
+        // фолбэки (офлайн / ошибки)
         setOrders((prev) =>
           prev.length
             ? prev
@@ -157,9 +184,10 @@ const AccountPage: React.FC = () => {
     })();
   }, [api, user?.email, toAbsoluteUrl]);
 
-  // сохранение профиля
+  // --------- сохранение профиля (имя/фамилия, телефоны, адреса и т.п.) ----------
   async function saveProfile(data: Partial<UserProfile>) {
-    const [firstName, ...rest] = (data.name ?? "").trim().split(/\s+/);
+    const name = (data.name ?? "").trim();
+    const [firstName, ...rest] = name.split(/\s+/);
     const lastName = rest.join(" ") || undefined;
 
     const me = await api<MeResponse>("/users/me", {
@@ -172,9 +200,6 @@ const AccountPage: React.FC = () => {
         country: data.country ?? null,
         homeAddress: data.homeAddress ?? null,
         deliveryAddress: data.deliveryAddress ?? null,
-        // Доп. поля отправляем, если бэк их принимает (сейчас поддерживает)
-        birthDate: data.birthDate ?? null,
-        pickupPoint: data.pickupPoint ?? null,
       }),
     });
 
@@ -187,19 +212,54 @@ const AccountPage: React.FC = () => {
       deliveryAddress: me.deliveryAddress ?? "",
       country: me.country ?? null,
       city: me.city ?? null,
-      birthDate: me.birthDate ?? null,
-      pickupPoint: me.pickupPoint ?? null,
     });
+  }
+
+  // --------- смена email с обязательным logout ----------
+  async function changeEmail(newEmail: string) {
+    await api<{ email: string }>("/users/me/email", {
+      method: "PATCH",
+      body: JSON.stringify({ email: newEmail }),
+    });
+    // logout (инвалидируем access по jti и ++tokenVersion)
+    try {
+      await api("/auth/logout", {
+        method: "POST",
+        headers: { "x-skip-refresh": "1" },
+      });
+    } catch {
+      // ignore
+    }
+    await logout();
+    navigate("/login", { replace: true });
+  }
+
+  // --------- смена пароля с обязательным logout ----------
+  async function changePassword(currentPassword: string, newPassword: string) {
+    await api<{ success: true }>("/users/me/password", {
+      method: "PATCH",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    try {
+      await api("/auth/logout", {
+        method: "POST",
+        headers: { "x-skip-refresh": "1" },
+      });
+    } catch {
+      // ignore
+    }
+    await logout();
+    navigate("/login", { replace: true });
   }
 
   // загрузка аватара
   async function uploadAvatar(file: File) {
     const fd = new FormData();
     fd.append("avatar", file);
-    const res = await api<{ avatarUrl: string; user?: MeResponse }>(
-      "/users/me/avatar",
-      { method: "PATCH", body: fd }
-    );
+    const res = await api<{ avatarUrl: string }>("/users/me/avatar", {
+      method: "PATCH",
+      body: fd,
+    });
     setProfile((p) =>
       p ? { ...p, avatarUrl: toAbsoluteUrl(res.avatarUrl) } : p
     );
@@ -226,6 +286,8 @@ const AccountPage: React.FC = () => {
       onOrderCancel={(id) => console.log("cancel", id)}
       onSaveProfile={saveProfile}
       onUploadAvatar={uploadAvatar}
+      onChangeEmail={changeEmail}
+      onChangePassword={changePassword}
     />
   );
 };

@@ -16,7 +16,7 @@ const Delivery = lazy(() => import("@/pages/Delivery"));
 const Reviews = lazy(() => import("@/pages/Reviews"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
-// user (новый аккаунт)
+// user
 const Account = lazy(() => import("@/components/user/account/AccountPage"));
 const LoginForm = lazy(() => import("@/components/user/LoginForm"));
 const RegisterForm = lazy(() => import("@/components/user/RegisterForm"));
@@ -25,9 +25,13 @@ const ChangePassword = lazy(() => import("@/components/user/ChangePassword"));
 const App = () => {
   const location = useLocation();
 
-  // пути, где не показываем NavBar и Footer
-  const hideLayoutPaths = ["/login", "/register", "/account/change-password"];
-  const hideLayout = hideLayoutPaths.includes(location.pathname);
+  // Страницы без NavBar и Footer (как логин/регистрация/смена пароля)
+  const HIDE_LAYOUT = new Set<string>([
+    "/login",
+    "/register",
+    "/change-password",
+  ]);
+  const hideLayout = HIDE_LAYOUT.has(location.pathname);
 
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans flex flex-col">
@@ -51,17 +55,15 @@ const App = () => {
             {/* Каталог */}
             <Route path="/catalog" element={<CatalogLayout />}>
               <Route index element={<Catalog />} />
-              <Route path="/catalog/:id" element={<ProductPage />} />
+              {/* внутри вложенного роутинга используем относительный путь */}
+              <Route path=":id" element={<ProductPage />} />
             </Route>
 
             {/* Пользователь */}
             <Route path="/account" element={<Account />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegisterForm />} />
-            <Route
-              path="/account/change-password"
-              element={<ChangePassword />}
-            />
+            <Route path="/change-password" element={<ChangePassword />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

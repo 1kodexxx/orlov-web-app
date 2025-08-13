@@ -1,4 +1,6 @@
+// src/pages/account/AccountView.tsx
 import React, { useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "./Breadcrumbs";
 import StatCard from "./StatCard";
 import PaymentBadge from "./PaymentBadge";
@@ -25,6 +27,11 @@ type Props = {
   comments?: MyComment[];
   companyReviews?: MyCompanyReview[];
   className?: string;
+  onChangeEmail?: (email: string) => Promise<void> | void;
+  onChangePassword?: (
+    currentPassword: string,
+    newPassword: string
+  ) => Promise<void> | void;
 } & AccountCallbacks;
 
 /** Инициалы для заглушки аватара */
@@ -47,7 +54,10 @@ const AccountView: React.FC<Props> = ({
   onOrderCancel,
   onSaveProfile,
   onUploadAvatar,
+  onChangeEmail,
 }) => {
+  const navigate = useNavigate();
+
   const [editOpen, setEditOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [actMenu, setActMenu] = useState<string | null>(null);
@@ -57,22 +67,16 @@ const AccountView: React.FC<Props> = ({
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // форма редактирования (тип берём из EditModal)
+  // форма редактирования
   const [form, setForm] = useState<
     Partial<React.ComponentProps<typeof EditModal>["form"]>
   >({
-    firstName: undefined,
-    lastName: undefined,
     email: user.email,
     pickupPoint: user.pickupPoint ?? null,
     phone: user.phone ?? null,
     homeAddress: user.homeAddress ?? null,
     deliveryAddress: user.deliveryAddress ?? null,
     birthDate: user.birthDate ?? null,
-    country: user.country ?? null,
-    city: user.city ?? null,
-    headline: undefined,
-    organization: undefined,
   });
 
   const totalOrdersCompare = "против 20 за последние 3 месяца";
@@ -94,18 +98,13 @@ const AccountView: React.FC<Props> = ({
     try {
       setSaving(true);
       await onSaveProfile({
-        name:
-          form.firstName || form.lastName
-            ? `${form.firstName ?? ""} ${form.lastName ?? ""}`.trim()
-            : user.name,
+        name: user.name,
         email: form.email ?? undefined,
         pickupPoint: form.pickupPoint ?? null,
         phone: form.phone ?? undefined,
         homeAddress: form.homeAddress ?? null,
         deliveryAddress: form.deliveryAddress ?? null,
         birthDate: form.birthDate ?? null,
-        country: form.country ?? null,
-        city: form.city ?? null,
       });
       setEditOpen(false);
     } finally {
@@ -123,7 +122,6 @@ const AccountView: React.FC<Props> = ({
     const file = e.target.files?.[0];
     e.currentTarget.value = "";
     if (!file) return;
-
     if (!file.type.startsWith("image/")) {
       alert("Файл должен быть изображением");
       return;
@@ -133,7 +131,6 @@ const AccountView: React.FC<Props> = ({
       alert("Размер файла не должен превышать 5 МБ");
       return;
     }
-
     try {
       setUploadingAvatar(true);
       await onUploadAvatar(file);
@@ -154,13 +151,17 @@ const AccountView: React.FC<Props> = ({
         <div className="grid grid-cols-2 gap-6 border-y border-gray-700 py-4 md:py-8 lg:grid-cols-4 xl:gap-16">
           <StatCard
             icon={
-              <svg className={iconCls} viewBox="0 0 24 24" fill="none">
+              <svg
+                className={iconCls}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24">
                 <path
-                  d="M5 4h2l2.5 10H17a2 2 0 1 1 0 4H9a2 2 0 1 1 0-4"
                   stroke="currentColor"
-                  strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
                 />
               </svg>
             }
@@ -172,12 +173,15 @@ const AccountView: React.FC<Props> = ({
 
           <StatCard
             icon={
-              <svg className={iconCls} viewBox="0 0 24 24" fill="none">
+              <svg
+                className={iconCls}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24">
                 <path
-                  d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z"
                   stroke="currentColor"
                   strokeWidth="2"
-                  strokeLinejoin="round"
+                  d="M11.083 5.104c.35-.8 1.485-.8 1.834 0l1.752 4.022a1 1 0 0 0 .84.597l4.463.342c.9.069 1.255 1.2.556 1.771l-3.33 2.723a1 1 0 0 0-.337 1.016l1.03 4.119c.214.858-.71 1.552-1.474 1.106l-3.913-2.281a1 1 0 0 0-1.008 0L7.583 20.8c-.764.446-1.688-.248-1.474-1.106l1.03-4.119A1 1 0 0 0 6.8 14.56l-3.33-2.723c-.698-.571-.342-1.702.557-1.771l4.462-.342a1 1 0 0 0 .84-.597l1.753-4.022Z"
                 />
               </svg>
             }
@@ -189,12 +193,17 @@ const AccountView: React.FC<Props> = ({
 
           <StatCard
             icon={
-              <svg className={iconCls} viewBox="0 0 24 24" fill="none">
+              <svg
+                className={iconCls}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24">
                 <path
-                  d="M12 21s-6.5-4.35-8.5-7.35C1.5 10.5 3 7 6.5 7 8.46 7 10 8.5 12 10.5 14 8.5 15.54 7 17.5 7 21 7 22.5 10.5 20.5 13.65 18.5 16.65 12 21 12 21Z"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeLinecap="round"
                   strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
                 />
               </svg>
             }
@@ -206,13 +215,17 @@ const AccountView: React.FC<Props> = ({
 
           <StatCard
             icon={
-              <svg className={iconCls} viewBox="0 0 24 24" fill="none">
+              <svg
+                className={iconCls}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24">
                 <path
-                  d="M3 9h13a5 5 0 0 1 0 10H7M3 9l4-4M3 9l4 4"
                   stroke="currentColor"
-                  strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M3 9h13a5 5 0 0 1 0 10H7M3 9l4-4M3 9l4 4"
                 />
               </svg>
             }
@@ -229,7 +242,6 @@ const AccountView: React.FC<Props> = ({
             {/* Левая колонка */}
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                {/* Аватар или заглушка с инициалами */}
                 {user.avatarUrl ? (
                   <img
                     className="h-16 w-16 rounded-lg object-cover border border-gray-700"
@@ -247,7 +259,7 @@ const AccountView: React.FC<Props> = ({
                     {user.name}
                   </h2>
 
-                  {/* Кнопка смены аватара */}
+                  {/* Смена аватара */}
                   <div>
                     <input
                       ref={fileRef}
@@ -260,7 +272,7 @@ const AccountView: React.FC<Props> = ({
                       type="button"
                       disabled={!onUploadAvatar || uploadingAvatar}
                       onClick={pickAvatar}
-                      className="inline-flex items-center rounded-lg border border-gray-700 bg-[#1b1b1b] px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-[#2A2A2A] disabled:opacity-60">
+                      className="cursor-pointer inline-flex items-center rounded-lg border border-gray-700 bg-[#1b1b1b] px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-[#2A2A2A] disabled:opacity-60">
                       {uploadingAvatar ? (
                         <>
                           <svg
@@ -308,6 +320,17 @@ const AccountView: React.FC<Props> = ({
               <dl>
                 <dt className="font-semibold text-white">E-mail</dt>
                 <dd className="text-text.secondary">{user.email}</dd>
+                {onChangeEmail && (
+                  <button
+                    className="cursor-pointer mt-2 inline-flex items-center rounded border border-gray-700 bg-[#1b1b1b] px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-[#2A2A2A]"
+                    onClick={() => {
+                      const v = window.prompt("Новый e-mail", user.email ?? "");
+                      if (!v) return;
+                      void onChangeEmail(v.trim());
+                    }}>
+                    Изменить e-mail
+                  </button>
+                )}
               </dl>
 
               <dl>
@@ -315,14 +338,15 @@ const AccountView: React.FC<Props> = ({
                 <dd className="flex items-center gap-1 text-text.secondary">
                   <svg
                     className="hidden h-5 w-5 shrink-0 text-text.secondary lg:inline"
-                    viewBox="0 0 24 24"
-                    fill="none">
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24">
                     <path
-                      d="M4 12L12 4l8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1V10.5"
                       stroke="currentColor"
-                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"
                     />
                   </svg>
                   {user.homeAddress || "—"}
@@ -334,19 +358,27 @@ const AccountView: React.FC<Props> = ({
                 <dd className="flex items-center gap-1 text-text.secondary">
                   <svg
                     className="hidden h-5 w-5 shrink-0 text-text.secondary lg:inline"
-                    viewBox="0 0 24 24"
-                    fill="none">
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24">
                     <path
-                      d="M13 7h6l2 4m-8-4v8M4 7h7a1 1 0 0 1 1 1v9H3V8a1 1 0 0 1 1-1Z"
                       stroke="currentColor"
-                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 7h6l2 4m-8-4v8m0-8V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v9h2m8 0H9m4 0h2m4 0h2v-4m0 0h-5"
                     />
                   </svg>
                   {user.deliveryAddress || "—"}
                 </dd>
               </dl>
+
+              {/* Кнопка переноса на отдельную страницу смены пароля */}
+              <button
+                className="cursor-pointer inline-flex items-center rounded border border-gray-700 bg-[#1b1b1b] px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-[#2A2A2A]"
+                onClick={() => navigate("/change-password")}>
+                Сменить пароль
+              </button>
             </div>
 
             {/* Правая колонка */}
@@ -388,17 +420,18 @@ const AccountView: React.FC<Props> = ({
           <button
             type="button"
             onClick={() => setEditOpen(true)}
-            className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-[#1a1a1a] hover:bg-[#e6d878] focus:outline-none focus:ring-4 focus:ring-primary-300 sm:w-auto">
+            className="cursor-pointer inline-flex w-full items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-[#1a1a1a] hover:bg-[#e6d878] focus:outline-none focus:ring-4 focus:ring-primary-300 sm:w-auto">
             <svg
               className="-ms-0.5 me-1.5 h-4 w-4"
-              viewBox="0 0 24 24"
-              fill="none">
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24">
               <path
-                d="M14.3 4.84l2.86 2.86M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5M16.6 4.09a2.02 2.02 0 0 1 2.86 2.86l-6.84 6.84L8 14l.71-3.56 6.84-6.84Z"
                 stroke="currentColor"
-                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                strokeWidth="2"
+                d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
               />
             </svg>
             Редактировать данные
@@ -428,7 +461,7 @@ const AccountView: React.FC<Props> = ({
                   <dd className="mt-1.5 text-base font-semibold text-white">
                     <button
                       onClick={() => onOrderDetails?.(o.id)}
-                      className="hover:underline">
+                      className="cursor-pointer hover:underline">
                       #{o.id}
                     </button>
                   </dd>
