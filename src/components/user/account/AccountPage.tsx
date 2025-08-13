@@ -1,39 +1,140 @@
-import React, { useEffect, useState } from "react";
+// src/pages/account/AccountPage.tsx
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useAuth } from "@/features/auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import AccountView from "./AccountView";
-import type { Order, Stats, UserProfile } from "./types";
+import type {
+  Order,
+  Stats,
+  UserProfile,
+  ProductSummary,
+  MyComment,
+  MyCompanyReview,
+} from "./types";
+import { API_BASE, getAccessToken } from "@/shared/apiClient";
 
 type ViteEnv = { VITE_API_URL?: string };
+
+/** Точное описание ответа /users/me */
+type MeResponse = {
+  id: number;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  avatarUrl: string | null;
+  phone: string | null;
+  country: string | null;
+  city: string | null;
+  homeAddress: string | null;
+  deliveryAddress: string | null;
+};
 
 const AccountPage: React.FC = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  const baseUrl = ((import.meta as unknown as { env: ViteEnv }).env
-    .VITE_API_URL ?? "") as string;
+  const baseUrl = useMemo(
+    () =>
+      (((import.meta as unknown as { env: ViteEnv }).env.VITE_API_URL ??
+        "") as string) || API_BASE,
+    []
+  );
+
+  /** Делает относительный URL с бэка абсолютным */
+  const toAbsoluteUrl = useCallback(
+    (u?: string | null): string | undefined => {
+      if (!u) return undefined;
+      // Если уже абсолютный http(s) — возвращаем как есть
+      if (/^https?:\/\//i.test(u)) return u;
+
+      try {
+        // Ведущий "/" заставляет new URL игнорировать под-пути (например, /api) и идти от корня домена
+        return new URL(u.startsWith("/") ? u : `/${u}`, baseUrl).toString();
+      } catch {
+        // Запасной план — ручная склейка без лишних слэшей
+        const root = String(baseUrl).replace(/\/+$/, "");
+        const path = String(u).replace(/^\/+/, "");
+        return `${root}/${path}`;
+      }
+    },
+    [baseUrl]
+  );
+
+  /** Хелпер для API с авторизацией и типизацией ответа */
+  const api = useCallback(
+    <T,>(path: string, init?: RequestInit) => {
+      const token = getAccessToken();
+      return fetch(`${baseUrl}${path}`, {
+        credentials: "include",
+        ...init,
+        headers: {
+          ...(init?.body instanceof FormData
+            ? {}
+            : { "Content-Type": "application/json" }),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(init?.headers || {}),
+        },
+      }).then(async (r) => {
+        if (!r.ok) {
+          const t = await r.text();
+          throw new Error(t || `HTTP ${r.status}`);
+        }
+        if (r.status === 204) return undefined as T;
+        const ct = r.headers.get("content-type") ?? "";
+        return (
+          ct.includes("application/json") ? r.json() : r.text()
+        ) as Promise<T>;
+      });
+    },
+    [baseUrl]
+  );
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
+  const [liked, setLiked] = useState<ProductSummary[]>([]);
+  const [comments, setComments] = useState<MyComment[]>([]);
+  const [companyReviews, setCompanyReviews] = useState<MyCompanyReview[]>([]);
+
+  // редирект неавторизованного
   useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login", { replace: true });
-    }
+    if (!loading && !user) navigate("/login", { replace: true });
   }, [loading, user, navigate]);
 
+  // первичная загрузка
   useEffect(() => {
     (async () => {
       try {
-        const [oRes, sRes] = await Promise.all([
-          fetch(`${baseUrl}/account/orders`, { credentials: "include" }),
-          fetch(`${baseUrl}/account/stats`, { credentials: "include" }),
+        const [me, o, s, l, c, cr] = await Promise.all([
+          api<MeResponse>("/users/me"),
+          api<Order[]>("/users/me/orders"),
+          api<Stats>("/users/me/stats"),
+          api<ProductSummary[]>("/users/me/likes"),
+          api<MyComment[]>("/users/me/comments"),
+          api<MyCompanyReview[]>("/users/me/company-reviews"),
         ]);
-        if (oRes.ok) setOrders((await oRes.json()) as Order[]);
-        if (sRes.ok) setStats((await sRes.json()) as Stats);
+
+        if (me) {
+          setProfile({
+            name:
+              `${me.firstName ?? ""} ${me.lastName ?? ""}`.trim() || me.email,
+            email: me.email,
+            avatarUrl: toAbsoluteUrl(me.avatarUrl),
+            phone: me.phone ?? "",
+            homeAddress: me.homeAddress ?? "",
+            deliveryAddress: me.deliveryAddress ?? "",
+            country: me.country ?? null,
+            city: me.city ?? null,
+          });
+        }
+        setOrders(o ?? []);
+        setStats(s ?? null);
+        setLiked(l ?? []);
+        setComments(c ?? []);
+        setCompanyReviews(cr ?? []);
       } catch {
-        // fallbacks
-      } finally {
+        // Фолбэки чтобы UI был заполнен даже при офлайне/ошибке
         setOrders((prev) =>
           prev.length
             ? prev
@@ -65,23 +166,73 @@ const AccountPage: React.FC = () => {
               ]
         );
         setStats(
+          (p) =>
+            p ?? {
+              ordersMade: 0,
+              ordersChangePct: 0,
+              reviewsAdded: 0,
+              reviewsChangePct: 0,
+              favoritesAdded: 0,
+              favoritesChangePct: 0,
+              returns: 0,
+              returnsChangePct: 0,
+            }
+        );
+        setProfile(
           (prev) =>
             prev ?? {
-              ordersMade: 24,
-              ordersChangePct: 10.3,
-              reviewsAdded: 16,
-              reviewsChangePct: 8.6,
-              favoritesAdded: 8,
-              favoritesChangePct: -12,
-              returns: 2,
-              returnsChangePct: 50,
+              name: user?.email ?? "Пользователь",
+              email: user?.email ?? "user@example.com",
             }
         );
       }
     })();
-  }, [baseUrl]);
+  }, [api, user?.email, toAbsoluteUrl]);
 
-  if (loading || !user || !stats) {
+  // сохранение профиля
+  async function saveProfile(data: Partial<UserProfile>) {
+    const [firstName, ...rest] = (data.name ?? "").trim().split(/\s+/);
+    const lastName = rest.join(" ") || undefined;
+
+    const me = await api<MeResponse>("/users/me", {
+      method: "PATCH",
+      body: JSON.stringify({
+        firstName: firstName || undefined,
+        lastName,
+        phone: data.phone ?? null,
+        city: data.city ?? null,
+        country: data.country ?? null,
+        homeAddress: data.homeAddress ?? null,
+        deliveryAddress: data.deliveryAddress ?? null,
+      }),
+    });
+
+    setProfile({
+      name: `${me.firstName ?? ""} ${me.lastName ?? ""}`.trim() || me.email,
+      email: me.email,
+      avatarUrl: toAbsoluteUrl(me.avatarUrl),
+      phone: me.phone ?? "",
+      homeAddress: me.homeAddress ?? "",
+      deliveryAddress: me.deliveryAddress ?? "",
+      country: me.country ?? null,
+      city: me.city ?? null,
+    });
+  }
+
+  // загрузка аватара
+  async function uploadAvatar(file: File) {
+    const fd = new FormData();
+    fd.append("avatar", file);
+    const res = await api<{ avatarUrl: string }>("/users/me/avatar", {
+      method: "PATCH",
+      body: fd,
+    });
+    setProfile((p) =>
+      p ? { ...p, avatarUrl: toAbsoluteUrl(res.avatarUrl) } : p
+    );
+  }
+
+  if (loading || !user || !stats || !profile) {
     return (
       <section className="min-h-[60vh] grid place-items-center">
         <div className="text-text.secondary">Загрузка…</div>
@@ -89,21 +240,19 @@ const AccountPage: React.FC = () => {
     );
   }
 
-  const profile: UserProfile = {
-    name: `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || user.email,
-    email: user.email,
-    avatarUrl: user.avatarUrl ?? undefined,
-  };
-
   return (
     <AccountView
       user={profile}
       stats={stats}
       orders={orders}
+      liked={liked}
+      comments={comments}
+      companyReviews={companyReviews}
       onOrderDetails={(id) => console.log("details", id)}
       onOrderRepeat={(id) => console.log("repeat", id)}
       onOrderCancel={(id) => console.log("cancel", id)}
-      onSaveProfile={(data) => console.log("save profile", data)}
+      onSaveProfile={saveProfile}
+      onUploadAvatar={uploadAvatar}
     />
   );
 };

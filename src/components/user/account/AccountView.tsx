@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Breadcrumbs from "./Breadcrumbs";
 import StatCard from "./StatCard";
 import PaymentBadge from "./PaymentBadge";
@@ -18,6 +18,9 @@ type Props = {
   user: UserProfile;
   stats: Stats;
   orders: Order[];
+  liked?: unknown[];
+  comments?: unknown[];
+  companyReviews?: unknown[];
   className?: string;
 } & AccountCallbacks;
 
@@ -30,6 +33,7 @@ export const AccountView: React.FC<Props> = ({
   onOrderRepeat,
   onOrderCancel,
   onSaveProfile,
+  onUploadAvatar,
 }) => {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -39,10 +43,12 @@ export const AccountView: React.FC<Props> = ({
   const [form, setForm] = useState<Partial<UserProfile>>({
     name: user.name,
     email: user.email,
-    pickupPoint: user.pickupPoint ?? user.favouritePickupPoint,
+    pickupPoint: user.pickupPoint ?? undefined,
     phone: user.phone,
-    homeAddress: user.homeAddress,
-    deliveryAddress: user.deliveryAddress,
+    homeAddress: user.homeAddress ?? undefined,
+    deliveryAddress: user.deliveryAddress ?? undefined,
+    country: user.country ?? undefined,
+    city: user.city ?? undefined,
   });
 
   const totalOrdersCompare = "против 20 за последние 3 месяца";
@@ -69,6 +75,15 @@ export const AccountView: React.FC<Props> = ({
       setSaving(false);
     }
   }
+
+  // загрузка аватара
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const onPickAvatar = () => inputRef.current?.click();
+  const onFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const f = e.target.files?.[0];
+    if (f && onUploadAvatar) void onUploadAvatar(f);
+    e.currentTarget.value = "";
+  };
 
   return (
     <section className={`bg-background py-8 md:py-8 ${className ?? ""}`}>
@@ -172,7 +187,7 @@ export const AccountView: React.FC<Props> = ({
           <div className="mb-6 grid gap-6 sm:grid-cols-2 sm:gap-8 lg:gap-16">
             {/* Левая колонка */}
             <div className="space-y-4">
-              <div className="flex space-x-4">
+              <div className="flex items-center gap-4">
                 <img
                   className="h-16 w-16 rounded-lg object-cover"
                   src={
@@ -181,15 +196,36 @@ export const AccountView: React.FC<Props> = ({
                   }
                   alt="Аватар"
                 />
-                <div>
+
+                <div className="flex-1">
                   {user.tierBadge && (
                     <span className="mb-2 inline-block rounded bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:text-primary">
                       {user.tierBadge}
                     </span>
                   )}
-                  <h2 className="flex items-center text-xl font-bold leading-none text-white sm:text-2xl">
-                    {user.name}
-                  </h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-xl font-bold leading-none text-white sm:text-2xl">
+                      {user.name}
+                    </h2>
+
+                    {onUploadAvatar && (
+                      <>
+                        <input
+                          ref={inputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={onFileChange}
+                        />
+                        <button
+                          type="button"
+                          onClick={onPickAvatar}
+                          className="rounded border border-gray-700 bg-background.paper px-3 py-1.5 text-sm font-medium text-text.secondary hover:bg-[#2a2a2a]">
+                          Загрузить аватар
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -251,7 +287,7 @@ export const AccountView: React.FC<Props> = ({
                   Избранный пункт выдачи
                 </dt>
                 <dd className="text-text.secondary">
-                  {user.favouritePickupPoint || user.pickupPoint || "—"}
+                  {user.pickupPoint || "—"}
                 </dd>
               </dl>
 

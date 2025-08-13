@@ -5,49 +5,33 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import svgr from "vite-plugin-svgr";
 
-// Нужно вручную определить __dirname в ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Экспорт конфигурации Vite
+const BACKEND = "http://localhost:3000";
+
 export default defineConfig({
   base: "/",
   plugins: [react(), svgr()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"),
-    },
-  },
+  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
   server: {
     port: 5173,
+    strictPort: true,
     proxy: {
-      // все запросы фронта вида /auth/* пойдут на NestJS http://localhost:3000
-      "/auth": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      },
-      // если у тебя есть страницы/эндпоинты аккаунта на API
-      "/account": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      },
+      "/auth": { target: BACKEND, changeOrigin: true, secure: false },
+      "/users": { target: BACKEND, changeOrigin: true, secure: false },
+      "/catalog": { target: BACKEND, changeOrigin: true, secure: false },
+      "/favorites": { target: BACKEND, changeOrigin: true, secure: false },
+      "/uploads": { target: BACKEND, changeOrigin: true, secure: false }, // аватары
     },
   },
-  // чтобы работало и в режиме `vite preview`
   preview: {
     proxy: {
-      "/auth": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      },
-      "/account": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      },
+      "/auth": { target: BACKEND, changeOrigin: true, secure: false },
+      "/users": { target: BACKEND, changeOrigin: true, secure: false },
+      "/catalog": { target: BACKEND, changeOrigin: true, secure: false },
+      "/favorites": { target: BACKEND, changeOrigin: true, secure: false },
+      "/uploads": { target: BACKEND, changeOrigin: true, secure: false },
     },
   },
 });

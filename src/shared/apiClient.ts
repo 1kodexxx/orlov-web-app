@@ -1,100 +1,54 @@
 // src/shared/apiClient.ts
-import axios, { AxiosError } from "axios";
-import type { InternalAxiosRequestConfig, AxiosRequestHeaders } from "axios";
+let _accessToken: string | null = null;
 
-const BASE_URL =
-  (import.meta as unknown as { env?: Record<string, string> })?.env
-    ?.VITE_API_URL ?? "http://localhost:3000";
-
-const ACCESS_KEY = "access_token";
-
-let accessToken: string =
-  (typeof localStorage !== "undefined" && localStorage.getItem(ACCESS_KEY)) ||
-  "";
-
-export function setAccessToken(token: string) {
-  accessToken = token || "";
-  try {
-    if (token) {
-      localStorage.setItem(ACCESS_KEY, token);
-    } else {
-      localStorage.removeItem(ACCESS_KEY);
-    }
-  } catch {
-    // ignore
-  }
+export function setAccessToken(token: string | null) {
+  _accessToken = token;
+}
+export function getAccessToken() {
+  return _accessToken;
 }
 
-export function getAccessToken(): string {
-  return accessToken;
-}
+type ViteEnv = { VITE_API_URL?: string };
 
-export const api = axios.create({
-  baseURL: BASE_URL,
-  withCredentials: true, // нужны cookie rt
-});
+export const API_BASE = ((import.meta as unknown as { env: ViteEnv }).env
+  .VITE_API_URL ?? "") as string;
 
-// === REQUEST: кладём Bearer ===
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (accessToken) {
-    const headers: AxiosRequestHeaders = (config.headers ??
-      {}) as AxiosRequestHeaders;
-    headers.Authorization = `Bearer ${accessToken}`;
-    config.headers = headers;
-  }
-  return config;
-});
-
-// === RESPONSE: auto refresh on 401 (если не запрещено) ===
-let refreshing: Promise<string> | null = null;
-
-api.interceptors.response.use(
-  (r) => r,
-  async (error: AxiosError) => {
-    const original = error.config as
-      | (InternalAxiosRequestConfig & {
-          _retry?: boolean;
-        })
-      | undefined;
-
-    const status = error.response?.status;
-
-    // Надёжно читаем заголовок запрета refresh
-    const headersObj = (original?.headers ?? {}) as Record<string, unknown>;
-    const skipRefresh =
-      headersObj["x-skip-refresh"] === "1" ||
-      headersObj["X-Skip-Refresh"] === "1";
-
-    if (status === 401 && !skipRefresh && original && !original._retry) {
-      try {
-        original._retry = true;
-
-        if (!refreshing) {
-          refreshing = api
-            .post<{ accessToken: string }>("/auth/refresh")
-            .then((res) => {
-              const token = res.data?.accessToken ?? "";
-              setAccessToken(token);
-              return token;
-            })
-            .finally(() => {
-              refreshing = null;
-            });
-        }
-
-        const newToken = await refreshing;
-        const hdrs: AxiosRequestHeaders = (original.headers ??
-          {}) as AxiosRequestHeaders;
-        hdrs.Authorization = `Bearer ${newToken}`;
-        original.headers = hdrs;
-
-        return api.request(original);
-      } catch (e) {
-        setAccessToken(""); // refresh не удался — локально деавторизуемся
-        throw e;
+export async function apiFetch<T>(
+  path: string,
+  init: RequestInit = {}
+): Promise<T> {
+  const token = getAccessToken();
+  const res = await fetch(`${API_BASE}${path}`, {
+    credentials: "include",
+    ...init,
+    headers: {
+      "Content-Type":
+        init.body instanceof FormData ? undefined! : "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(init.headers || {}),
+    } as HeadersInit,
+  });
+  if (!res.ok) {
+    let msg = `HTTP ${res.status}`;
+    try {
+      const ct = res.headers.get("content-type") ?? "";
+      if (ct.includes("application/json")) {
+        const j = (await res.json()) as { message?: string | string[] };
+        msg = Array.isArray(j.message)
+          ? j.message.join(", ")
+          : j.message ?? msg;
+      } else {
+        msg = (await res.text()) || msg;
       }
+    } catch {
+      // ignore
     }
-
-    throw error;
+    throw new Error(msg);
   }
-);
+  // 204 / no-content
+  if (res.status === 204) return undefined as unknown as T;
+  const ct = res.headers.get("content-type") ?? "";
+  return (
+    ct.includes("application/json") ? res.json() : (res.text() as unknown)
+  ) as T;
+}

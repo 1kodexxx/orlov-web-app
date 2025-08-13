@@ -1,49 +1,63 @@
 // src/features/profile/api.ts
-import { api } from "@/shared/apiClient";
-import type { Me } from "@/features/auth/api";
+import { apiFetch } from "@/shared/apiClient";
 
-export interface UpdateProfileDto {
-  firstName?: string;
-  lastName?: string;
-  phone?: string | null;
-  avatarUrl?: string; // сервер всё равно перезапишет
+export type Me = {
+  id: number;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  phone: string | null;
+  city: string | null;
+  country: string | null;
+  homeAddress: string | null;
+  deliveryAddress: string | null;
+  avatarUrl: string | null;
+  tokenVersion: number;
+};
+
+export type UpdateProfileDto = Partial<{
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  city: string | null;
+  country: string | null;
+  homeAddress: string | null;
+  deliveryAddress: string | null;
+}>;
+
+export async function getMe() {
+  return apiFetch<Me>("/users/me");
 }
 
-export const getMe = async () => {
-  const { data } = await api.get<Me>("/users/me");
-  return data;
-};
+export async function updateMe(dto: UpdateProfileDto) {
+  return apiFetch<Me>("/users/me", {
+    method: "PATCH",
+    body: JSON.stringify(dto),
+  });
+}
 
-export const updateMe = async (dto: UpdateProfileDto) => {
-  const { data } = await api.patch<Me>("/users/me", dto);
-  return data;
-};
+export async function changeEmail(email: string) {
+  return apiFetch<{ email: string }>("/users/me/email", {
+    method: "PATCH",
+    body: JSON.stringify({ email }),
+  });
+}
 
-export const changeEmail = async (email: string) => {
-  const { data } = await api.patch<Me>("/users/me/email", { email });
-  return data;
-};
-
-export const changePassword = async (
+export async function changePassword(
   currentPassword: string,
   newPassword: string
-) => {
-  const { data } = await api.patch<{ success: true }>("/users/me/password", {
-    currentPassword,
-    newPassword,
+) {
+  return apiFetch<{ success: true }>("/users/me/password", {
+    method: "PATCH",
+    body: JSON.stringify({ currentPassword, newPassword }),
   });
-  return data.success;
-};
+}
 
-export const uploadAvatar = async (file: File) => {
+export async function uploadAvatar(file: File) {
   const fd = new FormData();
   fd.append("avatar", file);
-  const { data } = await api.patch<{ avatarUrl: string }>(
-    "/users/me/avatar",
-    fd,
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    }
-  );
-  return data.avatarUrl;
-};
+  return apiFetch<{ avatarUrl: string; user: Me }>("/users/me/avatar", {
+    method: "PATCH",
+    body: fd,
+  });
+}

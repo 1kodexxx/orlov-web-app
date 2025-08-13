@@ -2,23 +2,32 @@ import React from "react";
 import Divider from "./Divider";
 import type { UserProfile } from "./types";
 
-const EditModal: React.FC<{
+type Props = {
   form: Partial<UserProfile>;
   setForm: React.Dispatch<React.SetStateAction<Partial<UserProfile>>>;
   onClose: () => void;
-  onSubmit: () => Promise<void> | void;
+  onSubmit: (data: Partial<UserProfile>) => Promise<void> | void;
   saving: boolean;
-}> = ({ form, setForm, onClose, onSubmit, saving }) => (
+};
+
+const EditModal: React.FC<Props> = ({
+  form,
+  setForm,
+  onClose,
+  onSubmit,
+  saving,
+}) => (
   <div
-    className="fixed inset-0 z-50 grid place-items-center bg-black p-4"
+    className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4"
     role="dialog"
     aria-modal="true">
-    <div className="w-full max-w-lg rounded-lg border border-gray-700 bg-background.paper shadow-2xl">
+    <div className="w-full max-w-2xl rounded-lg border border-gray-700 bg-background.paper shadow-2xl">
       <div className="flex items-center justify-between border-b border-gray-700 p-4">
         <h3 className="text-lg font-semibold text-white">Данные аккаунта</h3>
         <button
           onClick={onClose}
-          className="rounded p-1 text-text.secondary hover:bg-[#2a2a2a] hover:text-white">
+          className="rounded p-1 text-text.secondary hover:bg-[#2a2a2a] hover:text-white"
+          aria-label="Закрыть">
           <svg
             className="h-4 w-4"
             xmlns="http://www.w3.org/2000/svg"
@@ -35,13 +44,14 @@ const EditModal: React.FC<{
         </button>
       </div>
 
-      <div className="p-4 md:p-5">
+      <div className="p-4 md:p-6">
         <form
           className="grid grid-cols-1 gap-4 sm:grid-cols-2"
           onSubmit={(e) => {
             e.preventDefault();
-            void onSubmit();
+            void onSubmit(form);
           }}>
+          {/* Пункт выдачи (локально в localStorage) */}
           <div className="col-span-2">
             <label className="mb-2 block text-sm font-medium text-white">
               Пункт выдачи
@@ -57,6 +67,7 @@ const EditModal: React.FC<{
             />
           </div>
 
+          {/* Полное имя (раскладываем на first/last в родителе) */}
           <div>
             <label className="mb-2 block text-sm font-medium text-white">
               Полное имя
@@ -70,6 +81,7 @@ const EditModal: React.FC<{
             />
           </div>
 
+          {/* E-mail — имеет отдельный эндпоинт, сюда не отправляем */}
           <div>
             <label className="mb-2 block text-sm font-medium text-white">
               E-mail
@@ -83,8 +95,12 @@ const EditModal: React.FC<{
                 setForm((f) => ({ ...f, email: e.target.value }))
               }
             />
+            <p className="mt-1 text-xs text-gray-400">
+              Почта меняется через отдельный раздел.
+            </p>
           </div>
 
+          {/* Телефон */}
           <div className="col-span-2">
             <label className="mb-2 block text-sm font-medium text-white">
               Телефон
@@ -100,6 +116,7 @@ const EditModal: React.FC<{
             />
           </div>
 
+          {/* Страна */}
           <div>
             <label className="mb-2 block text-sm font-medium text-white">
               Страна
@@ -108,9 +125,14 @@ const EditModal: React.FC<{
               type="text"
               className="block w-full rounded-lg border border-gray-700 bg-[#1b1b1b] p-2.5 text-sm text-gray-100 placeholder:text-gray-500 focus:border-primary focus:ring-primary"
               placeholder="Россия"
+              value={form.country ?? ""}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, country: e.target.value }))
+              }
             />
           </div>
 
+          {/* Город */}
           <div>
             <label className="mb-2 block text-sm font-medium text-white">
               Город
@@ -119,9 +141,28 @@ const EditModal: React.FC<{
               type="text"
               className="block w-full rounded-lg border border-gray-700 bg-[#1b1b1b] p-2.5 text-sm text-gray-100 placeholder:text-gray-500 focus:border-primary focus:ring-primary"
               placeholder="Москва"
+              value={form.city ?? ""}
+              onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
             />
           </div>
 
+          {/* Домашний адрес */}
+          <div className="col-span-2">
+            <label className="mb-2 block text-sm font-medium text-white">
+              Домашний адрес
+            </label>
+            <input
+              type="text"
+              className="block w-full rounded-lg border border-gray-700 bg-[#1b1b1b] p-2.5 text-sm text-gray-100 placeholder:text-gray-500 focus:border-primary focus:ring-primary"
+              placeholder="Улица, дом, квартира"
+              value={form.homeAddress ?? ""}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, homeAddress: e.target.value }))
+              }
+            />
+          </div>
+
+          {/* Адрес доставки */}
           <div className="col-span-2">
             <label className="mb-2 block text-sm font-medium text-white">
               Адрес доставки
