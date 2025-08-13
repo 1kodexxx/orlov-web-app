@@ -1,6 +1,8 @@
+// src/components/user/LoginForm.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { setAccessToken } from "@/shared/apiClient";
+import { useAuth } from "@/features/auth/useAuth";
 
 type PublicUser = {
   sub?: number;
@@ -15,8 +17,7 @@ type LoginResponse = {
 };
 
 type Props = {
-  /** Можно переопределить URL бэкенда; по умолчанию берём из .env (VITE_API_URL) */
-  baseUrl?: string;
+  baseUrl?: string; // например: http://localhost:3000
   onSuccess?: (data: LoginResponse) => void;
   className?: string;
 };
@@ -32,15 +33,14 @@ function getErrorMessage(err: unknown): string {
   }
 }
 
-export const LoginForm: React.FC<Props> = ({
-  baseUrl = import.meta.env.VITE_API_URL ?? "",
+const LoginForm: React.FC<Props> = ({
+  baseUrl = "",
   onSuccess,
   className = "",
 }) => {
-  const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // UI «запомнить меня» оставим, но НЕ отправляем на бэкенд, раз он этого не ждёт
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -48,6 +48,9 @@ export const LoginForm: React.FC<Props> = ({
   const [error, setError] = useState<string | null>(null);
 
   const canSubmit = email.trim() && password.length >= 1 && !loading;
+
+  const navigate = useNavigate();
+  const { refreshProfile } = useAuth();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -61,7 +64,8 @@ export const LoginForm: React.FC<Props> = ({
         method: "POST",
         credentials: "include", // httpOnly refresh cookie
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, remember }),
+        // ❗️Бэкенд ругался на "remember", поэтому не отправляем его
+        body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
@@ -80,9 +84,13 @@ export const LoginForm: React.FC<Props> = ({
 
       const data = (await res.json()) as LoginResponse;
 
-      // Сохраняем access-токен для axios-интерцептора
-      setAccessToken(data.accessToken);
+      // ✅ сохраняем accessToken (если бэкенд его отдаёт)
+      if (data.accessToken) {
+        setAccessToken(data.accessToken);
+      }
 
+      // ✅ подхватываем профиль и уходим в кабинет
+      await refreshProfile();
       onSuccess?.(data);
       navigate("/account", { replace: true });
     } catch (err: unknown) {
@@ -96,7 +104,6 @@ export const LoginForm: React.FC<Props> = ({
     <section
       className={`bg-background min-h-screen flex items-center justify-center ${className}`}>
       <div className="w-full max-w-md px-4">
-        {/* Карточка: стиль как у виджетов */}
         <div className="bg-background.paper border border-gray-700 rounded-xl shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
           <div className="p-6 sm:p-8">
             <h1 className="text-2xl font-semibold text-primary">
@@ -110,7 +117,6 @@ export const LoginForm: React.FC<Props> = ({
             )}
 
             <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-              {/* E-mail */}
               <div>
                 <label
                   htmlFor="email"
@@ -129,7 +135,6 @@ export const LoginForm: React.FC<Props> = ({
                 />
               </div>
 
-              {/* Пароль */}
               <div>
                 <label
                   htmlFor="password"
@@ -159,7 +164,6 @@ export const LoginForm: React.FC<Props> = ({
                 </div>
               </div>
 
-              {/* Запомнить меня + Забыл пароль */}
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-3 text-sm text-text.secondary">
                   <input
@@ -179,15 +183,13 @@ export const LoginForm: React.FC<Props> = ({
                 </a>
               </div>
 
-              {/* Кнопка входа */}
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className="mt-2 w-full rounded-lg bg-primary text-[#1a1a1a] px-5 py-2.5 text-sm font-semibold transition hover:bg-[#e6д878] disabled:cursor-not-allowed disabled:opacity-60">
+                className="mt-2 w-full rounded-lg bg-primary text-[#1a1a1a] px-5 py-2.5 text-sm font-semibold transition hover:bg-[#e6d878] disabled:cursor-not-allowed disabled:opacity-60">
                 {loading ? "Вход…" : "Войти"}
               </button>
 
-              {/* Ссылки */}
               <p className="text-center text-sm text-text.secondary">
                 Нет аккаунта?{" "}
                 <a href="/register" className="text-primary hover:underline">

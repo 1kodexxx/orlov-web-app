@@ -1,21 +1,23 @@
 // src/components/layout/navBar/accountDropdown/AccountDropdown.tsx
 import React from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaTimes } from "react-icons/fa";
+import { useAuth } from "@/features/auth/useAuth";
 
 export interface AccountDropdownProps {
   onClose: () => void;
-  onSignOut?: () => void;
+  /** Хендлер выхода. Если не передан — используется logout() из useAuth */
+  onSignOut?: () => void | Promise<void>;
   className?: string;
-  /** Признак авторизации текущего пользователя */
+  /**
+   * Явно переданный признак авторизации.
+   * Если НЕ указан — компонент берёт состояние из useAuth.
+   */
   isAuthenticated?: boolean;
 }
 
-// Настрой здесь свои роуты для входа/регистрации
-// const SIGN_IN_ROUTE = "/auth/sign-in";
-// const SIGN_UP_ROUTE = "/auth/sign-up";
-
+// Роуты входа/регистрации
 const SIGN_IN_ROUTE = "/login";
 const SIGN_UP_ROUTE = "/register";
 
@@ -26,8 +28,32 @@ export const AccountDropdown: React.FC<AccountDropdownProps> = ({
   onClose,
   onSignOut,
   className = "",
-  isAuthenticated = false,
+  isAuthenticated,
 }) => {
+  const navigate = useNavigate();
+
+  // Берём состояние авторизации из контекста
+  const { user, loading, logout } = useAuth();
+
+  // Истина авторизации: либо пришла пропсом, либо из контекста
+  const authed =
+    typeof isAuthenticated === "boolean" ? isAuthenticated : !!user;
+
+  async function handleSignOut() {
+    try {
+      if (onSignOut) {
+        await onSignOut();
+      } else {
+        await logout();
+      }
+      onClose();
+      navigate("/", { replace: true });
+    } catch {
+      // опционально можно вывести тост/ошибку
+      onClose();
+    }
+  }
+
   return (
     <motion.div
       onMouseDown={(e) => e.stopPropagation()}
@@ -49,12 +75,13 @@ export const AccountDropdown: React.FC<AccountDropdownProps> = ({
 
         <div className="flex justify-between items-center mb-4 pr-10">
           <h3 className="text-lg font-semibold text-primary">
-            {isAuthenticated ? "Аккаунт" : "Гость"}
+            {authed ? "Аккаунт" : "Гость"}
           </h3>
         </div>
 
-        {/* ===== Содержимое меню ===== */}
-        {isAuthenticated ? (
+        {/* Пока идёт определение статуса авторизации — пусть будет гостевое меню,
+            чтобы не мигало. Как только user загрузится — отрисуется нужная ветка. */}
+        {authed ? (
           // ----- Авторизованный пользователь -----
           <ul className="space-y-1">
             <li>
@@ -102,17 +129,15 @@ export const AccountDropdown: React.FC<AccountDropdownProps> = ({
             <li>
               <button
                 type="button"
-                onClick={() => {
-                  onSignOut?.();
-                  onClose();
-                }}
+                onClick={handleSignOut}
+                disabled={loading}
                 className="w-full text-left text-gray-300 hover:text-text-primary hover:bg-[#2A2A2A] rounded-md px-4 py-2.5 text-sm transition-colors">
                 Выйти
               </button>
             </li>
           </ul>
         ) : (
-          // ----- Не авторизован -----
+          // ----- Гость -----
           <ul className="space-y-1">
             <li>
               <Link to={SIGN_IN_ROUTE} onClick={onClose} className={itemCls}>
