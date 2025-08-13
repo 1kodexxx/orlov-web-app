@@ -16,8 +16,8 @@ const Delivery = lazy(() => import("@/pages/Delivery"));
 const Reviews = lazy(() => import("@/pages/Reviews"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
-// user
-const Account = lazy(() => import("@/components/user/Account"));
+// user (новый аккаунт)
+const Account = lazy(() => import("@/components/user/account/AccountPage"));
 const LoginForm = lazy(() => import("@/components/user/LoginForm"));
 const RegisterForm = lazy(() => import("@/components/user/RegisterForm"));
 const ChangePassword = lazy(() => import("@/components/user/ChangePassword"));
