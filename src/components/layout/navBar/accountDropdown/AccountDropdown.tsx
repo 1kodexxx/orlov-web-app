@@ -1,4 +1,3 @@
-// src/components/layout/navBar/accountDropdown/AccountDropdown.tsx
 import React from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,6 +22,32 @@ const SIGN_UP_ROUTE = "/register";
 const itemCls =
   "flex w-full rounded-md px-4 py-2.5 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-text-primary transition-colors";
 
+/** Мини-тип только с теми полями, которые реально нужны здесь */
+type UserLite = {
+  firstName?: string | null;
+  lastName?: string | null;
+  email?: string | null;
+  avatarUrl?: string | null;
+};
+
+function getDisplayName(u?: UserLite | null): string {
+  const fn = u?.firstName ?? "";
+  const ln = u?.lastName ?? "";
+  const full = `${fn} ${ln}`.trim();
+  if (full.length > 0) return full;
+  const em = u?.email ?? "";
+  if (em) return em.split("@")[0] || em;
+  return "Пользователь";
+}
+
+function getInitials(name: string, email?: string | null): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const a = (parts[0]?.[0] ?? "").toUpperCase();
+  const b = (parts[1]?.[0] ?? "").toUpperCase();
+  const fallback = (email?.[0] ?? "U").toUpperCase();
+  return (a + b || fallback).slice(0, 2);
+}
+
 export const AccountDropdown: React.FC<AccountDropdownProps> = ({
   onClose,
   onSignOut,
@@ -30,18 +55,20 @@ export const AccountDropdown: React.FC<AccountDropdownProps> = ({
   isAuthenticated,
 }) => {
   const navigate = useNavigate();
-  // setUser тут НЕ нужен — logout из контекста уже очищает состояние
   const { user, loading, logout } = useAuth();
 
   const authed =
     typeof isAuthenticated === "boolean" ? isAuthenticated : !!user;
+
+  const u: UserLite | undefined = user ?? undefined;
+  const displayName = React.useMemo(() => getDisplayName(u), [u]);
+  const avatarUrl = u?.avatarUrl ?? "";
 
   async function handleSignOut() {
     try {
       if (onSignOut) {
         await onSignOut();
       } else {
-        // это вызовет /auth/logout, очистит accessToken и сбросит user в null
         await logout();
       }
       onClose();
@@ -76,6 +103,33 @@ export const AccountDropdown: React.FC<AccountDropdownProps> = ({
             {authed ? "Аккаунт" : "Гость"}
           </h3>
         </div>
+
+        {/* Компактная шапка с аватаром, именем и почтой (без кнопки) */}
+        {authed && (
+          <div className="mb-4 rounded-lg border border-gray-700 bg-[#121212] p-3">
+            <div className="flex items-center gap-3">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt="Аватар"
+                  className="h-10 w-10 rounded-full object-cover border border-gray-700"
+                />
+              ) : (
+                <div className="h-10 w-10 rounded-full grid place-items-center bg-[#2A2A2A] text-sm font-semibold text-gray-200 border border-gray-700">
+                  {getInitials(displayName, u?.email ?? undefined)}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-white font-medium leading-tight">
+                  {displayName}
+                </div>
+                {u?.email && (
+                  <div className="truncate text-xs text-primary">{u.email}</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {authed ? (
           <ul className="space-y-1">
