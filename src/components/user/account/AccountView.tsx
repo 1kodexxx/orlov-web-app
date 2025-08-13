@@ -3,7 +3,7 @@ import Breadcrumbs from "./Breadcrumbs";
 import StatCard from "./StatCard";
 import PaymentBadge from "./PaymentBadge";
 import RowActions from "./RowActions";
-import EditModal, { type UserProfile as EditUserProfile } from "./EditModal";
+import EditModal from "./EditModal";
 import DeleteModal from "./DeleteModal";
 import { currency, statusPill } from "./utils";
 import type {
@@ -27,6 +27,16 @@ type Props = {
   className?: string;
 } & AccountCallbacks;
 
+/** Инициалы для заглушки аватара */
+function initials(name?: string, email?: string) {
+  const n = (name ?? "").trim();
+  const parts = n.split(/\s+/).filter(Boolean);
+  const a = (parts[0]?.[0] ?? "").toUpperCase();
+  const b = (parts[1]?.[0] ?? "").toUpperCase();
+  const fallback = (email?.[0] ?? "U").toUpperCase();
+  return (a + b || fallback).slice(0, 2);
+}
+
 const AccountView: React.FC<Props> = ({
   user,
   stats,
@@ -47,8 +57,10 @@ const AccountView: React.FC<Props> = ({
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Тип формы берём из EditModal
-  const [form, setForm] = useState<Partial<EditUserProfile>>({
+  // форма редактирования (тип берём из EditModal)
+  const [form, setForm] = useState<
+    Partial<React.ComponentProps<typeof EditModal>["form"]>
+  >({
     firstName: undefined,
     lastName: undefined,
     email: user.email,
@@ -88,7 +100,7 @@ const AccountView: React.FC<Props> = ({
             : user.name,
         email: form.email ?? undefined,
         pickupPoint: form.pickupPoint ?? null,
-        phone: form.phone ?? undefined, // <- undefined вместо null
+        phone: form.phone ?? undefined,
         homeAddress: form.homeAddress ?? null,
         deliveryAddress: form.deliveryAddress ?? null,
         birthDate: form.birthDate ?? null,
@@ -109,7 +121,7 @@ const AccountView: React.FC<Props> = ({
   async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (!onUploadAvatar) return;
     const file = e.target.files?.[0];
-    e.currentTarget.value = ""; // чтобы можно было выбрать тот же файл повторно
+    e.currentTarget.value = "";
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
@@ -216,40 +228,39 @@ const AccountView: React.FC<Props> = ({
           <div className="mb-6 grid gap-6 sm:grid-cols-2 sm:gap-8 lg:gap-16">
             {/* Левая колонка */}
             <div className="space-y-4">
-              <div className="flex space-x-4">
-                <div className="relative">
+              <div className="flex items-center gap-4">
+                {/* Аватар или заглушка с инициалами */}
+                {user.avatarUrl ? (
                   <img
-                    className="h-16 w-16 rounded-lg object-cover"
-                    src={
-                      user.avatarUrl ||
-                      "https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/helene-engels.png"
-                    }
+                    className="h-16 w-16 rounded-lg object-cover border border-gray-700"
+                    src={user.avatarUrl}
                     alt="Аватар"
                   />
-                  <input
-                    ref={fileRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={onFileChange}
-                  />
-                </div>
-                <div>
-                  {user.tierBadge && (
-                    <span className="mb-2 inline-block rounded bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:text-primary">
-                      {user.tierBadge}
-                    </span>
-                  )}
-                  <h2 className="flex items-center text-xl font-bold leading-none text-white sm:text-2xl">
+                ) : (
+                  <div className="h-16 w-16 rounded-lg grid place-items-center bg-[#2A2A2A] text-white text-lg font-semibold border border-gray-700 uppercase">
+                    {initials(user.name, user.email)}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3">
+                  <h2 className="text-2xl md:text-3xl font-bold text-white leading-none">
                     {user.name}
                   </h2>
 
-                  <div className="mt-2">
+                  {/* Кнопка смены аватара */}
+                  <div>
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={onFileChange}
+                    />
                     <button
                       type="button"
                       disabled={!onUploadAvatar || uploadingAvatar}
                       onClick={pickAvatar}
-                      className="inline-flex items-center rounded-lg border border-gray-700 bg-background.paper px-2.5 py-1.5 text-xs font-medium text-white hover:bg-[#2a2a2a] disabled:opacity-60">
+                      className="inline-flex items-center rounded-lg border border-gray-700 bg-[#1b1b1b] px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-[#2A2A2A] disabled:opacity-60">
                       {uploadingAvatar ? (
                         <>
                           <svg
