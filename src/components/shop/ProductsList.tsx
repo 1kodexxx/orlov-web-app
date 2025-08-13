@@ -1,44 +1,72 @@
-// src/components/shop/ProductsList.tsx
-import React, { useState, useEffect } from "react";
-import ProductCard from "./ProductCard";
-import type { Product } from "@/data/products.data";
+import React, { useEffect, useMemo, useState } from "react";
 import { Loader } from "@/components/common";
-import { motion } from "framer-motion";
-import type { Variants } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import { useSearchParams } from "react-router-dom";
+import { getCatalog, type ProductRow, type SortKey } from "./api";
+import ProductCard from "./ProductCard";
 
 interface ProductsListProps {
-  products: Product[];
   itemsPerPage?: number;
-  currentPage: number;
-  setCurrentPage: (page: number) => void;
 }
 
-const AnimatedProductCard: React.FC<{ product: Product; index: number }> = ({
+const pickImage = (images?: ProductRow["images"]) => {
+  if (!images) return undefined;
+  if (Array.isArray(images)) {
+    if (images.length === 0) return undefined;
+    if (typeof images[0] === "string") return images[0] as string;
+    const arr = images as Array<{ url: string; position: number }>;
+    return [...arr].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))[0]
+      ?.url;
+  }
+  return undefined;
+};
+
+const mapSortFromUI = (ui: string): SortKey | undefined => {
+  switch (ui) {
+    case "Title, DESC":
+      return "name_desc";
+    case "Title, ASC":
+      return "name_asc";
+    case "Price, DESC":
+      return "price_desc";
+    case "Price, ASC":
+      return "price_asc";
+    case "Newest":
+      return "newest";
+    case "Likes":
+      return "likes_desc";
+    case "Views":
+      return "views_desc";
+    case "Rating, DESC":
+      return "rating_desc";
+    case "Rating, ASC":
+      return "rating_asc";
+    default:
+      return undefined; // relevance by default
+  }
+};
+
+const AnimatedProductCard: React.FC<{ product: ProductRow; index: number }> = ({
   product,
   index,
 }) => {
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.2,
-  });
+  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2 });
 
   const variants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: (custom: number) => ({
       opacity: 1,
       y: 0,
-      transition: {
-        delay: custom * 0.1,
-        duration: 0.5,
-        ease: "easeOut",
-      },
+      transition: { delay: custom * 0.06, duration: 0.45, ease: "easeOut" },
     }),
     hover: {
       scale: 1.05,
       transition: { type: "spring", stiffness: 300, damping: 20 },
     },
   };
+
+  const imageUrl = pickImage(product.images) ?? "/placeholder.png";
 
   return (
     <motion.li
@@ -50,48 +78,86 @@ const AnimatedProductCard: React.FC<{ product: Product; index: number }> = ({
       custom={index}
       className="origin-center">
       <ProductCard
-        slug={product.slug}
+        id={product.product_id}
         name={product.name}
-        image={product.image}
+        imageUrl={imageUrl}
         price={product.price}
       />
     </motion.li>
   );
 };
 
-const ProductsList: React.FC<ProductsListProps> = ({
-  products,
-  itemsPerPage = 12,
-  currentPage,
-  setCurrentPage,
-}) => {
+const ProductsList: React.FC<ProductsListProps> = ({ itemsPerPage = 12 }) => {
+  const [sp, setSp] = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
+  const [items, setItems] = useState<ProductRow[]>([]);
+  const [page, setPage] = useState<number>(Number(sp.get("page") || 1));
+  const [pages, setPages] = useState<number>(1);
 
-  const totalPages = Math.ceil(products.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentProducts = products.slice(startIndex, startIndex + itemsPerPage);
-  const showPagination = totalPages > 1;
+  const query = useMemo(() => {
+    const q = sp.get("q") || undefined;
+    const category = sp.get("category") || "";
+    const materials = (sp.get("materials") || "").split(",").filter(Boolean);
+    const collections = (sp.get("collections") || "")
+      .split(",")
+      .filter(Boolean);
+    const popularity = (sp.get("popularity") || "").split(",").filter(Boolean);
+    const priceMin = sp.get("priceMin")
+      ? Number(sp.get("priceMin"))
+      : undefined;
+    const priceMax = sp.get("priceMax")
+      ? Number(sp.get("priceMax"))
+      : undefined;
+    const sort = mapSortFromUI(sp.get("sort") || "") ?? undefined;
+    const categories = category ? [category] : [];
+    return {
+      q,
+      categories,
+      materials,
+      collections,
+      popularity,
+      priceMin,
+      priceMax,
+      sort,
+    };
+  }, [sp]);
 
-  // Сброс страницы, если currentPage выходит за пределы
   useEffect(() => {
-    if (totalPages > 0 && currentPage > totalPages) {
-      setCurrentPage(1);
-    }
-  }, [currentPage, totalPages, setCurrentPage]);
-
-  // Показ Loader при смене продуктов или страницы
-  useEffect(() => {
+    let canceled = false;
     setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, [products, currentPage]);
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: "auto" });
+    getCatalog({ page, limit: itemsPerPage, ...query })
+      .then((res) => {
+        if (canceled) return;
+        setItems(res.items);
+        setPages(res.pages);
+      })
+      .finally(() => {
+        if (!canceled) setIsLoading(false);
+      });
+
+    return () => {
+      canceled = true;
+    };
+  }, [page, itemsPerPage, query]);
+
+  useEffect(() => {
+    if (!isLoading && page > pages) {
+      setPage(1);
+      sp.set("page", "1");
+      setSp(sp, { replace: true });
     }
+  }, [isLoading, page, pages, setSp, sp]);
+
+  const handlePageChange = (next: number) => {
+    if (next < 1 || next > pages) return;
+    setPage(next);
+    sp.set("page", String(next));
+    setSp(sp, { replace: true });
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
+
+  const showPagination = pages > 1;
 
   return (
     <section className="text-text-secondary bg-background body-font py-0">
@@ -99,12 +165,12 @@ const ProductsList: React.FC<ProductsListProps> = ({
         <div className="min-h-[50vh] flex flex-col justify-center items-center">
           {isLoading ? (
             <Loader />
-          ) : currentProducts.length > 0 ? (
+          ) : items.length > 0 ? (
             <ul className="mt-4 grid gap-y-10 gap-x-4 sm:gap-x-[68.5px] grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center">
-              {currentProducts.map((product, index) => (
+              {items.map((p, index) => (
                 <AnimatedProductCard
-                  key={product.slug}
-                  product={product}
+                  key={p.product_id}
+                  product={p}
                   index={index}
                 />
               ))}
@@ -120,31 +186,31 @@ const ProductsList: React.FC<ProductsListProps> = ({
           <ol className="mt-8 flex justify-center gap-2 text-xs font-medium">
             <li>
               <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page === 1}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
                 ‹
               </button>
             </li>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <li key={page}>
+            {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
+              <li key={p}>
                 <button
-                  onClick={() => handlePageChange(page)}
+                  onClick={() => handlePageChange(p)}
                   className={`inline-flex h-8 w-8 items-center justify-center rounded-sm border ${
-                    page === currentPage
+                    p === page
                       ? "bg-[#EFE393] text-black border-[#EFE393]"
                       : "border-secondary hover:bg-secondary hover:text-background transition"
                   }`}>
-                  {page}
+                  {p}
                 </button>
               </li>
             ))}
 
             <li>
               <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page === pages}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-secondary hover:bg-secondary hover:text-background transition disabled:opacity-50">
                 ›
               </button>

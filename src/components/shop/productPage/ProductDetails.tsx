@@ -1,19 +1,20 @@
-// src/components/shop/productPage/ProductActions.tsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ColorSelector, ModelSelector, ProductActions } from "./";
-import type { Product } from "@/data/products.data";
+import type { ProductRow } from "../api";
 import { useCart } from "@/context/useCart";
 import { Confetti } from "@/animations";
 
+type NotificationSetter = React.Dispatch<
+  React.SetStateAction<{
+    variant: "success" | "error";
+    title: string;
+    description?: string;
+  } | null>
+>;
+
 interface ProductDetailsProps {
-  product: Product;
-  setNotification: React.Dispatch<
-    React.SetStateAction<{
-      variant: "success" | "error";
-      title: string;
-      description?: string;
-    } | null>
-  >;
+  product: ProductRow;
+  setNotification: NotificationSetter;
 }
 
 const colorOptions = [
@@ -57,14 +58,22 @@ export default function ProductDetails({
       return;
     }
 
-    // Салют в точке клика
     setClickX(e.clientX);
     setClickY(e.clientY);
     setConfettiTrigger(false);
     setTimeout(() => setConfettiTrigger(true), 0);
 
+    // приводим к формату cart item
     addToCart({
-      ...product,
+      slug: product.sku,
+      name: product.name,
+      image:
+        (Array.isArray(product.images) && typeof product.images[0] !== "string"
+          ? product.images[0]?.url
+          : Array.isArray(product.images)
+          ? String(product.images[0])
+          : undefined) || "/placeholder.png",
+      price: product.price,
       selectedColor: selectedColor.hex,
       selectedModel,
       quantity: 1,
@@ -92,7 +101,7 @@ export default function ProductDetails({
         </h1>
       </div>
 
-      {/* Блок описания */}
+      {/* Описание */}
       <p
         className={`leading-relaxed text-text-secondary transition-all duration-700 ease-out delay-200 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
@@ -100,7 +109,7 @@ export default function ProductDetails({
         {product.description || "Описание товара отсутствует."}
       </p>
 
-      {/* Блок выбора цвета и модели */}
+      {/* Параметры */}
       <div
         className={`flex flex-col md:flex-row md:justify-between gap-8 pb-5 border-b border-secondary transition-all duration-700 ease-out delay-300 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
@@ -113,6 +122,7 @@ export default function ProductDetails({
             if (color) setSelectedColor(color);
           }}
         />
+        {/* Модели здесь заглушкой. Если хочешь — подставим реальные из phone_model */}
         <ModelSelector
           models={[
             "iPhone 14 Pro",
@@ -126,7 +136,6 @@ export default function ProductDetails({
         />
       </div>
 
-      {/* Блок цены и кнопки */}
       <ProductActions
         price={product.price}
         isVisible={isVisible}
@@ -134,7 +143,6 @@ export default function ProductDetails({
         onBuy={handleBuy}
       />
 
-      {/* Компонент салюта */}
       <Confetti
         trigger={confettiTrigger}
         x={clickX}

@@ -1,4 +1,3 @@
-// src/components/shop/filters/PriceFilter.tsx
 import React, { useEffect, useRef, useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -10,6 +9,10 @@ interface PriceFilterProps {
   resetSignal: number;
 }
 
+const MIN = 0;
+const MAX = 60000;
+const DEFAULT_RANGE: [number, number] = [MIN, MAX];
+
 const PriceFilter: React.FC<PriceFilterProps> = ({
   activeDropdown,
   onToggle,
@@ -20,8 +23,11 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [mobileContentHeight, setMobileContentHeight] = useState(0);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 60000]);
 
+  // локальное контролируемое значение слайдера
+  const [priceRange, setPriceRange] = useState<[number, number]>(DEFAULT_RANGE);
+
+  // клик вне — закрываем
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -31,35 +37,36 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
         onToggle("");
       }
     };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onToggle]);
 
-  // Сброс слайдера только по resetSignal
+  // Сброс извне
   useEffect(() => {
-    setPriceRange([0, 60000]);
+    setPriceRange(DEFAULT_RANGE);
   }, [resetSignal]);
 
-  // Передаём обновлённые значения в родителя
+  // Репортим наружу при изменении ползунков (без Infinity и вне диапазона)
   useEffect(() => {
-    onPriceChange(priceRange);
+    const [min, max] = priceRange;
+    const clamped: [number, number] = [
+      Math.max(MIN, Math.min(min, MAX)),
+      Math.max(MIN, Math.min(max, MAX)),
+    ];
+    onPriceChange(clamped);
+    // onPriceChange — внешний колбэк, не меняем deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceRange]);
 
   const handleSliderChange = (values: number | number[]) => {
     if (Array.isArray(values)) {
-      setPriceRange([values[0], values[1]]);
+      const min = Math.max(MIN, Math.min(values[0], MAX));
+      const max = Math.max(MIN, Math.min(values[1], MAX));
+      setPriceRange([min, max]);
     }
   };
 
-  const handleReset = () => {
-    setPriceRange([0, 60000]);
-  };
+  const handleReset = () => setPriceRange(DEFAULT_RANGE);
 
   useEffect(() => {
     if (isOpen && contentRef.current) {
@@ -67,11 +74,11 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
     } else {
       setMobileContentHeight(0);
     }
-  }, [isOpen]);
+  }, [isOpen, priceRange]);
 
   return (
     <div className="relative w-full sm:w-auto" ref={dropdownRef}>
-      {/* Десктоп версия */}
+      {/* desktop */}
       <div className="hidden sm:block">
         <button
           onClick={() => onToggle("Цена")}
@@ -110,8 +117,8 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
             </header>
             <Slider
               range
-              min={0}
-              max={60000}
+              min={MIN}
+              max={MAX}
               step={100}
               value={priceRange}
               onChange={handleSliderChange}
@@ -126,7 +133,7 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
         )}
       </div>
 
-      {/* Мобильная версия */}
+      {/* mobile */}
       <div className="sm:hidden">
         <button
           onClick={() => onToggle("Цена")}
@@ -149,8 +156,8 @@ const PriceFilter: React.FC<PriceFilterProps> = ({
             <div className="w-full max-w-full">
               <Slider
                 range
-                min={0}
-                max={60000}
+                min={MIN}
+                max={MAX}
                 step={100}
                 value={priceRange}
                 onChange={handleSliderChange}

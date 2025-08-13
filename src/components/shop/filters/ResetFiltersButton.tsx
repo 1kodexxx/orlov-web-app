@@ -8,7 +8,9 @@ interface ResetFiltersButtonProps {
 const ResetFiltersButton: React.FC<ResetFiltersButtonProps> = ({ onReset }) => {
   return (
     <button
+      type="button"
       onClick={onReset}
+      aria-label="Сбросить все фильтры"
       className="w-full sm:w-auto h-8 sm:h-10 px-4 text-sm rounded-sm border border-secondary text-[#CCCCCC] bg-secondary/30 hover:bg-secondary hover:text-[#CCCCCC] transition">
       Сбросить всё
     </button>

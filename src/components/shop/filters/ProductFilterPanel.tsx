@@ -1,5 +1,4 @@
-// src/components/shop/filters/ProductFilterPanel.tsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   FilterDropdown,
@@ -8,6 +7,7 @@ import {
   CategoryButtons,
   ResetFiltersButton,
 } from "./";
+import { useSearchParams } from "react-router-dom";
 
 const categories = [
   "Мужчинам",
@@ -36,6 +36,10 @@ interface ProductFilterPanelProps {
   initialQuery?: string;
 }
 
+const PRICE_MIN = 0;
+const PRICE_MAX = 60000;
+const DEFAULT_PRICE: [number, number] = [PRICE_MIN, PRICE_MAX];
+
 const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   onCategorySelect,
   onSearch,
@@ -51,54 +55,80 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
   const [searchValue, setSearchValue] = useState<string>(initialQuery);
+  const [sp, setSp] = useSearchParams();
+  const [localResetTick, setLocalResetTick] = useState(0);
 
-  // 👉 Синхронизация с параметрами URL
   useEffect(() => {
     onCategorySelect(initialCategory);
     onSearch(initialQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCategory, initialQuery]);
 
-  // 👉 Автоматически выделяет кнопку категории при изменении URL
-  useEffect(() => {
-    setActiveCategory(initialCategory);
-  }, [initialCategory]);
+  useEffect(() => setActiveCategory(initialCategory), [initialCategory]);
+  useEffect(() => setSearchValue(initialQuery), [initialQuery]);
 
-  // 👉 Автоматически обновляет поле поиска при изменении URL
-  useEffect(() => {
-    setSearchValue(initialQuery);
-  }, [initialQuery]);
-
-  // 👉 Сброс доп. фильтров
+  // внешний сброс -> чистим доп. фильтры и цену (без Infinity)
   useEffect(() => {
     onPopularitySelect([]);
     onMaterialSelect([]);
     onCollectionSelect([]);
-    onPriceChange([0, Infinity]);
+    onPriceChange(DEFAULT_PRICE);
+    setLocalResetTick((x) => x + 1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetSignal]);
 
   const handleDropdownToggle = (title: string) =>
     setActiveDropdown((prev) => (prev === title ? null : title));
 
+  const writeAndReplace = (next: URLSearchParams) => {
+    next.set("page", "1");
+    setSp(next, { replace: true });
+  };
+
   const handleCategoryClick = (category: string) => {
     setActiveCategory(category);
     onCategorySelect(category);
+    const next = new URLSearchParams(sp);
+    next.set("category", category);
+    writeAndReplace(next);
   };
 
   const handleResetCategory = () => {
     setActiveCategory("");
     onCategorySelect("");
+    const next = new URLSearchParams(sp);
+    next.delete("category");
+    writeAndReplace(next);
   };
 
   const handleResetAll = () => {
     setActiveCategory("");
     setSearchValue("");
+
     onCategorySelect("");
     onSearch("");
     onSortChange("");
     onPopularitySelect([]);
     onMaterialSelect([]);
     onCollectionSelect([]);
-    onPriceChange([0, Infinity]);
+    onPriceChange(DEFAULT_PRICE);
+
+    const next = new URLSearchParams(sp);
+    [
+      "page",
+      "q",
+      "category",
+      "materials",
+      "collections",
+      "popularity",
+      "priceMin",
+      "priceMax",
+      "sort",
+    ].forEach((k) => next.delete(k));
+    writeAndReplace(next);
+
+    setLocalResetTick((x) => x + 1);
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   return (
@@ -110,6 +140,10 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
             onSearch={(query) => {
               setSearchValue(query);
               onSearch(query);
+              const next = new URLSearchParams(sp);
+              if (query) next.set("q", query);
+              else next.delete("q");
+              writeAndReplace(next);
             }}
           />
         </div>
@@ -132,15 +166,33 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
-              onSelect={onPopularitySelect}
-              resetSignal={resetSignal}
+              onSelect={(arr) => {
+                onPopularitySelect(arr);
+                const next = new URLSearchParams(sp);
+                if (arr.length) next.set("popularity", arr.join(","));
+                else next.delete("popularity");
+                writeAndReplace(next);
+              }}
+              resetSignal={localResetTick}
             />
 
             <PriceFilter
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
-              onPriceChange={onPriceChange}
-              resetSignal={resetSignal}
+              onPriceChange={([min, max]) => {
+                onPriceChange([min, max]);
+                const next = new URLSearchParams(sp);
+                const isDefault = min === PRICE_MIN && max === PRICE_MAX;
+                if (isDefault) {
+                  next.delete("priceMin");
+                  next.delete("priceMax");
+                } else {
+                  next.set("priceMin", String(min));
+                  next.set("priceMax", String(max));
+                }
+                writeAndReplace(next);
+              }}
+              resetSignal={localResetTick}
             />
 
             <FilterDropdown
@@ -152,8 +204,14 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
-              onSelect={onMaterialSelect}
-              resetSignal={resetSignal}
+              onSelect={(arr) => {
+                onMaterialSelect(arr);
+                const next = new URLSearchParams(sp);
+                if (arr.length) next.set("materials", arr.join(","));
+                else next.delete("materials");
+                writeAndReplace(next);
+              }}
+              resetSignal={localResetTick}
             />
 
             <FilterDropdown
@@ -166,13 +224,27 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               ]}
               activeDropdown={activeDropdown}
               onToggle={handleDropdownToggle}
-              onSelect={onCollectionSelect}
-              resetSignal={resetSignal}
+              onSelect={(arr) => {
+                onCollectionSelect(arr);
+                const next = new URLSearchParams(sp);
+                if (arr.length) next.set("collections", arr.join(","));
+                else next.delete("collections");
+                writeAndReplace(next);
+              }}
+              resetSignal={localResetTick}
             />
           </div>
 
           <div className="hidden sm:flex items-center gap-4 w-auto">
-            <SortBy onSortChange={onSortChange} />
+            <SortBy
+              onSortChange={(sort) => {
+                onSortChange(sort);
+                const next = new URLSearchParams(sp);
+                if (sort) next.set("sort", sort);
+                else next.delete("sort");
+                writeAndReplace(next);
+              }}
+            />
             <ResetFiltersButton onReset={handleResetAll} />
           </div>
         </div>

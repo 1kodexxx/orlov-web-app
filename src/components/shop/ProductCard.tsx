@@ -1,31 +1,35 @@
-// src/components/shop/ProductCard.tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
-  slug: string;
+  id: number;
   name: string;
-  image: string;
+  imageUrl?: string;
   price: number;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
-  slug,
+  id,
   name,
-  image,
+  imageUrl,
   price,
 }) => {
   const navigate = useNavigate();
-  const handleCardClick = () => navigate(`/catalog/${slug}`);
+  const handleCardClick = () => navigate(`/catalog/${id}`);
 
   return (
     <div
       className="product-card flex flex-col items-center max-w-[260px] w-full cursor-pointer"
       onClick={handleCardClick}>
-      <div className="overflow-hidden bg-background-paper rounded-lg">
-        <img src={image} alt={name} className="object-cover w-full" />
+      <div className="overflow-hidden bg-background-paper rounded-lg w-full">
+        <img
+          src={imageUrl || "/placeholder.png"}
+          alt={name}
+          className="object-cover w-full"
+          loading="lazy"
+        />
       </div>
-      <div className="mt-2 p-2 text-center">
+      <div className="mt-2 p-2 text-center w-full">
         <h3
           className="text-sm text-text-secondary hover:underline overflow-hidden"
           style={{

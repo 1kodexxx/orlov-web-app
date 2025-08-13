@@ -1,24 +1,32 @@
-// src/components/shop/filters/SortBy.tsx
 import React, { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+
+const sortOptions = [
+  { value: "", label: "Сортировать по (релевантность)" },
+  { value: "Title, DESC", label: "Название: от Я до А" },
+  { value: "Title, ASC", label: "Название: от А до Я" },
+  { value: "Price, DESC", label: "Цена: по убыванию" },
+  { value: "Price, ASC", label: "Цена: по возрастанию" },
+  { value: "Newest", label: "Сначала новые" },
+  { value: "Likes", label: "По лайкам" },
+  { value: "Views", label: "По просмотрам" },
+  { value: "Rating, DESC", label: "Рейтинг: высокий → низкий" },
+  { value: "Rating, ASC", label: "Рейтинг: низкий → высокий" },
+];
 
 interface SortByProps {
   onSortChange: (sort: string) => void;
 }
 
-const sortOptions = [
-  { value: "", label: "Сортировать по" },
-  { value: "Title, DESC", label: "Название: от Я до А" },
-  { value: "Title, ASC", label: "Название: от А до Я" },
-  { value: "Price, DESC", label: "Цена: по убыванию" },
-  { value: "Price, ASC", label: "Цена: по возрастанию" },
-];
-
 const SortBy: React.FC<SortByProps> = ({ onSortChange }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(sortOptions[0]);
+  const [sp, setSp] = useSearchParams();
+  const initial =
+    sortOptions.find((o) => o.value === (sp.get("sort") || "")) ??
+    sortOptions[0];
+  const [selected, setSelected] = useState(initial);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Автозакрытие по клику вне
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -28,24 +36,22 @@ const SortBy: React.FC<SortByProps> = ({ onSortChange }) => {
         setIsOpen(false);
       }
     };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
   const handleSelect = (option: { value: string; label: string }) => {
     setSelected(option);
     setIsOpen(false);
+    if (option.value) sp.set("sort", option.value);
+    else sp.delete("sort");
+    sp.set("page", "1");
+    setSp(sp, { replace: true });
     onSortChange(option.value);
   };
 
   return (
-    <div className="sort-by relative hidden sm:block " ref={dropdownRef}>
+    <div className="sort-by relative hidden sm:block" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className="h-10 flex items-center justify-between gap-2 rounded-sm border border-secondary bg-background-paper text-sm text-text-secondary px-4 cursor-pointer">
@@ -66,7 +72,7 @@ const SortBy: React.FC<SortByProps> = ({ onSortChange }) => {
       </button>
 
       {isOpen && (
-        <ul className="absolute top-full mt-2 w-64 rounded-sm border border-secondary bg-background-paper shadow z-50">
+        <ul className="absolute top-full mt-2 w-72 rounded-sm border border-secondary bg-background-paper shadow z-50">
           {sortOptions.map((option) => (
             <li key={option.value}>
               <button

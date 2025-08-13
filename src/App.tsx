@@ -54,7 +54,7 @@ const App = () => {
             {/* Каталог */}
             <Route path="/catalog" element={<CatalogLayout />}>
               <Route index element={<Catalog />} />
-              <Route path="/catalog/:id" element={<ProductPage />} />
+              <Route path=":id" element={<ProductPage />} />
             </Route>
 
             {/* Пользователь */}

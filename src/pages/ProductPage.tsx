@@ -1,21 +1,36 @@
-import React, { useState, useEffect } from "react";
+// src/components/shop/productPage/Page.tsx
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loader } from "@/components/common";
-import { allProducts, type Product } from "@/data/products.data";
 import {
   BackTo,
   ProductSlider,
   ProductDetails,
   ProductNotification,
 } from "@/components/shop/productPage";
+import { fetchProductAndView, type ProductRow } from "@/components/shop/api";
+
+/** Приводим поле images из v_product_full к массиву URL для слайдера */
+const toImageArray = (images?: ProductRow["images"]): string[] => {
+  if (!images) return [];
+  if (Array.isArray(images)) {
+    if (images.length === 0) return [];
+    if (typeof images[0] === "string") return images as string[];
+    return (images as Array<{ url: string; position: number }>)
+      .slice()
+      .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+      .map((x) => x.url);
+  }
+  return [];
+};
 
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const productId = Number(id);
   const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [slideIndex, setSlideIndex] = useState(0);
-  const [touchStartX, setTouchStartX] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [product, setProduct] = useState<ProductRow | null>(null);
 
   const [notification, setNotification] = useState<{
     variant: "success" | "error";
@@ -24,11 +39,25 @@ const ProductPage: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 300);
-    return () => clearTimeout(t);
-  }, []);
+    let cancel = false;
+    setLoading(true);
 
-  if (isLoading) {
+    fetchProductAndView(productId)
+      .then((p) => {
+        if (!cancel) setProduct(p);
+      })
+      .finally(() => {
+        if (!cancel) setLoading(false);
+      });
+
+    return () => {
+      cancel = true;
+    };
+  }, [productId]);
+
+  const images = useMemo(() => toImageArray(product?.images), [product]);
+
+  if (loading) {
     return (
       <div className="min-h-[calc(100vh-4rem)] flex justify-center items-center">
         <Loader />
@@ -36,7 +65,6 @@ const ProductPage: React.FC = () => {
     );
   }
 
-  const product: Product | undefined = allProducts.find((p) => p.slug === id);
   if (!product) {
     return (
       <section className="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-text-secondary min-h-screen flex items-center justify-center">
@@ -44,31 +72,6 @@ const ProductPage: React.FC = () => {
       </section>
     );
   }
-
-  const handlePrev = () => setSlideIndex((slideIndex + 2) % 3);
-  const handleNext = () => setSlideIndex((slideIndex + 1) % 3);
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setTouchStartX(e.clientX);
-  };
-
-  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
-    const diff = e.clientX - touchStartX;
-    if (diff > 50) handlePrev();
-    else if (diff < -50) handleNext();
-  };
-
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    setTouchStartX(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchEndX - touchStartX;
-    if (diff > 50) handlePrev();
-    else if (diff < -50) handleNext();
-  };
 
   return (
     <>
@@ -95,17 +98,8 @@ const ProductPage: React.FC = () => {
 
         <div className="max-w-screen-lg mx-auto px-4 py-4 sm:px-6 sm:py-8 lg:py-3 xl:mb-20 w-full">
           <div className="flex flex-col lg:flex-row gap-4 items-stretch">
-            <div
-              className="w-full lg:w-1/2 flex justify-center"
-              onMouseDown={handleMouseDown}
-              onMouseUp={handleMouseUp}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}>
-              <ProductSlider
-                image={product.image}
-                name={product.name}
-                slides={3}
-              />
+            <div className="w-full lg:w-1/2 flex justify-center">
+              <ProductSlider images={images} name={product.name} />
             </div>
 
             <div className="w-full lg:w-1/2 flex">
