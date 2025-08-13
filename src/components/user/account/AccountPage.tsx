@@ -1,5 +1,4 @@
-// src/pages/account/AccountPage.tsx
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/features/auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import AccountView from "./AccountView";
@@ -11,11 +10,9 @@ import type {
   MyComment,
   MyCompanyReview,
 } from "./types";
-import { API_BASE, getAccessToken } from "@/shared/apiClient";
+import { apiFetch, API_BASE } from "@/shared/apiClient";
 
-type ViteEnv = { VITE_API_URL?: string };
-
-/** Точное описание ответа /users/me */
+/** Точное описание ответа /users/me (из бэка) */
 type MeResponse = {
   id: number;
   email: string;
@@ -27,67 +24,36 @@ type MeResponse = {
   city: string | null;
   homeAddress: string | null;
   deliveryAddress: string | null;
+  birthDate?: string | null;
+  pickupPoint?: string | null;
 };
 
 const AccountPage: React.FC = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  const baseUrl = useMemo(
-    () =>
-      (((import.meta as unknown as { env: ViteEnv }).env.VITE_API_URL ??
-        "") as string) || API_BASE,
-    []
-  );
-
   /** Делает относительный URL с бэка абсолютным */
-  const toAbsoluteUrl = useCallback(
-    (u?: string | null): string | undefined => {
-      if (!u) return undefined;
-      // Если уже абсолютный http(s) — возвращаем как есть
-      if (/^https?:\/\//i.test(u)) return u;
+  const toAbsoluteUrl = useCallback((u?: string | null): string | undefined => {
+    if (!u) return undefined;
+    if (/^https?:\/\//i.test(u)) return u;
 
-      try {
-        // Ведущий "/" заставляет new URL игнорировать под-пути (например, /api) и идти от корня домена
-        return new URL(u.startsWith("/") ? u : `/${u}`, baseUrl).toString();
-      } catch {
-        // Запасной план — ручная склейка без лишних слэшей
-        const root = String(baseUrl).replace(/\/+$/, "");
-        const path = String(u).replace(/^\/+/, "");
-        return `${root}/${path}`;
-      }
-    },
-    [baseUrl]
-  );
+    // базовый origin: берём VITE_API_URL, иначе текущий сайт
+    const base = (API_BASE && API_BASE.trim()) || window.location.origin;
 
-  /** Хелпер для API с авторизацией и типизацией ответа */
-  const api = useCallback(
-    <T,>(path: string, init?: RequestInit) => {
-      const token = getAccessToken();
-      return fetch(`${baseUrl}${path}`, {
-        credentials: "include",
-        ...init,
-        headers: {
-          ...(init?.body instanceof FormData
-            ? {}
-            : { "Content-Type": "application/json" }),
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          ...(init?.headers || {}),
-        },
-      }).then(async (r) => {
-        if (!r.ok) {
-          const t = await r.text();
-          throw new Error(t || `HTTP ${r.status}`);
-        }
-        if (r.status === 204) return undefined as T;
-        const ct = r.headers.get("content-type") ?? "";
-        return (
-          ct.includes("application/json") ? r.json() : r.text()
-        ) as Promise<T>;
-      });
-    },
-    [baseUrl]
-  );
+    try {
+      // ведущий "/" гарантирует путь от корня
+      return new URL(u.startsWith("/") ? u : `/${u}`, base).toString();
+    } catch {
+      const root = base.replace(/\/+$/, "");
+      const path = String(u).replace(/^\/+/, "");
+      return `${root}/${path}`;
+    }
+  }, []);
+
+  // локальный алиас поверх apiFetch — для явной типизации
+  const api = useCallback(<T,>(path: string, init?: RequestInit) => {
+    return apiFetch<T>(path, init);
+  }, []);
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -126,6 +92,8 @@ const AccountPage: React.FC = () => {
             deliveryAddress: me.deliveryAddress ?? "",
             country: me.country ?? null,
             city: me.city ?? null,
+            birthDate: me.birthDate ?? null,
+            pickupPoint: me.pickupPoint ?? null,
           });
         }
         setOrders(o ?? []);
@@ -134,7 +102,7 @@ const AccountPage: React.FC = () => {
         setComments(c ?? []);
         setCompanyReviews(cr ?? []);
       } catch {
-        // Фолбэки чтобы UI был заполнен даже при офлайне/ошибке
+        // Фолбэки, если сеть/сервер недоступны
         setOrders((prev) =>
           prev.length
             ? prev
@@ -204,6 +172,9 @@ const AccountPage: React.FC = () => {
         country: data.country ?? null,
         homeAddress: data.homeAddress ?? null,
         deliveryAddress: data.deliveryAddress ?? null,
+        // Доп. поля отправляем, если бэк их принимает (сейчас поддерживает)
+        birthDate: data.birthDate ?? null,
+        pickupPoint: data.pickupPoint ?? null,
       }),
     });
 
@@ -216,6 +187,8 @@ const AccountPage: React.FC = () => {
       deliveryAddress: me.deliveryAddress ?? "",
       country: me.country ?? null,
       city: me.city ?? null,
+      birthDate: me.birthDate ?? null,
+      pickupPoint: me.pickupPoint ?? null,
     });
   }
 
@@ -223,10 +196,10 @@ const AccountPage: React.FC = () => {
   async function uploadAvatar(file: File) {
     const fd = new FormData();
     fd.append("avatar", file);
-    const res = await api<{ avatarUrl: string }>("/users/me/avatar", {
-      method: "PATCH",
-      body: fd,
-    });
+    const res = await api<{ avatarUrl: string; user?: MeResponse }>(
+      "/users/me/avatar",
+      { method: "PATCH", body: fd }
+    );
     setProfile((p) =>
       p ? { ...p, avatarUrl: toAbsoluteUrl(res.avatarUrl) } : p
     );

@@ -1,9 +1,9 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Breadcrumbs from "./Breadcrumbs";
 import StatCard from "./StatCard";
 import PaymentBadge from "./PaymentBadge";
 import RowActions from "./RowActions";
-import EditModal from "./EditModal";
+import EditModal, { type UserProfile as EditUserProfile } from "./EditModal";
 import DeleteModal from "./DeleteModal";
 import { currency, statusPill } from "./utils";
 import type {
@@ -11,16 +11,20 @@ import type {
   Order,
   OrderStatus,
   Stats,
-  UserProfile,
+  UserProfile, // тип профиля для отображения
+  ProductSummary,
+  MyComment,
+  MyCompanyReview,
 } from "./types";
 
 type Props = {
   user: UserProfile;
   stats: Stats;
   orders: Order[];
-  liked?: unknown[];
-  comments?: unknown[];
-  companyReviews?: unknown[];
+  /** передаём, даже если пока не рендерим — для типобезопасности пропсов */
+  liked?: ProductSummary[];
+  comments?: MyComment[];
+  companyReviews?: MyCompanyReview[];
   className?: string;
 } & AccountCallbacks;
 
@@ -33,22 +37,26 @@ export const AccountView: React.FC<Props> = ({
   onOrderRepeat,
   onOrderCancel,
   onSaveProfile,
-  onUploadAvatar,
 }) => {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [actMenu, setActMenu] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState<Partial<UserProfile>>({
-    name: user.name,
+  // ВАЖНО: тип формы берём из EditModal, чтобы дженерик Dispatch совпал
+  const [form, setForm] = useState<Partial<EditUserProfile>>({
+    firstName: undefined,
+    lastName: undefined,
     email: user.email,
-    pickupPoint: user.pickupPoint ?? undefined,
-    phone: user.phone,
-    homeAddress: user.homeAddress ?? undefined,
-    deliveryAddress: user.deliveryAddress ?? undefined,
-    country: user.country ?? undefined,
-    city: user.city ?? undefined,
+    pickupPoint: user.pickupPoint ?? null,
+    phone: user.phone ?? null,
+    homeAddress: user.homeAddress ?? null,
+    deliveryAddress: user.deliveryAddress ?? null,
+    birthDate: user.birthDate ?? null,
+    country: user.country ?? null,
+    city: user.city ?? null,
+    headline: undefined,
+    organization: undefined,
   });
 
   const totalOrdersCompare = "против 20 за последние 3 месяца";
@@ -69,21 +77,25 @@ export const AccountView: React.FC<Props> = ({
     }
     try {
       setSaving(true);
-      await onSaveProfile(form);
+      await onSaveProfile({
+        name:
+          form.firstName || form.lastName
+            ? `${form.firstName ?? ""} ${form.lastName ?? ""}`.trim()
+            : user.name,
+        email: form.email ?? undefined,
+        pickupPoint: form.pickupPoint ?? null,
+        phone: form.phone ?? undefined,
+        homeAddress: form.homeAddress ?? null,
+        deliveryAddress: form.deliveryAddress ?? null,
+        birthDate: form.birthDate ?? null,
+        country: form.country ?? null,
+        city: form.city ?? null,
+      });
       setEditOpen(false);
     } finally {
       setSaving(false);
     }
   }
-
-  // загрузка аватара
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const onPickAvatar = () => inputRef.current?.click();
-  const onFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    const f = e.target.files?.[0];
-    if (f && onUploadAvatar) void onUploadAvatar(f);
-    e.currentTarget.value = "";
-  };
 
   return (
     <section className={`bg-background py-8 md:py-8 ${className ?? ""}`}>
@@ -187,7 +199,7 @@ export const AccountView: React.FC<Props> = ({
           <div className="mb-6 grid gap-6 sm:grid-cols-2 sm:gap-8 lg:gap-16">
             {/* Левая колонка */}
             <div className="space-y-4">
-              <div className="flex items-center gap-4">
+              <div className="flex space-x-4">
                 <img
                   className="h-16 w-16 rounded-lg object-cover"
                   src={
@@ -196,36 +208,15 @@ export const AccountView: React.FC<Props> = ({
                   }
                   alt="Аватар"
                 />
-
-                <div className="flex-1">
+                <div>
                   {user.tierBadge && (
                     <span className="mb-2 inline-block rounded bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:text-primary">
                       {user.tierBadge}
                     </span>
                   )}
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-bold leading-none text-white sm:text-2xl">
-                      {user.name}
-                    </h2>
-
-                    {onUploadAvatar && (
-                      <>
-                        <input
-                          ref={inputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={onFileChange}
-                        />
-                        <button
-                          type="button"
-                          onClick={onPickAvatar}
-                          className="rounded border border-gray-700 bg-background.paper px-3 py-1.5 text-sm font-medium text-text.secondary hover:bg-[#2a2a2a]">
-                          Загрузить аватар
-                        </button>
-                      </>
-                    )}
-                  </div>
+                  <h2 className="flex items-center text-xl font-bold leading-none text-white sm:text-2xl">
+                    {user.name}
+                  </h2>
                 </div>
               </div>
 
@@ -283,25 +274,14 @@ export const AccountView: React.FC<Props> = ({
               </dl>
 
               <dl>
-                <dt className="font-semibold text-white">
-                  Избранный пункт выдачи
-                </dt>
-                <dd className="text-text.secondary">
-                  {user.pickupPoint || "—"}
-                </dd>
+                <dt className="font-semibold text-white">Дата рождения</dt>
+                <dd className="text-text.secondary">{user.birthDate || "—"}</dd>
               </dl>
 
               <dl>
-                <dt className="font-semibold text-white">Мои компании</dt>
+                <dt className="font-semibold text-white">Пункт выдачи</dt>
                 <dd className="text-text.secondary">
-                  {user.companies && user.companies.length > 0
-                    ? user.companies.map((c, i) => (
-                        <div key={i}>
-                          {c.name}
-                          {c.info ? `, ${c.info}` : ""}
-                        </div>
-                      ))
-                    : "—"}
+                  {user.pickupPoint || "—"}
                 </dd>
               </dl>
 

@@ -1,11 +1,13 @@
+// src/user/account/Breadcrumbs.tsx
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Breadcrumbs: React.FC<{ className?: string }> = ({ className }) => (
   <nav className={`mb-4 flex ${className ?? ""}`} aria-label="Breadcrumb">
     <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
       <li className="inline-flex items-center">
-        <a
-          href="/"
+        <Link
+          to="/"
           className="inline-flex items-center text-sm font-medium text-text.secondary hover:text-primary">
           <svg
             className="me-2 h-4 w-4"
@@ -21,8 +23,9 @@ const Breadcrumbs: React.FC<{ className?: string }> = ({ className }) => (
             />
           </svg>
           Главная
-        </a>
+        </Link>
       </li>
+
       <li>
         <div className="flex items-center">
           <svg
@@ -38,13 +41,14 @@ const Breadcrumbs: React.FC<{ className?: string }> = ({ className }) => (
               d="m9 5 7 7-7 7"
             />
           </svg>
-          <a
-            href="/account"
+          <Link
+            to="/account"
             className="ms-1 text-sm font-medium text-text.secondary hover:text-primary md:ms-2">
             Личный кабинет
-          </a>
+          </Link>
         </div>
       </li>
+
       <li aria-current="page">
         <div className="flex items-center">
           <svg

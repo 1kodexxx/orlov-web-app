@@ -60,11 +60,14 @@ export type UserProfile = {
   city?: string | null;
   homeAddress?: string | null;
   deliveryAddress?: string | null;
+
+  /** Новые поля для ЛК */
+  birthDate?: string | null; // YYYY-MM-DD
   pickupPoint?: string | null;
 
   // не обязательные «витринные» поля — UI их рендерит, но мы тут не меняем
   tierBadge?: string;
-  companies?: CompanyMini[];
+  companies?: CompanyMini[]; // оставляем для совместимости
   paymentMethods?: PaymentMethod[];
 };
 
