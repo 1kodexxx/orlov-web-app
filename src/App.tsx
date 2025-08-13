@@ -1,10 +1,11 @@
-import { Routes, Route } from "react-router-dom";
+// src/App.tsx
+import { Routes, Route, useLocation } from "react-router-dom";
 import { ScrollToTop, ScrollToTopButton, Loader } from "@/components/common/";
 import { Footer, CatalogLayout } from "@/components/layout";
 import { NavBar } from "@/components/layout/navBar";
-
 import { Suspense, lazy } from "react";
 
+// pages
 const Home = lazy(() => import("@/pages/Home"));
 const Catalog = lazy(() => import("@/pages/Catalog"));
 const CartPage = lazy(() => import("@/pages/CartPage"));
@@ -15,10 +16,22 @@ const Delivery = lazy(() => import("@/pages/Delivery"));
 const Reviews = lazy(() => import("@/pages/Reviews"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
+// user
+const Account = lazy(() => import("@/components/user/Account"));
+const LoginForm = lazy(() => import("@/components/user/LoginForm"));
+const RegisterForm = lazy(() => import("@/components/user/RegisterForm"));
+const ChangePassword = lazy(() => import("@/components/user/ChangePassword"));
+
 const App = () => {
+  const location = useLocation();
+
+  // пути, где не показываем NavBar и Footer
+  const hideLayoutPaths = ["/login", "/register", "/account/change-password"];
+  const hideLayout = hideLayoutPaths.includes(location.pathname);
+
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans flex flex-col">
-      <NavBar />
+      {!hideLayout && <NavBar />}
       <main className="flex-1">
         <ScrollToTop />
         <Suspense
@@ -41,11 +54,20 @@ const App = () => {
               <Route path="/catalog/:id" element={<ProductPage />} />
             </Route>
 
+            {/* Пользователь */}
+            <Route path="/account" element={<Account />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<RegisterForm />} />
+            <Route
+              path="/account/change-password"
+              element={<ChangePassword />}
+            />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </main>
-      <Footer />
+      {!hideLayout && <Footer />}
       <ScrollToTopButton />
     </div>
   );
