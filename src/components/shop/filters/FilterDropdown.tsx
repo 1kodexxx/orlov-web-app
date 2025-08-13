@@ -1,4 +1,3 @@
-// src/components/shop/filters/FilterDropdown.tsx
 import React, { useEffect, useRef, useState } from "react";
 
 interface FilterDropdownProps {
@@ -24,6 +23,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [mobileContentHeight, setMobileContentHeight] = useState(0);
 
+  // закрытие по клику вне
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -33,32 +33,25 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
         onToggle("");
       }
     };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onToggle]);
 
+  // ✅ Сбрасываем только когда изменился resetSignal (НЕ завися от onSelect)
   useEffect(() => {
     setSelectedOptions([]);
     onSelect([]);
-  }, [resetSignal, onSelect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetSignal]);
 
   const handleCheckboxChange = (id: string) => {
-    let updatedOptions: string[] = [];
-
-    if (selectedOptions.includes(id)) {
-      updatedOptions = selectedOptions.filter((option) => option !== id);
-    } else {
-      updatedOptions = [...selectedOptions, id];
-    }
-
-    setSelectedOptions(updatedOptions);
-    onSelect(updatedOptions);
+    setSelectedOptions((prev) => {
+      let updated: string[];
+      if (prev.includes(id)) updated = prev.filter((x) => x !== id);
+      else updated = [...prev, id];
+      onSelect(updated);
+      return updated;
+    });
   };
 
   const handleReset = () => {
@@ -76,7 +69,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
 
   return (
     <div className="relative w-full sm:w-auto" ref={dropdownRef}>
-      {/* Десктоп версия */}
+      {/* Desktop */}
       <div className="hidden sm:block">
         <button
           onClick={() => onToggle(title)}
@@ -155,7 +148,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
         )}
       </div>
 
-      {/* Мобильная версия */}
+      {/* Mobile */}
       <div className="sm:hidden">
         <button
           onClick={() => onToggle(title)}
@@ -168,9 +161,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
         </button>
         <div
           className="overflow-hidden transition-all duration-300 ease-in-out"
-          style={{
-            maxHeight: isOpen ? `${mobileContentHeight}px` : "0px",
-          }}>
+          style={{ maxHeight: isOpen ? `${mobileContentHeight}px` : "0px" }}>
           <div ref={contentRef} className="pt-2 space-y-2">
             {options.map((o) => (
               <label

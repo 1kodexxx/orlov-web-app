@@ -1,4 +1,3 @@
-// src/components/shop/filters/Search.tsx
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -18,20 +17,16 @@ const Search: React.FC<SearchProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
 
-  useEffect(() => {
-    setQuery(value);
-  }, [value]);
+  useEffect(() => setQuery(value), [value]);
 
-  const text = placeholder;
-
+  // 👉 запускаем “печатание” ровно один раз
   useEffect(() => {
+    const text = placeholder;
     let index = 0;
     const speed = 200;
-
-    const type = () => {
+    const tick = () => {
       setAnimatedPlaceholder(text.slice(0, index + 1));
       index++;
-
       if (index === text.length) {
         setTimeout(() => {
           index = 0;
@@ -39,15 +34,14 @@ const Search: React.FC<SearchProps> = ({
         }, 1000);
       }
     };
-
-    const interval = setInterval(type, speed);
-    return () => clearInterval(interval);
-  }, [text]);
+    const id = setInterval(tick, speed);
+    return () => clearInterval(id);
+  }, [placeholder]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setQuery(value);
-    onSearch(value);
+    const v = e.target.value;
+    setQuery(v);
+    onSearch(v);
   };
 
   const handleClear = () => {
@@ -67,7 +61,6 @@ const Search: React.FC<SearchProps> = ({
       htmlFor="Search"
       className="block w-full cursor-pointer product-card">
       <span className="text-sm font-medium text-text-primary">Поиск</span>
-
       <div className="relative mt-2">
         <input
           type="text"
@@ -79,7 +72,6 @@ const Search: React.FC<SearchProps> = ({
           placeholder={animatedPlaceholder}
           className="w-full h-10 rounded border border-secondary bg-background-paper text-text-secondary shadow-sm sm:text-sm px-4 pr-10 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
         />
-
         <span className="absolute inset-y-0 right-2 flex items-center">
           <button
             type="button"
