@@ -1,3 +1,4 @@
+// src/components/shop/ProductsList.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Loader } from "@/components/common";
 import { motion, type Variants } from "framer-motion";
@@ -61,7 +62,7 @@ const AnimatedProductCard: React.FC<{ product: ProductRow; index: number }> = ({
       transition: { delay: custom * 0.06, duration: 0.45, ease: "easeOut" },
     }),
     hover: {
-      scale: 1.05,
+      scale: 1.03,
       transition: { type: "spring", stiffness: 300, damping: 20 },
     },
   };
@@ -70,13 +71,13 @@ const AnimatedProductCard: React.FC<{ product: ProductRow; index: number }> = ({
 
   return (
     <motion.li
+      ref={ref}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       whileHover="hover"
       variants={variants}
       custom={index}
-      className="origin-center"
-      ref={ref}>
+      className="origin-center">
       <ProductCard
         id={product.product_id}
         name={product.name}
@@ -96,12 +97,6 @@ const ProductsList: React.FC<ProductsListProps> = ({ itemsPerPage = 12 }) => {
   const [items, setItems] = useState<ProductRow[]>([]);
   const [page, setPage] = useState<number>(Number(sp.get("page") || 1));
   const [pages, setPages] = useState<number>(1);
-
-  // ⚠️ СИНХ С PAGE ИЗ URL: если URL очищён (reset), локальный page становится 1
-  useEffect(() => {
-    const nextPage = Number(sp.get("page") || 1);
-    setPage((prev) => (prev !== nextPage ? nextPage : prev));
-  }, [sp]);
 
   const query = useMemo(() => {
     const q = sp.get("q") || undefined;
@@ -175,7 +170,13 @@ const ProductsList: React.FC<ProductsListProps> = ({ itemsPerPage = 12 }) => {
           {isLoading ? (
             <Loader />
           ) : items.length > 0 ? (
-            <ul className="mt-4 grid gap-y-10 gap-x-4 sm:gap-x-[68.5px] grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-items-center">
+            <ul
+              className="
+                mt-4 grid
+                grid-cols-2 md:grid-cols-3 xl:grid-cols-4
+                gap-x-6 xl:gap-x-8 gap-y-12
+                justify-items-center
+              ">
               {items.map((p, index) => (
                 <AnimatedProductCard
                   key={p.product_id}

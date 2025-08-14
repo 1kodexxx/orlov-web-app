@@ -31,12 +31,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  // ---- «глобальное» знание о лайках (persist + optional sync с API)
+  // ---- глобальное знание о лайках
   const { likedIds, markLiked, markUnliked } = useFavorites();
-  const isLiked = likedIds.has(id) || liked; // если контекст ещё не успел подтянуть состояния – используем prop
+  const isLiked = likedIds.has(id) || liked;
 
   // ---- локальные счётчики/рейтинг для UI
-  const [views] = React.useState(viewCount); // просмотры в списке не считаем
+  const [views] = React.useState(viewCount);
   const [likes, setLikes] = React.useState(likeCount);
   const [rating, setRatingLocal] = React.useState<number>(
     Number(myRating ?? avgRating) || 0
@@ -51,14 +51,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
       if (isLiked) {
         const res = await unlike(id);
         setLikes(res.likeCount);
-        markUnliked(id); // важное: фиксируем локально и сохраняем в LS
+        markUnliked(id);
       } else {
         const res = await like(id);
         setLikes(res.likeCount);
-        markLiked(id); // фиксируем локально и сохраняем в LS
+        markLiked(id);
       }
     } catch {
-      /* можно показать toast */
+      /* опционально: toast */
     }
   };
 
@@ -68,7 +68,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     setRatingLocal(value);
     try {
       const res = await setRating(id, value);
-      // гарантируем число, чтобы не было .toFixed is not a function
       const next = Number.isFinite(res.myRating)
         ? res.myRating
         : Number(res.avgRating) || value;
@@ -138,43 +137,56 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div
-      className="product-card flex flex-col items-center max-w-[260px] w-full cursor-pointer"
+      className="product-card group w-full max-w-[310px] cursor-pointer"
       onClick={handleCardClick}>
-      <div className="overflow-hidden bg-background-paper rounded-lg w-full relative">
-        <img
-          src={imageUrl || "/placeholder.png"}
-          alt={name}
-          className="object-cover w-full"
-          loading="lazy"
-        />
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-2 sm:bottom-3">
+      <div className="relative w-full rounded-xl border border-secondary/60 bg-background-paper shadow-sm transition-[box-shadow,transform] duration-200 hover:shadow-md">
+        {/* === Бейджи сверху: просмотры слева, лайки справа === */}
+        <div className="pointer-events-none absolute top-2 left-2 z-20">
+          <div className="flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1.5 text-white backdrop-blur-sm">
+            <AiOutlineEye size={16} />
+            <span className="text-xs">{formatCount(views)}</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={toggleLike}
+          aria-label={isLiked ? "Убрать лайк" : "Поставить лайк"}
+          className={`absolute top-2 right-2 z-20 inline-flex items-center gap-1 rounded-full px-2.5 py-1.5 backdrop-blur-sm transition
+            ${
+              isLiked
+                ? "bg-rose-500/80 text-white"
+                : "bg-black/55 text-white hover:bg-black/70"
+            }
+          `}>
+          <HeartIcon size={16} />
+          <span className="text-xs">{formatCount(likes)}</span>
+        </button>
+
+        {/* === Блок изображения с фиксированным соотношением 3:4 === */}
+        <div
+          className="w-full overflow-hidden"
+          style={{ aspectRatio: "3 / 4" }}>
+          <img
+            src={imageUrl || "/placeholder.png"}
+            alt={name}
+            loading="lazy"
+            className="h-full w-full object-contain p-2 sm:p-3"
+          />
+        </div>
+
+        {/* Рейтинг на фото (снизу по центру) */}
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-2 sm:bottom-3 z-10">
           <div className="flex items-center gap-2 rounded-full bg-black/55 text-white px-3.5 py-2 backdrop-blur-sm">
             {renderStars()}
           </div>
         </div>
       </div>
 
-      <div className="w-full mt-2 px-2 flex items-center justify-between h-8 select-none">
-        <div className="inline-flex items-center gap-1.5 text-white/90">
-          <AiOutlineEye size={20} />
-          <span className="text-sm">{formatCount(views)}</span>
-        </div>
-
-        <button
-          type="button"
-          onClick={toggleLike}
-          className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md ${
-            isLiked ? "text-rose-400" : "text-white/90"
-          }`}
-          aria-label={isLiked ? "Убрать лайк" : "Поставить лайк"}>
-          <HeartIcon size={20} />
-          <span className="text-sm">{formatCount(likes)}</span>
-        </button>
-      </div>
-
-      <div className="p-2 text-center w-full">
+      {/* Подпись и цена */}
+      <div className="p-3 text-center w-full">
         <h3
-          className="text-sm text-text-secondary hover:underline overflow-hidden"
+          className="text-[15px] text-text-secondary hover:underline overflow-hidden leading-snug"
           style={{
             display: "-webkit-box",
             WebkitLineClamp: 2,
@@ -185,7 +197,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           title={name}>
           {name}
         </h3>
-        <p className="mt-1 text-base font-semibold text-text-primary">
+        <p className="mt-1 text-[17px] font-semibold text-text-primary">
           {price.toLocaleString("ru-RU")} ₽
         </p>
       </div>
