@@ -1,8 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiFillHeart, AiOutlineHeart } from "react-icons/ai";
-import { FaStar, FaRegStar } from "react-icons/fa";
-import { like, unlike, setRating } from "@/features/catalog";
+import { like, unlike } from "@/features/catalog";
 import { useFavorites } from "@/features/catalog/useFavorites";
 
 interface ProductCardProps {
@@ -13,8 +12,10 @@ interface ProductCardProps {
 
   viewCount?: number;
   likeCount?: number;
-  avgRating?: number; // 0..5
-  liked?: boolean; // стартовое состояние для SSR/списка
+
+  /** ниже оставлены для совместимости с существующими вызовами, но не используются */
+  avgRating?: number;
+  liked?: boolean;
   myRating?: number | null;
 }
 
@@ -25,23 +26,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
   price,
   viewCount = 0,
   likeCount = 0,
-  avgRating = 0,
   liked = false,
-  myRating = null,
 }) => {
   const navigate = useNavigate();
 
-  // ---- глобальное знание о лайках
+  // глобальное знание о лайках
   const { likedIds, markLiked, markUnliked } = useFavorites();
   const isLiked = likedIds.has(id) || liked;
 
-  // ---- локальные счётчики/рейтинг для UI
+  // локальные счётчики для UI
   const [views] = React.useState(viewCount);
   const [likes, setLikes] = React.useState(likeCount);
-  const [rating, setRatingLocal] = React.useState<number>(
-    Number(myRating ?? avgRating) || 0
-  );
-  const [hoverVal, setHoverVal] = React.useState<number | null>(null);
 
   const handleCardClick = () => navigate(`/catalog/${id}`);
 
@@ -62,21 +57,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
-  const handleRate = async (value: number, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const prev = rating;
-    setRatingLocal(value);
-    try {
-      const res = await setRating(id, value);
-      const next = Number.isFinite(res.myRating)
-        ? res.myRating
-        : Number(res.avgRating) || value;
-      setRatingLocal(next);
-    } catch {
-      setRatingLocal(prev);
-    }
-  };
-
   const formatCount = (n: number) =>
     Intl.NumberFormat("ru-RU", {
       notation: "compact",
@@ -85,62 +65,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const HeartIcon = isLiked ? AiFillHeart : AiOutlineHeart;
 
-  const renderStars = () => {
-    const current =
-      hoverVal ?? Math.round(Number.isFinite(rating) ? rating : 0);
-    const arr = [1, 2, 3, 4, 5];
-    return (
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1">
-          {arr.map((s) =>
-            s <= current ? (
-              <FaStar
-                key={s}
-                size={18}
-                className="text-yellow-400 cursor-pointer"
-                onMouseEnter={(e) => {
-                  e.stopPropagation();
-                  setHoverVal(s);
-                }}
-                onMouseLeave={(e) => {
-                  e.stopPropagation();
-                  setHoverVal(null);
-                }}
-                onClick={(e) => handleRate(s, e)}
-                title={`Оценить на ${s}`}
-              />
-            ) : (
-              <FaRegStar
-                key={s}
-                size={18}
-                className="text-zinc-300 cursor-pointer"
-                onMouseEnter={(e) => {
-                  e.stopPropagation();
-                  setHoverVal(s);
-                }}
-                onMouseLeave={(e) => {
-                  e.stopPropagation();
-                  setHoverVal(null);
-                }}
-                onClick={(e) => handleRate(s, e)}
-                title={`Оценить на ${s}`}
-              />
-            )
-          )}
-        </div>
-        <span className="text-sm text-white/90">
-          {(Number.isFinite(rating) ? rating : 0).toFixed(1)}
-        </span>
-      </div>
-    );
-  };
-
   return (
     <div
       className="product-card group w-full max-w-[310px] cursor-pointer"
       onClick={handleCardClick}>
       <div className="relative w-full rounded-xl border border-secondary/60 bg-background-paper shadow-sm transition-[box-shadow,transform] duration-200 hover:shadow-md">
-        {/* === Бейджи сверху: просмотры слева, лайки справа === */}
+        {/* Бейджи сверху: просмотры слева, лайки справа */}
         <div className="pointer-events-none absolute top-2 left-2 z-20">
           <div className="flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1.5 text-white backdrop-blur-sm">
             <AiOutlineEye size={16} />
@@ -163,7 +93,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <span className="text-xs">{formatCount(likes)}</span>
         </button>
 
-        {/* === Блок изображения с фиксированным соотношением 3:4 === */}
+        {/* Изображение c фиксированным соотношением 3:4 */}
         <div
           className="w-full overflow-hidden"
           style={{ aspectRatio: "3 / 4" }}>
@@ -173,13 +103,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
             loading="lazy"
             className="h-full w-full object-contain p-2 sm:p-3"
           />
-        </div>
-
-        {/* Рейтинг на фото (снизу по центру) */}
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-2 sm:bottom-3 z-10">
-          <div className="flex items-center gap-2 rounded-full bg-black/55 text-white px-3.5 py-2 backdrop-blur-sm">
-            {renderStars()}
-          </div>
         </div>
       </div>
 

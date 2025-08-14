@@ -1,30 +1,34 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 interface SearchProps {
   placeholder?: string;
   onSearch: (query: string) => void;
   value: string;
+  /** внешний сигнал сброса (инкремент) */
+  resetSignal?: number;
 }
 
 const Search: React.FC<SearchProps> = ({
   placeholder = "Поиск...",
   onSearch,
   value,
+  resetSignal = 0,
 }) => {
   const [query, setQuery] = useState(value);
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
+  const [sp, setSp] = useSearchParams();
 
   useEffect(() => setQuery(value), [value]);
 
-  // 👉 запускаем “печатание” ровно один раз
+  // «печатание» плейсхолдера
   useEffect(() => {
     const text = placeholder;
     let index = 0;
     const speed = 200;
-    const tick = () => {
+    const id = setInterval(() => {
       setAnimatedPlaceholder(text.slice(0, index + 1));
       index++;
       if (index === text.length) {
@@ -33,10 +37,29 @@ const Search: React.FC<SearchProps> = ({
           setAnimatedPlaceholder("");
         }, 1000);
       }
-    };
-    const id = setInterval(tick, speed);
+    }, speed);
     return () => clearInterval(id);
   }, [placeholder]);
+
+  // фокус из навбара
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("focus") === "search" && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [location]);
+
+  // внешний сброс: чистим поле и q в URL
+  useEffect(() => {
+    if (!resetSignal) return;
+    setQuery("");
+    const next = new URLSearchParams(sp);
+    next.delete("q");
+    next.delete("page");
+    setSp(next, { replace: true });
+    onSearch("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetSignal]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
@@ -47,14 +70,11 @@ const Search: React.FC<SearchProps> = ({
   const handleClear = () => {
     setQuery("");
     onSearch("");
+    const next = new URLSearchParams(sp);
+    next.delete("q");
+    next.delete("page");
+    setSp(next, { replace: true });
   };
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    if (params.get("focus") === "search" && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [location]);
 
   return (
     <label

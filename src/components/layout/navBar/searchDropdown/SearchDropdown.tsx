@@ -1,4 +1,3 @@
-// src/components/layout/navBar/searchDropdown/SearchDropdown.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { FaSearch, FaChevronDown } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -45,20 +44,18 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
   const handleSearch = () => {
     const slug = categoryLabelToSlug[selectedCat] || "";
     const params = new URLSearchParams();
     if (slug) params.set("category", slug);
-    if (searchQuery) params.set("query", searchQuery);
+    if (searchQuery) params.set("q", searchQuery); // <-- единый ключ q
+    params.set("focus", "search"); // подсветить поле на каталоге
     navigate(`/catalog?${params.toString()}`);
 
     onClose();
-
     if (location.pathname === "/catalog") {
       onToggleMenu();
       window.scrollTo(0, 0);
@@ -66,15 +63,13 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+    if (e.key === "Enter") handleSearch();
   };
 
   return (
     <div
       ref={dropdownRef}
-      onMouseDown={(e) => e.stopPropagation()} // предотвращаем всплытие клика наружу
+      onMouseDown={(e) => e.stopPropagation()}
       className="relative flex flex-nowrap items-center w-[400px] max-w-[95vw] bg-background border border-secondary rounded-2xl overflow-visible sm:w-full">
       <div className="relative flex-shrink-0">
         <button
