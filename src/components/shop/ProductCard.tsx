@@ -38,7 +38,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [views] = React.useState(viewCount);
   const [likes, setLikes] = React.useState(likeCount);
 
-  const handleCardClick = () => navigate(`/catalog/${id}`);
+  // ProductCard.tsx
+  const handleCardClick = () =>
+    navigate(`/catalog/${id}`, { state: { productName: name } });
 
   const toggleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
