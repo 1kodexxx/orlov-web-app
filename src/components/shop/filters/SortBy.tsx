@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 const sortOptions = [
-  { value: "", label: "Сортировать по (релевантность)" },
+  { value: "", label: "Сортировать по" },
   { value: "Title, DESC", label: "Название: от Я до А" },
   { value: "Title, ASC", label: "Название: от А до Я" },
   { value: "Price, DESC", label: "Цена: по убыванию" },
