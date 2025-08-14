@@ -1,10 +1,12 @@
-// src/components/shop/filters/CategoryButtons.tsx
 import React, { useEffect, useRef } from "react";
 
 interface CategoryButtonsProps {
   categories: string[];
+  /** активная русская метка категории (точно такая же, как в product.categories) */
   activeCategory: string;
+  /** ставим активную категорию (или снимаем, если повторный клик) */
   onCategoryClick: (category: string) => void;
+  /** сброс активной категории при клике вне */
   onResetCategory: () => void;
 }
 
@@ -20,12 +22,12 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
 
-      // Если клик был вне кнопок, вне карточки товара и вне блока сортировки
+      // если клик был вне кнопок, вне карточки товара и вне блока сортировки — сбрасываем
       if (
         buttonsRef.current &&
         !buttonsRef.current.contains(target) &&
         !target.closest(".product-card") &&
-        !target.closest(".sort-by") // 🔥 НЕ сбрасывать, если клик внутри сортировки
+        !target.closest(".sort-by")
       ) {
         onResetCategory();
       }
@@ -34,10 +36,7 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
     if (activeCategory) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [activeCategory, onResetCategory]);
 
   const getButtonClass = (category: string) =>
@@ -49,14 +48,22 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
 
   return (
     <div ref={buttonsRef} className="flex flex-wrap gap-2 mb-2">
-      {categories.map((category) => (
-        <button
-          key={category}
-          onClick={() => onCategoryClick(category)}
-          className={getButtonClass(category)}>
-          {category}
-        </button>
-      ))}
+      {categories.map((category) => {
+        const isActive = activeCategory === category;
+        return (
+          <button
+            key={category}
+            type="button"
+            aria-pressed={isActive}
+            onClick={() => onCategoryClick(category)}
+            className={getButtonClass(category)}
+            title={
+              isActive ? `Сбросить: ${category}` : `Показать: ${category}`
+            }>
+            {category}
+          </button>
+        );
+      })}
     </div>
   );
 };

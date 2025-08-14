@@ -16,17 +16,22 @@ const sortOptions = [
 
 interface SortByProps {
   onSortChange: (sort: string) => void;
+  /** сигнал внешнего сброса (увеличивается при Reset) */
+  resetSignal?: number;
 }
 
-const SortBy: React.FC<SortByProps> = ({ onSortChange }) => {
+const SortBy: React.FC<SortByProps> = ({ onSortChange, resetSignal }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [sp, setSp] = useSearchParams();
-  const initial =
+
+  const findInitial = () =>
     sortOptions.find((o) => o.value === (sp.get("sort") || "")) ??
     sortOptions[0];
-  const [selected, setSelected] = useState(initial);
+
+  const [selected, setSelected] = useState(findInitial());
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Закрытие по клику вне
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -40,12 +45,18 @@ const SortBy: React.FC<SortByProps> = ({ onSortChange }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
+  // Синхронизация с URL (если поменяли сортировку извне или нажали Reset)
+  useEffect(() => {
+    setSelected(findInitial());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sp, resetSignal]);
+
   const handleSelect = (option: { value: string; label: string }) => {
     setSelected(option);
     setIsOpen(false);
     if (option.value) sp.set("sort", option.value);
     else sp.delete("sort");
-    sp.set("page", "1");
+    sp.delete("page"); // не держим page=1
     setSp(sp, { replace: true });
     onSortChange(option.value);
   };

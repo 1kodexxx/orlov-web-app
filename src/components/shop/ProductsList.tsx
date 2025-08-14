@@ -1,4 +1,3 @@
-// src/components/shop/ProductsList.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Loader } from "@/components/common";
 import { motion, type Variants } from "framer-motion";
@@ -143,10 +142,11 @@ const ProductsList: React.FC<ProductsListProps> = ({ itemsPerPage = 12 }) => {
     };
   }, [page, itemsPerPage, query]);
 
+  // если страница вышла за пределы — перейти на 1 и убрать параметр из URL
   useEffect(() => {
     if (!isLoading && page > pages) {
       setPage(1);
-      sp.set("page", "1");
+      sp.delete("page"); // ⚠️ не пишем page=1
       setSp(sp, { replace: true });
     }
   }, [isLoading, page, pages, setSp, sp]);
@@ -154,7 +154,8 @@ const ProductsList: React.FC<ProductsListProps> = ({ itemsPerPage = 12 }) => {
   const handlePageChange = (next: number) => {
     if (next < 1 || next > pages) return;
     setPage(next);
-    sp.set("page", String(next));
+    if (next === 1) sp.delete("page"); // ⚠️ не держим page=1 в URL
+    else sp.set("page", String(next));
     setSp(sp, { replace: true });
     window.scrollTo({ top: 0, behavior: "auto" });
   };

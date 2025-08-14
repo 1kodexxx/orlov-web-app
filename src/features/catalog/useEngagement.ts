@@ -1,5 +1,5 @@
 import * as React from "react";
-import { addView, like, unlike, setRating } from "./api";
+import { like, unlike, setRating } from "./api";
 
 /** Чтобы в одной вкладке один товар не считался многократно */
 const viewedThisSession = new Set<number>();

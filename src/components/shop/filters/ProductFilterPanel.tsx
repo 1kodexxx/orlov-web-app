@@ -67,7 +67,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   useEffect(() => setActiveCategory(initialCategory), [initialCategory]);
   useEffect(() => setSearchValue(initialQuery), [initialQuery]);
 
-  // внешний сброс -> чистим доп. фильтры и цену (без Infinity)
+  // внешний сброс -> чистим доп. фильтры и цену
   useEffect(() => {
     onPopularitySelect([]);
     onMaterialSelect([]);
@@ -80,8 +80,9 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   const handleDropdownToggle = (title: string) =>
     setActiveDropdown((prev) => (prev === title ? null : title));
 
+  // не пишем page=1
   const writeAndReplace = (next: URLSearchParams) => {
-    next.set("page", "1");
+    next.delete("page");
     setSp(next, { replace: true });
   };
 
@@ -244,6 +245,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
                 else next.delete("sort");
                 writeAndReplace(next);
               }}
+              resetSignal={localResetTick} // ← сигнал сброса для визуального обновления SortBy
             />
             <ResetFiltersButton onReset={handleResetAll} />
           </div>
