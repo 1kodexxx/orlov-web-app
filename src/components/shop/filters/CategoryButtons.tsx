@@ -1,12 +1,14 @@
 import React, { useEffect, useRef } from "react";
+import { categoryLabelToSlug } from "@/utils/categories";
 
 interface CategoryButtonsProps {
+  /** список русских лейблов для UI */
   categories: string[];
-  /** активная русская метка категории (точно такая же, как в product.categories) */
+  /** активная категория — SLUG (en) */
   activeCategory: string;
-  /** ставим активную категорию (или снимаем, если повторный клик) */
-  onCategoryClick: (category: string) => void;
-  /** сброс активной категории при клике вне */
+  /** клик по категории — передаём SLUG (en) */
+  onCategoryClick: (slug: string) => void;
+  /** сброс активной категории */
   onResetCategory: () => void;
 }
 
@@ -21,8 +23,6 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-
-      // если клик был вне кнопок, вне карточки товара и вне блока сортировки — сбрасываем
       if (
         buttonsRef.current &&
         !buttonsRef.current.contains(target) &&
@@ -39,28 +39,27 @@ const CategoryButtons: React.FC<CategoryButtonsProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [activeCategory, onResetCategory]);
 
-  const getButtonClass = (category: string) =>
+  const getButtonClass = (isActive: boolean) =>
     `px-3 py-1 border rounded-full text-sm transition ${
-      activeCategory === category
+      isActive
         ? "bg-[#EFE393] text-black border-[#EFE393]"
         : "border-secondary text-text-primary hover:border-primary hover:text-gold"
     }`;
 
   return (
     <div ref={buttonsRef} className="flex flex-wrap gap-2 mb-2">
-      {categories.map((category) => {
-        const isActive = activeCategory === category;
+      {categories.map((label) => {
+        const slug = categoryLabelToSlug[label] || ""; // ru → en
+        const isActive = activeCategory === slug;
         return (
           <button
-            key={category}
+            key={slug || label}
             type="button"
             aria-pressed={isActive}
-            onClick={() => onCategoryClick(category)}
-            className={getButtonClass(category)}
-            title={
-              isActive ? `Сбросить: ${category}` : `Показать: ${category}`
-            }>
-            {category}
+            onClick={() => onCategoryClick(slug)}
+            className={getButtonClass(isActive)}
+            title={isActive ? `Сбросить: ${label}` : `Показать: ${label}`}>
+            {label}
           </button>
         );
       })}

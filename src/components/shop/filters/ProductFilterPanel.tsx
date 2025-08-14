@@ -24,7 +24,8 @@ const categories = [
 ];
 
 interface ProductFilterPanelProps {
-  onCategorySelect: (category: string) => void;
+  /** принимает и отдаёт SLUG (en) */
+  onCategorySelect: (slug: string) => void;
   onSearch: (query: string) => void;
   onSortChange: (sort: string) => void;
   onPopularitySelect: (selected: string[]) => void;
@@ -32,6 +33,7 @@ interface ProductFilterPanelProps {
   onCollectionSelect: (selected: string[]) => void;
   onPriceChange: (range: [number, number]) => void;
   resetSignal: number;
+  /** стартовый SLUG из URL (если есть) */
   initialCategory?: string;
   initialQuery?: string;
 }
@@ -49,11 +51,11 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   onCollectionSelect,
   onPriceChange,
   resetSignal,
-  initialCategory = "",
+  initialCategory = "", // ← SLUG
   initialQuery = "",
 }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
+  const [activeCategory, setActiveCategory] = useState<string>(initialCategory); // SLUG
   const [searchValue, setSearchValue] = useState<string>(initialQuery);
   const [sp, setSp] = useSearchParams();
   const [localResetTick, setLocalResetTick] = useState(0);
@@ -67,7 +69,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   useEffect(() => setActiveCategory(initialCategory), [initialCategory]);
   useEffect(() => setSearchValue(initialQuery), [initialQuery]);
 
-  // внешний сброс -> чистим доп. фильтры и цену
+  // внешний сброс -> чистим фильтры и цену
   useEffect(() => {
     onPopularitySelect([]);
     onMaterialSelect([]);
@@ -80,49 +82,41 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   const handleDropdownToggle = (title: string) =>
     setActiveDropdown((prev) => (prev === title ? null : title));
 
-  // вспомогательная запись без page=1
+  // helper: записываем без page=1
   const writeAndReplace = (next: URLSearchParams) => {
     next.delete("page");
     setSp(next, { replace: true });
   };
 
-  const handleCategoryClick = (category: string) => {
-    setActiveCategory(category);
-    onCategorySelect(category);
+  /** Клик по категории — приходят SLUG’и */
+  const handleCategoryClick = (slug: string) => {
+    setActiveCategory(slug);
+    onCategorySelect(slug);
     const next = new URLSearchParams(sp);
-    next.set("category", category);
+    if (slug) next.set("category", slug);
+    else next.delete("category");
     writeAndReplace(next);
   };
 
-  const handleResetCategory = () => {
-    setActiveCategory("");
-    onCategorySelect("");
-    const next = new URLSearchParams(sp);
-    next.delete("category");
-    writeAndReplace(next);
-  };
+  const handleResetCategory = () => handleCategoryClick("");
 
   const handleResetAll = () => {
-    // 1) Сброс локального UI
     setActiveDropdown(null);
     setActiveCategory("");
     setSearchValue("");
 
     onCategorySelect("");
     onSearch("");
-    onSortChange(""); // сортировка — дефолт
+    onSortChange("");
     onPopularitySelect([]);
     onMaterialSelect([]);
     onCollectionSelect([]);
     onPriceChange(DEFAULT_PRICE);
 
-    // 2) Полная очистка URL (до /catalog)
+    // /catalog без query
     setSp(new URLSearchParams(), { replace: true });
 
-    // 3) Сообщаем дочерним фильтрам о сбросе (SortBy/Dropdown/Slider)
     setLocalResetTick((x) => x + 1);
-
-    // 4) Скролл к началу
     window.scrollTo({ top: 0, behavior: "auto" });
   };
 
@@ -144,9 +138,9 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
         </div>
 
         <CategoryButtons
-          categories={categories}
-          activeCategory={activeCategory}
-          onCategoryClick={handleCategoryClick}
+          categories={categories} // UI — русские подписи
+          activeCategory={activeCategory} // state — SLUG
+          onCategoryClick={handleCategoryClick} // отдаём SLUG
           onResetCategory={handleResetCategory}
         />
 
