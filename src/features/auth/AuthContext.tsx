@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   me as fetchMe,
   login as apiLogin,
@@ -6,8 +6,10 @@ import {
   logout as apiLogout,
 } from "./api";
 import { setAccessToken, getAccessToken } from "@/shared/apiClient";
+import { Ctx } from "./AuthContextObject"; // ⬅️ импортируем объект контекста отсюда
 
 export type Role = "admin" | "manager" | "customer";
+
 export type CurrentUser = {
   id: number;
   email: string;
@@ -29,17 +31,15 @@ export type AuthCtx = {
   }) => Promise<void>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  setToken: (t: string | null) => void;
 };
 
-const Ctx = createContext<AuthCtx | undefined>(undefined);
-
-/** Тайпгард: ответ логина содержит accessToken */
+/** Тайпгард для ответов, где может быть accessToken */
 function hasAccessToken(x: unknown): x is { accessToken: string } {
   return (
     typeof x === "object" &&
     x !== null &&
-    "accessToken" in x &&
-    typeof (x as { accessToken: unknown }).accessToken === "string"
+    typeof (x as { accessToken?: unknown }).accessToken === "string"
   );
 }
 
@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<CurrentUser>(null);
   const [loading, setLoading] = useState(true);
 
-  // первый запуск: если есть access в localStorage — пробуем /auth/me
+  // первый запуск: если есть access — пробуем /auth/me
   useEffect(() => {
     (async () => {
       try {
@@ -70,11 +70,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     email: string;
     password: string;
   }) => {
-    // если ваш бэкенд возвращает accessToken — положим его
-    const res: unknown = await apiLogin({ email, password });
-    if (hasAccessToken(res)) {
-      setAccessToken(res.accessToken);
-    }
+    const res = await apiLogin({ email, password });
+    if (hasAccessToken(res)) setAccessToken(res.accessToken);
     const profile = await fetchMe();
     setUser(profile);
   };
@@ -85,14 +82,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     firstName: string;
     lastName: string;
   }) => {
-    await apiRegister(p);
+    const res = await apiRegister(p);
+    if (hasAccessToken(res)) setAccessToken(res.accessToken);
     const profile = await fetchMe();
     setUser(profile);
   };
 
   const logout = async () => {
     await apiLogout();
-    setAccessToken("");
+    setAccessToken(null);
     setUser(null);
   };
 
@@ -101,16 +99,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(profile);
   };
 
-  return (
-    <Ctx.Provider
-      value={{ user, loading, login, register, logout, refreshProfile }}>
-      {children}
-    </Ctx.Provider>
-  );
-};
+  const value: AuthCtx = {
+    user,
+    loading,
+    login,
+    register,
+    logout,
+    refreshProfile,
+    setToken: setAccessToken,
+  };
 
-export const useAuth = (): AuthCtx => {
-  const v = useContext(Ctx);
-  if (!v) throw new Error("useAuth must be used inside <AuthProvider>");
-  return v;
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 };

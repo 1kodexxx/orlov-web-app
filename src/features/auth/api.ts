@@ -1,72 +1,60 @@
-// src/features/auth/api.ts
-import { api, setAccessToken } from "@/shared/apiClient";
+// API-обёртки для auth, переписаны на apiFetch
+import { apiFetch, setAccessToken } from "@/shared/apiClient";
 
 export type Role = "admin" | "manager" | "customer";
 
-// Профиль, который отдаёт /auth/me
-export interface Me {
+// Полный профиль, который возвращает бэкенд на GET /users/me
+export type Me = {
   id: number;
   email: string;
   role: Role;
   firstName: string | null;
   lastName: string | null;
   avatarUrl: string | null;
-}
+};
 
-export interface RegisterDto {
+// Лёгкий пользователь из /auth/login (может и не понадобиться снаружи)
+export type PublicUser = {
+  id: number;
+  email: string;
+  role: Role;
+  tokenVersion?: number;
+};
+
+export type RegisterDto = {
   email: string;
   password: string;
   firstName: string;
   lastName: string;
-}
-export interface LoginDto {
-  email: string;
-  password: string;
-}
+};
+export type LoginDto = { email: string; password: string };
 
-export interface JwtPayload {
-  sub: number;
-  email: string;
-  role: Role;
-  ver: number;
-  jti?: string;
-}
-export interface PublicUser {
-  id: number;
-  email: string;
-  role: Role;
-  tokenVersion: number;
-}
-
-type RegisterResponse = { accessToken: string; user: JwtPayload };
-type LoginResponse = { accessToken: string; user: PublicUser };
-type RefreshResponse = { accessToken: string; user: JwtPayload };
-
+// /auth/register -> { accessToken, user }
 export async function register(dto: RegisterDto) {
-  const { data } = await api.post<RegisterResponse>("/auth/register", dto);
+  const data = await apiFetch<{ accessToken: string; user: PublicUser }>(
+    "/auth/register",
+    { method: "POST", body: JSON.stringify(dto) }
+  );
   setAccessToken(data.accessToken);
   return data.user;
 }
 
+// /auth/login -> { accessToken, user }
 export async function login(dto: LoginDto) {
-  const { data } = await api.post<LoginResponse>("/auth/login", dto);
+  const data = await apiFetch<{ accessToken: string; user: PublicUser }>(
+    "/auth/login",
+    { method: "POST", body: JSON.stringify(dto) }
+  );
   setAccessToken(data.accessToken);
   return data.user;
 }
 
+// Профиль берём из /users/me (возвращает Me напрямую)
 export async function me(): Promise<Me> {
-  const { data } = await api.get<{ user: Me }>("/auth/me");
-  return data.user;
-}
-
-export async function refresh() {
-  const { data } = await api.post<RefreshResponse>("/auth/refresh");
-  setAccessToken(data.accessToken);
-  return data.user;
+  return apiFetch<Me>("/users/me");
 }
 
 export async function logout() {
-  // ⛔️ выключаем авто-refresh для запроса logout
-  await api.post("/auth/logout", {}, { headers: { "x-skip-refresh": "1" } });
-  setAccessToken("");
+  await apiFetch("/auth/logout", { method: "POST" });
+  setAccessToken(null);
 }

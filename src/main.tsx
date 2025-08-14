@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "@/store";
 import { CartProvider } from "@/context/CartContext";
-import { AuthProvider } from "@/features/auth/useAuth"; // ⬅️ правильный импорт
+import { AuthProvider } from "@/features/auth/AuthContext";
 import App from "./App";
 import "./main.css";
 

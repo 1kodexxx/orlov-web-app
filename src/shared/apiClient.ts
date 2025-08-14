@@ -1,3 +1,5 @@
+// общий мини-клиент на fetch + хранение accessToken в памяти
+
 let _accessToken: string | null = null;
 
 export function setAccessToken(token: string | null) {
@@ -9,6 +11,7 @@ export function getAccessToken() {
 
 type ViteEnv = { VITE_API_URL?: string };
 
+// можно задать базовый адрес в .env: VITE_API_URL=http://localhost:3000
 export const API_BASE = ((import.meta as unknown as { env: ViteEnv }).env
   .VITE_API_URL ?? "") as string;
 
@@ -19,7 +22,6 @@ export async function apiFetch<T>(
   const token = getAccessToken();
   const isForm = init.body instanceof FormData;
 
-  // надёжное слияние заголовков
   const fromInit =
     init.headers instanceof Headers
       ? Object.fromEntries(init.headers.entries())
@@ -27,7 +29,6 @@ export async function apiFetch<T>(
 
   const headers: Record<string, string> = { ...fromInit };
 
-  // ⛔️ Не ставим Content-Type для FormData — браузер сам добавит boundary
   if (!isForm && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   }
