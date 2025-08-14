@@ -1,5 +1,3 @@
-// src/features/catalog/api.ts
-
 /* =========================================
  * Типы
  * ======================================= */
@@ -27,7 +25,6 @@ export type ProductRow = {
   like_count: number;
   avg_rating: number;
 
-  // Ниже — поля для фильтров/метаданных (если приходят из VIEW)
   material?: "Кожа" | "Металл" | "Силикон";
   popularity?: "hit" | "new" | "recommended";
   collection?: "business" | "limited" | "premium" | "autumn2025";
@@ -40,7 +37,6 @@ export type ProductRow = {
   collections?: string[];
   popularity_arr?: string[];
 
-  // Изображения могут приходить как массив URL или как массив объектов с позицией
   images?: string[] | Array<{ url: string; position: number }>;
 };
 
@@ -152,7 +148,6 @@ export async function getProduct(id: number): Promise<ProductRow> {
 /** Получить карточку и параллельно отправить просмотр (не блокирует UI) */
 export async function fetchProductAndView(id: number): Promise<ProductRow> {
   const product = await getProduct(id);
-  // Отправляем просмотр "в фоне"
   postView(id).catch(() => void 0);
   return product;
 }
@@ -220,7 +215,6 @@ export async function setRating(
     body: JSON.stringify({ rating, comment: comment ?? "" }),
   });
   await ensureOk(res, `Failed to set rating for product ${id}`);
-  // { avgRating: number; myRating: number }
   return res.json() as Promise<RatingResult>;
 }
 
@@ -280,8 +274,26 @@ export async function deleteComment(commentId: number): Promise<{ ok: true }> {
 }
 
 /* =========================================
- * Barrel-экспорт: чтобы можно было импортировать из "@/features/catalog"
+ * Избранное (лайки) — устойчиво к 400
  * ======================================= */
 
-export // types already exported above
- {};
+export async function getFavorites(): Promise<ProductRow[]> {
+  try {
+    const res = await fetch(`${API_BASE}/catalog/favorites`, {
+      method: "GET",
+      credentials: "include",
+    });
+    if (res.status === 204) return [];
+    if (res.status === 400) return []; // нет owner (ни user, ни visitorId) — считаем пустым
+    await ensureOk(res, "Failed to load favorites");
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
+/* =========================================
+ * Barrel-экспорт (если нужно импортировать из "@/features/catalog")
+ * ======================================= */
+
+export {};

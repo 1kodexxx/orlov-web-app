@@ -1,13 +1,4 @@
 // src/features/catalog/index.ts
-export type {
-  SortKey,
-  ProductRow,
-  Paged,
-  CommentRow,
-  RatingResult,
-  LikeResult,
-} from "./api";
-
 export {
   getCatalog,
   getProduct,
@@ -21,4 +12,11 @@ export {
   listComments,
   addComment,
   deleteComment,
+  getFavorites, // <— важно
+  type SortKey,
+  type ProductRow,
+  type Paged,
+  type CommentRow,
+  type RatingResult,
+  type LikeResult,
 } from "./api";

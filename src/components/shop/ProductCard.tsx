@@ -1,9 +1,9 @@
-// src/components/shop/ProductCard.tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { like, unlike, setRating } from "@/features/catalog";
+import { useFavorites } from "@/features/catalog/useFavorites";
 
 interface ProductCardProps {
   id: number;
@@ -14,7 +14,7 @@ interface ProductCardProps {
   viewCount?: number;
   likeCount?: number;
   avgRating?: number; // 0..5
-  liked?: boolean; // лайк от текущего пользователя/гостя
+  liked?: boolean; // стартовое состояние для SSR/списка
   myRating?: number | null;
 }
 
@@ -31,54 +31,47 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  // локальные состояния
-  const [views] = React.useState<number>(Number(viewCount) || 0); // в списке НЕ инкрементим
-  const [likes, setLikes] = React.useState<number>(Number(likeCount) || 0);
-  const [isLiked, setIsLiked] = React.useState<boolean>(!!liked);
+  // ---- «глобальное» знание о лайках (persist + optional sync с API)
+  const { likedIds, markLiked, markUnliked } = useFavorites();
+  const isLiked = likedIds.has(id) || liked; // если контекст ещё не успел подтянуть состояния – используем prop
+
+  // ---- локальные счётчики/рейтинг для UI
+  const [views] = React.useState(viewCount); // просмотры в списке не считаем
+  const [likes, setLikes] = React.useState(likeCount);
   const [rating, setRatingLocal] = React.useState<number>(
-    Number(myRating ?? avgRating ?? 0)
+    Number(myRating ?? avgRating) || 0
   );
   const [hoverVal, setHoverVal] = React.useState<number | null>(null);
 
-  const handleCardClick = () => {
-    navigate(`/catalog/${id}`);
-  };
+  const handleCardClick = () => navigate(`/catalog/${id}`);
 
-  // лайк/анлайк
   const toggleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const next = !isLiked;
-    setIsLiked(next);
-    setLikes((n) => Math.max(0, n + (next ? 1 : -1)));
-
     try {
-      const res = next ? await like(id) : await unlike(id);
-      if (res && typeof res.likeCount === "number") {
+      if (isLiked) {
+        const res = await unlike(id);
         setLikes(res.likeCount);
-        setIsLiked(!!res.liked);
+        markUnliked(id); // важное: фиксируем локально и сохраняем в LS
+      } else {
+        const res = await like(id);
+        setLikes(res.likeCount);
+        markLiked(id); // фиксируем локально и сохраняем в LS
       }
     } catch {
-      // откат
-      setIsLiked(!next);
-      setLikes((n) => Math.max(0, n + (next ? -1 : 1)));
+      /* можно показать toast */
     }
   };
 
-  // рейтинг 1..5
   const handleRate = async (value: number, e: React.MouseEvent) => {
     e.stopPropagation();
     const prev = rating;
-    setRatingLocal(Number(value));
+    setRatingLocal(value);
     try {
-      const res = await setRating(id, value); // res: RatingResult
-      // Приоритет — моя оценка; если её нет (0), берём среднюю; затем значение-резерв.
-      const next =
-        Number.isFinite(res.myRating) && res.myRating > 0
-          ? res.myRating
-          : Number.isFinite(res.avgRating)
-          ? res.avgRating
-          : value;
-
+      const res = await setRating(id, value);
+      // гарантируем число, чтобы не было .toFixed is not a function
+      const next = Number.isFinite(res.myRating)
+        ? res.myRating
+        : Number(res.avgRating) || value;
       setRatingLocal(next);
     } catch {
       setRatingLocal(prev);
@@ -89,12 +82,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
     Intl.NumberFormat("ru-RU", {
       notation: "compact",
       compactDisplay: "short",
-    }).format(Math.max(0, Number(n) || 0));
+    }).format(Math.max(0, n));
 
   const HeartIcon = isLiked ? AiFillHeart : AiOutlineHeart;
 
   const renderStars = () => {
-    const current = hoverVal ?? Math.round(Number(rating) || 0);
+    const current =
+      hoverVal ?? Math.round(Number.isFinite(rating) ? rating : 0);
     const arr = [1, 2, 3, 4, 5];
     return (
       <div className="flex items-center gap-2">
@@ -136,7 +130,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
         <span className="text-sm text-white/90">
-          {Number(rating || 0).toFixed(1)}
+          {(Number.isFinite(rating) ? rating : 0).toFixed(1)}
         </span>
       </div>
     );
@@ -153,7 +147,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
           className="object-cover w-full"
           loading="lazy"
         />
-        {/* рейтинг поверх картинки */}
         <div className="absolute left-1/2 -translate-x-1/2 bottom-2 sm:bottom-3">
           <div className="flex items-center gap-2 rounded-full bg-black/55 text-white px-3.5 py-2 backdrop-blur-sm">
             {renderStars()}
@@ -161,7 +154,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
       </div>
 
-      {/* метрики под картинкой */}
       <div className="w-full mt-2 px-2 flex items-center justify-between h-8 select-none">
         <div className="inline-flex items-center gap-1.5 text-white/90">
           <AiOutlineEye size={20} />
