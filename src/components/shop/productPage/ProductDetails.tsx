@@ -1,6 +1,7 @@
+// src/components/shop/productPage/ProductDetails.tsx
 import { useEffect, useState } from "react";
 import { ColorSelector, ModelSelector, ProductActions } from "./";
-import type { ProductRow } from "../api";
+import type { ProductRow } from "@/features/catalog/api"; // новый API
 import { useCart } from "@/context/useCart";
 import { Confetti } from "@/animations";
 
@@ -25,6 +26,20 @@ const colorOptions = [
   { name: "Красный", hex: "#f87171" },
   { name: "Фиолетовый", hex: "#a855f7" },
 ];
+
+function firstImageUrl(
+  images: ProductRow["images"] | undefined,
+  fallback = "/placeholder.png"
+): string {
+  if (!images) return fallback;
+  if (Array.isArray(images) && images.length > 0) {
+    const first = images[0] as unknown;
+    if (typeof first === "string") return first;
+    const obj = first as { url?: string; position?: number } | null;
+    return obj?.url || fallback;
+  }
+  return fallback;
+}
 
 export default function ProductDetails({
   product,
@@ -63,19 +78,24 @@ export default function ProductDetails({
     setConfettiTrigger(false);
     setTimeout(() => setConfettiTrigger(true), 0);
 
-    // приводим к формату cart item
+    const imageUrl = firstImageUrl(product.images);
+
+    // приводим к формату cart item (строгое соответствие типам)
+    if (!selectedColor || !selectedModel) {
+      setNotification({
+        variant: "error",
+        title: "Пожалуйста, выберите цвет и модель",
+      });
+      return;
+    }
+
     addToCart({
       slug: product.sku,
       name: product.name,
-      image:
-        (Array.isArray(product.images) && typeof product.images[0] !== "string"
-          ? product.images[0]?.url
-          : Array.isArray(product.images)
-          ? String(product.images[0])
-          : undefined) || "/placeholder.png",
+      image: imageUrl ?? "/placeholder.png",
       price: product.price,
       selectedColor: selectedColor.hex,
-      selectedModel,
+      selectedModel: selectedModel,
       quantity: 1,
     });
 
@@ -122,7 +142,7 @@ export default function ProductDetails({
             if (color) setSelectedColor(color);
           }}
         />
-        {/* Модели здесь заглушкой. Если хочешь — подставим реальные из phone_model */}
+        {/* Модели как заглушка; при желании подставим реальные из phone_model */}
         <ModelSelector
           models={[
             "iPhone 14 Pro",

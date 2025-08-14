@@ -1,9 +1,10 @@
+// src/components/shop/ProductsList.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Loader } from "@/components/common";
 import { motion, type Variants } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useSearchParams } from "react-router-dom";
-import { getCatalog, type ProductRow, type SortKey } from "./api";
+import { getCatalog, type ProductRow, type SortKey } from "@/features/catalog";
 import ProductCard from "./ProductCard";
 
 interface ProductsListProps {
@@ -82,6 +83,9 @@ const AnimatedProductCard: React.FC<{ product: ProductRow; index: number }> = ({
         name={product.name}
         imageUrl={imageUrl}
         price={product.price}
+        viewCount={product.view_count}
+        likeCount={product.like_count}
+        avgRating={product.avg_rating}
       />
     </motion.li>
   );
@@ -132,9 +136,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ itemsPerPage = 12 }) => {
         setItems(res.items);
         setPages(res.pages);
       })
-      .finally(() => {
-        if (!canceled) setIsLoading(false);
-      });
+      .finally(() => !canceled && setIsLoading(false));
 
     return () => {
       canceled = true;

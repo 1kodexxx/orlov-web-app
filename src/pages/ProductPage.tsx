@@ -1,4 +1,4 @@
-// src/components/shop/productPage/Page.tsx
+// src/pages/ProductPage.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loader } from "@/components/common";
@@ -8,20 +8,17 @@ import {
   ProductDetails,
   ProductNotification,
 } from "@/components/shop/productPage";
-import { fetchProductAndView, type ProductRow } from "@/components/shop/api";
+import { fetchProductAndView, type ProductRow } from "@/features/catalog";
 
-/** Приводим поле images из v_product_full к массиву URL для слайдера */
+/** Преобразуем images к массиву URL для слайдера */
 const toImageArray = (images?: ProductRow["images"]): string[] => {
   if (!images) return [];
-  if (Array.isArray(images)) {
-    if (images.length === 0) return [];
-    if (typeof images[0] === "string") return images as string[];
-    return (images as Array<{ url: string; position: number }>)
-      .slice()
-      .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-      .map((x) => x.url);
-  }
-  return [];
+  if (!Array.isArray(images) || images.length === 0) return [];
+  if (typeof images[0] === "string") return images as string[];
+  return (images as Array<{ url: string; position: number }>)
+    .slice()
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+    .map((x) => x.url);
 };
 
 const ProductPage: React.FC = () => {
@@ -43,12 +40,8 @@ const ProductPage: React.FC = () => {
     setLoading(true);
 
     fetchProductAndView(productId)
-      .then((p) => {
-        if (!cancel) setProduct(p);
-      })
-      .finally(() => {
-        if (!cancel) setLoading(false);
-      });
+      .then((p) => !cancel && setProduct(p))
+      .finally(() => !cancel && setLoading(false));
 
     return () => {
       cancel = true;

@@ -1,17 +1,31 @@
 import { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
-import type { Product } from "@/data/products.data";
 
-// Тип корзины
-export interface CartItem extends Product {
+/** Минимальный набор полей товара, которые реально нужны корзине */
+export type ProductForCart = {
+  slug: string;
+  name: string;
+  image: string; // URL первой картинки/плейсхолдер
+  price: number;
+};
+
+/** То, что лежит в корзине */
+export interface CartItem extends ProductForCart {
   quantity: number;
   selectedColor: string;
   selectedModel: string;
 }
 
+/** Аргумент для addToCart: quantity опциональный — по умолчанию 1 */
+export type AddToCartInput = ProductForCart & {
+  selectedColor: string;
+  selectedModel: string;
+  quantity?: number;
+};
+
 export interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: AddToCartInput) => void;
   removeFromCart: (
     slug: string,
     selectedColor: string,
@@ -39,34 +53,53 @@ interface CartProviderProps {
 
 export const CartProvider = ({ children }: CartProviderProps) => {
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
+    try {
+      const saved = localStorage.getItem("cart");
+      return saved ? (JSON.parse(saved) as CartItem[]) : [];
+    } catch {
+      return [];
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
+    try {
+      localStorage.setItem("cart", JSON.stringify(cartItems));
+    } catch {
+      /* ignore */
+    }
   }, [cartItems]);
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = (item: AddToCartInput) => {
+    const quantity = item.quantity ?? 1;
+
     setCartItems((prev) => {
       const existing = prev.find(
-        (cartItem) =>
-          cartItem.slug === item.slug &&
-          cartItem.selectedColor === item.selectedColor &&
-          cartItem.selectedModel === item.selectedModel
+        (ci) =>
+          ci.slug === item.slug &&
+          ci.selectedColor === item.selectedColor &&
+          ci.selectedModel === item.selectedModel
       );
 
       if (existing) {
-        return prev.map((cartItem) =>
-          cartItem.slug === item.slug &&
-          cartItem.selectedColor === item.selectedColor &&
-          cartItem.selectedModel === item.selectedModel
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
+        return prev.map((ci) =>
+          ci.slug === item.slug &&
+          ci.selectedColor === item.selectedColor &&
+          ci.selectedModel === item.selectedModel
+            ? { ...ci, quantity: ci.quantity + quantity }
+            : ci
         );
       }
 
-      return [...prev, { ...item, quantity: 1 }];
+      const next: CartItem = {
+        slug: item.slug,
+        name: item.name,
+        image: item.image,
+        price: item.price,
+        selectedColor: item.selectedColor,
+        selectedModel: item.selectedModel,
+        quantity,
+      };
+      return [...prev, next];
     });
   };
 
@@ -77,11 +110,11 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   ) => {
     setCartItems((prev) =>
       prev.filter(
-        (item) =>
+        (ci) =>
           !(
-            item.slug === slug &&
-            item.selectedColor === selectedColor &&
-            item.selectedModel === selectedModel
+            ci.slug === slug &&
+            ci.selectedColor === selectedColor &&
+            ci.selectedModel === selectedModel
           )
       )
     );
@@ -93,12 +126,12 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     selectedModel: string
   ) => {
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.slug === slug &&
-        item.selectedColor === selectedColor &&
-        item.selectedModel === selectedModel
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
+      prev.map((ci) =>
+        ci.slug === slug &&
+        ci.selectedColor === selectedColor &&
+        ci.selectedModel === selectedModel
+          ? { ...ci, quantity: ci.quantity + 1 }
+          : ci
       )
     );
   };
@@ -110,14 +143,14 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   ) => {
     setCartItems((prev) =>
       prev
-        .map((item) =>
-          item.slug === slug &&
-          item.selectedColor === selectedColor &&
-          item.selectedModel === selectedModel
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
+        .map((ci) =>
+          ci.slug === slug &&
+          ci.selectedColor === selectedColor &&
+          ci.selectedModel === selectedModel
+            ? { ...ci, quantity: ci.quantity - 1 }
+            : ci
         )
-        .filter((item) => item.quantity > 0)
+        .filter((ci) => ci.quantity > 0)
     );
   };
 

@@ -1,14 +1,10 @@
-import { useState, useEffect } from "react";
+// src/pages/Catalog.tsx
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { allProducts } from "@/data/products.data";
+
 import { ProductsList } from "@/components/shop";
 import { ProductFilterPanel } from "@/components/shop/filters";
 import { categoryLabelToSlug, categorySlugToLabel } from "@/utils/categories";
-
-const parsePrice = (price: number | string) => {
-  if (typeof price === "number") return price;
-  return parseInt(price.replace(/\s/g, "").replace("₽", ""));
-};
 
 const Catalog = () => {
   const location = useLocation();
@@ -17,15 +13,15 @@ const Catalog = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Читаем slug из URL → мапим в русскую метку
+  // Читаем slug из URL → мапим его в русскую метку для панели фильтров
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const slug = params.get("category") || "";
     const label = categorySlugToLabel[slug] || "";
-    const queryParam = params.get("query") || "";
+    const q = params.get("query") || "";
 
     setSelectedCategory(label);
-    setSearchQuery(queryParam);
+    setSearchQuery(q);
   }, [location.search]);
 
   const [sortOption, setSortOption] = useState<string>("");
@@ -34,19 +30,29 @@ const Catalog = () => {
   const [selectedMaterial, setSelectedMaterial] = useState<string[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, Infinity]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // При изменении фильтров пишем обратно в URL уже английский slug
+  // При изменении фильтров — пишем обратно в URL (их прочитает ProductsList и обратится к API)
   useEffect(() => {
     const params = new URLSearchParams();
+
     const slug = categoryLabelToSlug[selectedCategory] || "";
     if (slug) params.set("category", slug);
     if (searchQuery) params.set("query", searchQuery);
-    navigate(`/catalog?${params.toString()}`, { replace: true });
-  }, [selectedCategory, searchQuery]);
 
-  useEffect(() => {
-    setCurrentPage(1);
+    // Доп. фильтры — как в ProductsList (он ожидает эти имена)
+    if (selectedPopularity.length)
+      params.set("popularity", selectedPopularity.join(","));
+    if (selectedMaterial.length)
+      params.set("materials", selectedMaterial.join(","));
+    if (selectedCollection.length)
+      params.set("collections", selectedCollection.join(","));
+    if (Number.isFinite(priceRange[0]))
+      params.set("priceMin", String(priceRange[0]));
+    if (Number.isFinite(priceRange[1]) && priceRange[1] !== Infinity)
+      params.set("priceMax", String(priceRange[1]));
+    if (sortOption) params.set("sort", sortOption);
+
+    navigate(`/catalog?${params.toString()}`, { replace: true });
   }, [
     selectedCategory,
     searchQuery,
@@ -55,6 +61,7 @@ const Catalog = () => {
     selectedMaterial,
     selectedCollection,
     priceRange,
+    navigate,
   ]);
 
   const handleCategorySelect = (category: string) => {
@@ -65,50 +72,6 @@ const Catalog = () => {
     setSelectedCollection([]);
     setPriceRange([0, Infinity]);
   };
-
-  const filteredProducts = allProducts
-    .filter((product) => {
-      const matchesCategory = selectedCategory
-        ? product.categories.includes(selectedCategory)
-        : true;
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const matchesPopularity =
-        selectedPopularity.length > 0
-          ? selectedPopularity.includes(product.popularity)
-          : true;
-      const matchesMaterial =
-        selectedMaterial.length > 0
-          ? selectedMaterial.includes(product.material)
-          : true;
-      const matchesCollection =
-        selectedCollection.length > 0
-          ? selectedCollection.includes(product.collection)
-          : true;
-      const price = parsePrice(product.price);
-      const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
-      return (
-        matchesCategory &&
-        matchesSearch &&
-        matchesPopularity &&
-        matchesMaterial &&
-        matchesCollection &&
-        matchesPrice
-      );
-    })
-    .sort((a, b) => {
-      if (sortOption === "Title, ASC") {
-        return a.name.localeCompare(b.name);
-      } else if (sortOption === "Title, DESC") {
-        return b.name.localeCompare(a.name);
-      } else if (sortOption === "Price, ASC") {
-        return parsePrice(a.price) - parsePrice(b.price);
-      } else if (sortOption === "Price, DESC") {
-        return parsePrice(b.price) - parsePrice(a.price);
-      }
-      return 0;
-    });
 
   return (
     <>
@@ -124,11 +87,9 @@ const Catalog = () => {
         initialCategory={selectedCategory}
         initialQuery={searchQuery}
       />
-      <ProductsList
-        products={filteredProducts}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
+
+      {/* ProductsList сам читает параметры из URL и ходит в новый API */}
+      <ProductsList itemsPerPage={12} />
     </>
   );
 };
