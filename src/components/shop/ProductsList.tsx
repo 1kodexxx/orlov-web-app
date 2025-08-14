@@ -70,13 +70,13 @@ const AnimatedProductCard: React.FC<{ product: ProductRow; index: number }> = ({
 
   return (
     <motion.li
-      ref={ref}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       whileHover="hover"
       variants={variants}
       custom={index}
-      className="origin-center">
+      className="origin-center"
+      ref={ref}>
       <ProductCard
         id={product.product_id}
         name={product.name}
@@ -96,6 +96,12 @@ const ProductsList: React.FC<ProductsListProps> = ({ itemsPerPage = 12 }) => {
   const [items, setItems] = useState<ProductRow[]>([]);
   const [page, setPage] = useState<number>(Number(sp.get("page") || 1));
   const [pages, setPages] = useState<number>(1);
+
+  // ⚠️ СИНХ С PAGE ИЗ URL: если URL очищён (reset), локальный page становится 1
+  useEffect(() => {
+    const nextPage = Number(sp.get("page") || 1);
+    setPage((prev) => (prev !== nextPage ? nextPage : prev));
+  }, [sp]);
 
   const query = useMemo(() => {
     const q = sp.get("q") || undefined;
@@ -146,7 +152,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ itemsPerPage = 12 }) => {
   useEffect(() => {
     if (!isLoading && page > pages) {
       setPage(1);
-      sp.delete("page"); // ⚠️ не пишем page=1
+      sp.delete("page"); // не пишем page=1
       setSp(sp, { replace: true });
     }
   }, [isLoading, page, pages, setSp, sp]);
@@ -154,7 +160,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ itemsPerPage = 12 }) => {
   const handlePageChange = (next: number) => {
     if (next < 1 || next > pages) return;
     setPage(next);
-    if (next === 1) sp.delete("page"); // ⚠️ не держим page=1 в URL
+    if (next === 1) sp.delete("page");
     else sp.set("page", String(next));
     setSp(sp, { replace: true });
     window.scrollTo({ top: 0, behavior: "auto" });

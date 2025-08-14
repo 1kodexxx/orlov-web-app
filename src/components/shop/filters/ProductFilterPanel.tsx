@@ -80,7 +80,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   const handleDropdownToggle = (title: string) =>
     setActiveDropdown((prev) => (prev === title ? null : title));
 
-  // не пишем page=1
+  // вспомогательная запись без page=1
   const writeAndReplace = (next: URLSearchParams) => {
     next.delete("page");
     setSp(next, { replace: true });
@@ -103,32 +103,26 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   };
 
   const handleResetAll = () => {
+    // 1) Сброс локального UI
+    setActiveDropdown(null);
     setActiveCategory("");
     setSearchValue("");
 
     onCategorySelect("");
     onSearch("");
-    onSortChange("");
+    onSortChange(""); // сортировка — дефолт
     onPopularitySelect([]);
     onMaterialSelect([]);
     onCollectionSelect([]);
     onPriceChange(DEFAULT_PRICE);
 
-    const next = new URLSearchParams(sp);
-    [
-      "page",
-      "q",
-      "category",
-      "materials",
-      "collections",
-      "popularity",
-      "priceMin",
-      "priceMax",
-      "sort",
-    ].forEach((k) => next.delete(k));
-    writeAndReplace(next);
+    // 2) Полная очистка URL (до /catalog)
+    setSp(new URLSearchParams(), { replace: true });
 
+    // 3) Сообщаем дочерним фильтрам о сбросе (SortBy/Dropdown/Slider)
     setLocalResetTick((x) => x + 1);
+
+    // 4) Скролл к началу
     window.scrollTo({ top: 0, behavior: "auto" });
   };
 
@@ -245,7 +239,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
                 else next.delete("sort");
                 writeAndReplace(next);
               }}
-              resetSignal={localResetTick} // ← сигнал сброса для визуального обновления SortBy
+              resetSignal={localResetTick}
             />
             <ResetFiltersButton onReset={handleResetAll} />
           </div>
