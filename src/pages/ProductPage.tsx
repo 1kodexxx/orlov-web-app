@@ -1,6 +1,6 @@
 // src/pages/product/ProductPage.tsx
 import React from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import BackTo from "@/components/shop/productPage/BackTo";
 import ProductSlider from "@/components/shop/productPage/ProductSlider";
@@ -22,7 +22,7 @@ import { getProduct, type ProductRow } from "@/features/catalog";
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const location = useLocation() as { state?: { productName?: string } };
+  // const location = useLocation() as { state?: { productName?: string } };
 
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -66,14 +66,14 @@ const ProductPage: React.FC = () => {
   }, [id]);
 
   // Обновим title вкладки, когда знаем имя
-  React.useEffect(() => {
-    const prev = document.title;
-    const name = product?.name ?? location.state?.productName;
-    if (name) document.title = `${name} — ORLOV BRAND`;
-    return () => {
-      document.title = prev;
-    };
-  }, [product?.name, location.state?.productName]);
+  // React.useEffect(() => {
+  //   const prev = document.title;
+  //   const name = product?.name ?? location.state?.productName;
+  //   if (name) document.title = `${name} — ORLOV BRAND`;
+  //   return () => {
+  //     document.title = prev;
+  //   };
+  // }, [product?.name, location.state?.productName]);
 
   // Отправим "просмотр" после успешной загрузки (fire-and-forget)
   React.useEffect(() => {
