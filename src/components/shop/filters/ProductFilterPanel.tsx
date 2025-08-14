@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Search,
   FilterDropdown,
@@ -24,8 +24,7 @@ const categories = [
 ];
 
 interface ProductFilterPanelProps {
-  /** принимает и отдаёт SLUG (en) */
-  onCategorySelect: (slug: string) => void;
+  onCategorySelect: (category: string) => void;
   onSearch: (query: string) => void;
   onSortChange: (sort: string) => void;
   onPopularitySelect: (selected: string[]) => void;
@@ -33,7 +32,6 @@ interface ProductFilterPanelProps {
   onCollectionSelect: (selected: string[]) => void;
   onPriceChange: (range: [number, number]) => void;
   resetSignal: number;
-  /** стартовый SLUG из URL (если есть) */
   initialCategory?: string;
   initialQuery?: string;
 }
@@ -51,14 +49,18 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   onCollectionSelect,
   onPriceChange,
   resetSignal,
-  initialCategory = "", // ← SLUG
+  initialCategory = "",
   initialQuery = "",
 }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>(initialCategory); // SLUG
+  const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
   const [searchValue, setSearchValue] = useState<string>(initialQuery);
   const [sp, setSp] = useSearchParams();
   const [localResetTick, setLocalResetTick] = useState(0);
+
+  // флаг «идёт сброс» — блокирует записи в URL из дочерних обработчиков
+  const [isResetting, setIsResetting] = useState(false);
+  const resetTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     onCategorySelect(initialCategory);
@@ -69,7 +71,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   useEffect(() => setActiveCategory(initialCategory), [initialCategory]);
   useEffect(() => setSearchValue(initialQuery), [initialQuery]);
 
-  // внешний сброс -> чистим фильтры и цену
+  // внешний сброс -> чистим доп. фильтры и цену
   useEffect(() => {
     onPopularitySelect([]);
     onMaterialSelect([]);
@@ -82,43 +84,65 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
   const handleDropdownToggle = (title: string) =>
     setActiveDropdown((prev) => (prev === title ? null : title));
 
-  // helper: записываем без page=1
+  // не пишем page=1
   const writeAndReplace = (next: URLSearchParams) => {
     next.delete("page");
     setSp(next, { replace: true });
   };
 
-  /** Клик по категории — приходят SLUG’и */
-  const handleCategoryClick = (slug: string) => {
-    setActiveCategory(slug);
-    onCategorySelect(slug);
+  const handleCategoryClick = (category: string) => {
+    setActiveCategory(category);
+    onCategorySelect(category);
     const next = new URLSearchParams(sp);
-    if (slug) next.set("category", slug);
-    else next.delete("category");
+    next.set("category", category);
     writeAndReplace(next);
   };
 
-  const handleResetCategory = () => handleCategoryClick("");
+  const handleResetCategory = () => {
+    setActiveCategory("");
+    onCategorySelect("");
+    const next = new URLSearchParams(sp);
+    next.delete("category");
+    writeAndReplace(next);
+  };
 
   const handleResetAll = () => {
-    setActiveDropdown(null);
+    // 0) включаем «режим сброса»
+    setIsResetting(true);
+
+    // 1) Сброс локального UI-состояния
     setActiveCategory("");
     setSearchValue("");
-
     onCategorySelect("");
     onSearch("");
-    onSortChange("");
+    onSortChange(""); // сортировка — дефолт (релевантность)
     onPopularitySelect([]);
     onMaterialSelect([]);
     onCollectionSelect([]);
     onPriceChange(DEFAULT_PRICE);
 
-    // /catalog без query
+    // 2) Полная очистка адресной строки: /catalog без query
     setSp(new URLSearchParams(), { replace: true });
 
+    // 3) Сообщаем дочерним фильтрам о сбросе (они обновят UI),
+    // но их onSelect/onPriceChange не будут писать в URL благодаря isResetting
     setLocalResetTick((x) => x + 1);
+
+    // 4) Выключим «режим сброса» в следующий тик
+    if (resetTimerRef.current) window.clearTimeout(resetTimerRef.current);
+    resetTimerRef.current = window.setTimeout(() => {
+      setIsResetting(false);
+    }, 0);
+
+    // 5) Скролл к началу
     window.scrollTo({ top: 0, behavior: "auto" });
   };
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) window.clearTimeout(resetTimerRef.current);
+    };
+  }, []);
 
   return (
     <section className="text-text-secondary bg-background body-font m-0">
@@ -138,9 +162,9 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
         </div>
 
         <CategoryButtons
-          categories={categories} // UI — русские подписи
-          activeCategory={activeCategory} // state — SLUG
-          onCategoryClick={handleCategoryClick} // отдаём SLUG
+          categories={categories}
+          activeCategory={activeCategory}
+          onCategoryClick={handleCategoryClick}
           onResetCategory={handleResetCategory}
         />
 
@@ -157,6 +181,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               onToggle={handleDropdownToggle}
               onSelect={(arr) => {
                 onPopularitySelect(arr);
+                if (isResetting) return; // во время сброса ничего не пишем
                 const next = new URLSearchParams(sp);
                 if (arr.length) next.set("popularity", arr.join(","));
                 else next.delete("popularity");
@@ -170,6 +195,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               onToggle={handleDropdownToggle}
               onPriceChange={([min, max]) => {
                 onPriceChange([min, max]);
+                if (isResetting) return; // во время сброса не трогаем URL
                 const next = new URLSearchParams(sp);
                 const isDefault = min === PRICE_MIN && max === PRICE_MAX;
                 if (isDefault) {
@@ -195,6 +221,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               onToggle={handleDropdownToggle}
               onSelect={(arr) => {
                 onMaterialSelect(arr);
+                if (isResetting) return;
                 const next = new URLSearchParams(sp);
                 if (arr.length) next.set("materials", arr.join(","));
                 else next.delete("materials");
@@ -215,6 +242,7 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
               onToggle={handleDropdownToggle}
               onSelect={(arr) => {
                 onCollectionSelect(arr);
+                if (isResetting) return;
                 const next = new URLSearchParams(sp);
                 if (arr.length) next.set("collections", arr.join(","));
                 else next.delete("collections");
@@ -226,14 +254,15 @@ const ProductFilterPanel: React.FC<ProductFilterPanelProps> = ({
 
           <div className="hidden sm:flex items-center gap-4 w-auto">
             <SortBy
+              resetSignal={localResetTick}
               onSortChange={(sort) => {
                 onSortChange(sort);
+                if (isResetting) return;
                 const next = new URLSearchParams(sp);
                 if (sort) next.set("sort", sort);
                 else next.delete("sort");
                 writeAndReplace(next);
               }}
-              resetSignal={localResetTick}
             />
             <ResetFiltersButton onReset={handleResetAll} />
           </div>

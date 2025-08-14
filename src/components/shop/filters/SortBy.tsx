@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 const sortOptions = [
-  { value: "", label: "Сортировать по" }, // дефолт (релевантность на бэкенде)
+  { value: "", label: "Сортировать по (релевантность)" },
   { value: "Title, DESC", label: "Название: от Я до А" },
   { value: "Title, ASC", label: "Название: от А до Я" },
   { value: "Price, DESC", label: "Цена: по убыванию" },
@@ -16,20 +16,20 @@ const sortOptions = [
 
 interface SortByProps {
   onSortChange: (sort: string) => void;
-  /** инкрементируется при «Сбросить всё» */
+  /** тик для внешнего «сброса всего» */
   resetSignal?: number;
 }
 
 const SortBy: React.FC<SortByProps> = ({ onSortChange, resetSignal }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [sp, setSp] = useSearchParams();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const fromUrl = () =>
+  const currentFromUrl =
     sortOptions.find((o) => o.value === (sp.get("sort") || "")) ??
     sortOptions[0];
 
-  const [selected, setSelected] = useState(fromUrl());
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [selected, setSelected] = useState(currentFromUrl);
 
   // клик вне — закрыть
   useEffect(() => {
@@ -45,25 +45,36 @@ const SortBy: React.FC<SortByProps> = ({ onSortChange, resetSignal }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
-  // синхронизация, если адрес изменился извне
+  // синхронизация при изменении URL (например, из истории/внешних фильтров)
   useEffect(() => {
-    setSelected(fromUrl());
+    const opt =
+      sortOptions.find((o) => o.value === (sp.get("sort") || "")) ??
+      sortOptions[0];
+    setSelected(opt);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sp]);
+  }, [sp.toString()]); // toString => меняется при любом изменении набора параметров
 
-  // явный глобальный сброс от панели
+  // внешний «Reset all» — вернуть дефолт и очистить URL
   useEffect(() => {
-    if (resetSignal !== undefined) setSelected(sortOptions[0]);
+    if (resetSignal === undefined) return;
+    setSelected(sortOptions[0]);
+    const next = new URLSearchParams(sp);
+    next.delete("sort");
+    next.delete("page"); // заодно не держим page=1
+    setSp(next, { replace: true });
+    onSortChange(""); // сообщаем наверх
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetSignal]);
 
   const handleSelect = (option: { value: string; label: string }) => {
     setSelected(option);
     setIsOpen(false);
 
-    if (option.value) sp.set("sort", option.value);
-    else sp.delete("sort"); // дефолт — убрать параметр
-    sp.delete("page"); // и не держать page=1
-    setSp(sp, { replace: true });
+    const next = new URLSearchParams(sp);
+    if (option.value) next.set("sort", option.value);
+    else next.delete("sort");
+    next.delete("page");
+    setSp(next, { replace: true });
 
     onSortChange(option.value);
   };
@@ -92,9 +103,7 @@ const SortBy: React.FC<SortByProps> = ({ onSortChange, resetSignal }) => {
       </button>
 
       {isOpen && (
-        <ul
-          className="absolute top-full mt-2 w-72 rounded-sm border border-secondary bg-background-paper shadow z-50"
-          role="listbox">
+        <ul className="absolute top-full mt-2 w-72 rounded-sm border border-secondary bg-background-paper shadow z-50">
           {sortOptions.map((option) => (
             <li key={option.value}>
               <button
