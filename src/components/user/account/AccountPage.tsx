@@ -339,7 +339,8 @@ const AccountPage: React.FC = () => {
       />
 
       {/* ---- Мои отзывы о компании ---- */}
-      <section className="max-w-screen-lg mx-auto px-4 mt-12 mb-16">
+      {/* Сделали ту же ширину, что и верхние блоки: max-w-[1244px] */}
+      <section className="w-full max-w-[1054px] mx-auto px-4 mt-12 mb-16">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl lg:text-3xl font-bold text-white">
             Мои отзывы о компании
@@ -359,7 +360,8 @@ const AccountPage: React.FC = () => {
           </div>
         )}
 
-        <div className="space-y-4 mb-8">
+        {/* одинаковая ширина карточек: тянут w-full внутри контейнера */}
+        <div className="mb-8 space-y-4">
           {companyReviews.length === 0 && !crLoading && (
             <div className="text-sm text-text-secondary">
               Вы ещё не оставляли отзывов.
@@ -369,7 +371,7 @@ const AccountPage: React.FC = () => {
           {companyReviews.map((r) => (
             <article
               key={r.id}
-              className="rounded-xl border border-gray-700 bg-background-paper p-4 shadow-[0_8px_24px_rgba(0,0,0,0.3)] overflow-hidden">
+              className="w-full rounded-xl border border-gray-700 bg-background-paper p-4 shadow-[0_8px_24px_rgba(0,0,0,0.3)] overflow-hidden">
               {/* Заголовок карточки: аватар, имя, дата и удалить */}
               <header className="mb-3 flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
@@ -432,8 +434,8 @@ const AccountPage: React.FC = () => {
           ))}
         </div>
 
-        {/* форма внизу списка */}
-        <div className="rounded-xl border border-gray-700 bg-background-paper/70 shadow-[0_12px_32px_rgba(0,0,0,0.35)] p-4 sm:p-5">
+        {/* форма внизу списка — тоже на полную ширину контейнера */}
+        <div className="w-full rounded-xl border border-gray-700 bg-background-paper/70 shadow-[0_12px_32px_rgba(0,0,0,0.35)] p-4 sm:p-5">
           <LeaveCompanyReview
             onCreated={(created: MyCompanyReview) => {
               // новый — сверху
