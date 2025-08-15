@@ -1,12 +1,10 @@
-// дополнил профиль полями, которые сохраняем в ЛК
-
-export type OrderStatus = "in_transit" | "cancelled" | "completed";
+// Типы аккаунта
 
 export type Order = {
   id: string;
   date: string;
   price: number;
-  status: OrderStatus;
+  status: "completed" | "in_transit" | "cancelled";
 };
 
 export type Stats = {
@@ -20,73 +18,36 @@ export type Stats = {
   returnsChangePct: number;
 };
 
-export type PaymentMethod = {
-  brand: string;
-  last4: string;
-  expiry: string;
+export type UserProfile = {
+  name: string;
+  email: string;
+  avatarUrl?: string;
+  phone?: string;
+  homeAddress?: string;
+  deliveryAddress?: string;
+  country?: string | null;
+  city?: string | null;
 };
 
-export type CompanyMini = { name: string; info?: string };
-
 export type ProductSummary = {
-  id: number;
+  id: number | string;
   name: string;
   price: number;
   image?: string;
 };
 
 export type MyComment = {
-  id: number;
-  productId: number;
-  productName: string;
+  id: number | string;
+  productId: number | string;
   text: string;
   createdAt: string;
 };
 
+/** Отзыв о компании в личном кабинете — БЕЗ рейтинга */
 export type MyCompanyReview = {
   id: number;
-  rating: number;
   text: string;
   createdAt: string;
-  isApproved: boolean;
+  /** если бэк шлёт — покажем «На модерации» */
+  isApproved?: boolean;
 };
-
-export type UserProfile = {
-  name: string;
-  email: string;
-  avatarUrl?: string;
-  phone?: string;
-  country?: string | null;
-  city?: string | null;
-  homeAddress?: string | null;
-  deliveryAddress?: string | null;
-
-  /** Новые поля для ЛК */
-  birthDate?: string | null; // YYYY-MM-DD
-  pickupPoint?: string | null;
-
-  // не обязательные «витринные» поля — UI их рендерит, но мы тут не меняем
-  tierBadge?: string;
-  companies?: CompanyMini[]; // оставляем для совместимости
-  paymentMethods?: PaymentMethod[];
-};
-
-export type AccountCallbacks = {
-  onOrderDetails?: (orderId: string) => void;
-  onOrderRepeat?: (orderId: string) => void;
-  onOrderCancel?: (orderId: string) => Promise<void> | void;
-
-  onSaveProfile?: (data: Partial<UserProfile>) => Promise<void> | void;
-  onUploadAvatar?: (file: File) => Promise<void> | void;
-};
-
-// src/types/api.ts
-export interface MeResponse {
-  id: number;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  avatarUrl: string | null;
-  role: "admin" | "manager" | "customer";
-  registeredAt: string;
-}

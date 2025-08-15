@@ -153,11 +153,11 @@ const LoginForm: React.FC<Props> = ({
               </div>
 
               <div className="flex items-center justify-between">
-                <label className="flex items-center gap-3 text-sm text-text.secondary">
+                <label className="flex items-center gap-3 text-sm text-text.secondary cursor-pointer">
                   <input
                     id="remember"
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-700 bg-[#1b1b1b] text-primary focus:ring-primary"
+                    className="text-primary h-4 w-4 rounded border-gray-700 bg-[#1b1b1b] text-primary focus:ring-primary cursor-pointer"
                     checked={remember}
                     onChange={(e) => setRemember(e.target.checked)}
                   />

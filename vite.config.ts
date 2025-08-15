@@ -82,13 +82,18 @@ export default defineConfig({
     host: true,
     port: 5173,
     strictPort: true,
-    // Оставляем прежние пути: логин/регистрация не ломаются
     proxy: {
       "/auth": { target: BACKEND, changeOrigin: true, secure: false },
       "/users": { target: BACKEND, changeOrigin: true, secure: false },
       "/catalog": { target: BACKEND, changeOrigin: true, secure: false },
       "/favorites": { target: BACKEND, changeOrigin: true, secure: false },
       "/uploads": { target: BACKEND, changeOrigin: true, secure: false },
+
+      "/company-reviews": {
+        target: BACKEND,
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });
