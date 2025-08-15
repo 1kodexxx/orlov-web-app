@@ -340,7 +340,7 @@ const AccountPage: React.FC = () => {
 
       {/* ---- Мои отзывы о компании ---- */}
       {/* Сделали ту же ширину, что и верхние блоки: max-w-[1244px] */}
-      <section className="w-full max-w-[1054px] mx-auto px-4 mt-12 mb-16">
+      <section className="w-full max-w-[1055px] mx-auto px-4 mt-12 mb-16">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl lg:text-3xl font-bold text-white">
             Мои отзывы о компании

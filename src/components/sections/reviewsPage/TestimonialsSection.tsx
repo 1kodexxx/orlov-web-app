@@ -135,7 +135,7 @@ const TestimonialsSection: React.FC = () => {
                 viewport={{ once: true, amount: 0.2 }}
                 whileHover={{ scale: 1.03, y: -4, filter: "brightness(1.06)" }}
                 whileTap={{ scale: 0.985 }}>
-                <p className="mb-5 text-gray-300 leading-relaxed break-words [overflow-wrap:anywhere]">
+                <p className="mb-5 text-gray-300 leading-relaxed [overflow-wrap:anywhere]">
                   “{t.text}”
                 </p>
                 <div className="flex items-center gap-4 mt-auto">

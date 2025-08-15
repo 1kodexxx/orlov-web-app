@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   createCompanyReview,
   type CreatedCompanyReview,
@@ -11,7 +11,7 @@ type Props = {
   onCreated?: (review: MyCompanyReview) => void;
 };
 
-/** Нормализуем ответ бэка в форму, удобную для фронта */
+// Нормализуем ответ бэка
 function toMyCompanyReview(
   created: CreatedCompanyReview,
   fallbackText: string
@@ -33,17 +33,23 @@ const LeaveCompanyReview: React.FC<Props> = ({ onCreated, className }) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Минимум символов для отправки
+  const MIN_LENGTH = 10;
+
+  const canSubmit = useMemo(
+    () => text.trim().length >= MIN_LENGTH && !submitting,
+    [text, submitting]
+  );
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const body = text.trim();
-    if (!body) return;
+    if (!canSubmit) return;
 
+    const body = text.trim();
     setSubmitting(true);
     setError(null);
     try {
-      // ⚠️ отправляем ТОЛЬКО text — без rating
       const created = await createCompanyReview({ text: body });
-
       const mine = toMyCompanyReview(created, body);
       onCreated?.(mine);
       setText("");
@@ -57,7 +63,7 @@ const LeaveCompanyReview: React.FC<Props> = ({ onCreated, className }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className={className}>
+    <form onSubmit={handleSubmit} className={className} noValidate>
       <label className="block text-sm text-text-secondary mb-2">
         Оставьте отзыв о компании
       </label>
@@ -77,11 +83,21 @@ const LeaveCompanyReview: React.FC<Props> = ({ onCreated, className }) => {
         <span>{text.length}/4000</span>
         <button
           type="submit"
-          disabled={submitting || !text.trim()}
-          className="rounded-lg bg-primary px-4 py-2 text-primary-contrast disabled:opacity-60">
+          disabled={!canSubmit}
+          className={`rounded-lg bg-primary px-4 py-2 text-primary-contrast ${
+            !canSubmit ? "opacity-60 cursor-not-allowed" : "hover:opacity-95"
+          }`}>
           {submitting ? "Отправка…" : "Отправить отзыв"}
         </button>
       </div>
+
+      {!canSubmit &&
+        text.trim().length > 0 &&
+        text.trim().length < MIN_LENGTH && (
+          <p className="mt-2 text-xs text-yellow-400">
+            Минимальная длина отзыва — {MIN_LENGTH} символов
+          </p>
+        )}
     </form>
   );
 };
