@@ -29,7 +29,7 @@ type MeResponse = {
 };
 
 const AccountPage: React.FC = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, refreshProfile } = useAuth();
   const navigate = useNavigate();
 
   const baseUrl = useMemo(
@@ -260,9 +260,18 @@ const AccountPage: React.FC = () => {
       method: "PATCH",
       body: fd,
     });
+
+    // 1) мгновенно обновим локальный профиль (для текущей страницы)
     setProfile((p) =>
       p ? { ...p, avatarUrl: toAbsoluteUrl(res.avatarUrl) } : p
     );
+
+    // 2) обновим глобальный профиль в AuthContext (для шапки/AccountDropdown)
+    try {
+      await refreshProfile();
+    } catch {
+      /* ignore */
+    }
   }
 
   if (loading || !user || !stats || !profile) {
