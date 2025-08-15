@@ -423,7 +423,7 @@ const AccountPage: React.FC = () => {
               </header>
 
               {/* Текст отзыва — с безопасными переносами */}
-              <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] hyphens-auto text-text-secondary">
+              <p className="whitespace-pre-wrap [overflow-wrap:anywhere] hyphens-auto text-text-secondary">
                 {r.text}
               </p>
 
