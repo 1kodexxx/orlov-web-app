@@ -1,3 +1,4 @@
+// src/components/user/account/AccountPage.tsx
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useAuth } from "@/features/auth/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -201,28 +202,19 @@ const AccountPage: React.FC = () => {
     })();
   }, [api, user?.email, toAbsoluteUrl]);
 
-  // обновить список моих отзывов (не теряем уже показанные)
+  // обновить список моих отзывов
   const reloadMyCompanyReviews = useCallback(async () => {
     setCrLoading(true);
     setCrError(null);
     try {
-      const minLimit = Math.max(9, companyReviews.length);
-      const cr = await api<MyCompanyReview[]>(
-        `/users/me/company-reviews?limit=${minLimit}&page=1`
-      );
-      setCompanyReviews((prev) => {
-        const byId = new Map<string, MyCompanyReview>();
-        for (const x of [...cr, ...prev]) byId.set(String(x.id), x);
-        return [...byId.values()].sort(
-          (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
-        );
-      });
+      const cr = await api<MyCompanyReview[]>("/users/me/company-reviews");
+      setCompanyReviews(cr ?? []);
     } catch (e) {
       setCrError(e instanceof Error ? e.message : "Не удалось загрузить");
     } finally {
       setCrLoading(false);
     }
-  }, [api, companyReviews.length]);
+  }, [api]);
 
   // удалить отзыв
   const deleteCompanyReview = useCallback(
@@ -377,34 +369,32 @@ const AccountPage: React.FC = () => {
           {companyReviews.map((r) => (
             <article
               key={r.id}
-              className="rounded-xl border border-gray-700 bg-background-paper p-4 shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
-              {/* === Заголовок с аватаром, именем и датой === */}
+              className="rounded-xl border border-gray-700 bg-background-paper p-4 shadow-[0_8px_24px_rgba(0,0,0,0.3)] overflow-hidden">
+              {/* Заголовок карточки: аватар, имя, дата и удалить */}
               <header className="mb-3 flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  {/* Аватар */}
                   {profile.avatarUrl ? (
                     <img
                       src={profile.avatarUrl}
-                      alt={profile.name || "Пользователь"}
-                      className="w-10 h-10 rounded-full object-cover border border-secondary flex-shrink-0"
+                      alt={profile.name}
+                      className="h-10 w-10 rounded-full object-cover border border-secondary flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full grid place-items-center bg-[#2A2A2A] text-xs font-semibold text-gray-200 border border-secondary flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full grid place-items-center bg-[#2A2A2A] text-xs font-semibold text-gray-200 border border-secondary flex-shrink-0">
                       {(profile.name || "U")
                         .split(" ")
                         .slice(0, 2)
                         .map((s) => s[0])
                         .join("")
-                        .toUpperCase()}
+                        .toUpperCase() || "U"}
                     </div>
                   )}
 
-                  {/* Имя + дата */}
                   <div className="min-w-0">
                     <div className="truncate font-semibold text-white">
                       {profile.name || "Пользователь"}
                     </div>
-                    <div className="text-xs text-text-secondary mt-0.5">
+                    <div className="text-xs text-text-secondary">
                       {new Date(r.createdAt).toLocaleDateString("ru-RU", {
                         year: "numeric",
                         month: "long",
@@ -414,7 +404,6 @@ const AccountPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Кнопка удаления */}
                 <button
                   onClick={() => deleteCompanyReview(r.id)}
                   className="rounded p-2 text-text-primary/80 hover:bg-[#2a2a2a] hover:text-text-primary"
@@ -431,8 +420,8 @@ const AccountPage: React.FC = () => {
                 </button>
               </header>
 
-              {/* Текст отзыва */}
-              <p className="whitespace-pre-wrap text-text-secondary">
+              {/* Текст отзыва — с безопасными переносами */}
+              <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] hyphens-auto text-text-secondary">
                 {r.text}
               </p>
 
@@ -447,6 +436,7 @@ const AccountPage: React.FC = () => {
         <div className="rounded-xl border border-gray-700 bg-background-paper/70 shadow-[0_12px_32px_rgba(0,0,0,0.35)] p-4 sm:p-5">
           <LeaveCompanyReview
             onCreated={(created: MyCompanyReview) => {
+              // новый — сверху
               setCompanyReviews((prev) => [created, ...prev]);
             }}
           />
