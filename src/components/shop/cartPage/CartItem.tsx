@@ -1,11 +1,11 @@
-// src/components/shop/cartPage/CartItem.tsx
+import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/useCart";
-import type { CartItem as CartItemType } from "@/data/cart.data";
+import type { CartItemEl } from "./CartItemList";
 
 interface CartItemProps {
-  item: CartItemType;
+  item: CartItemEl;
 }
 
 const colorOptions = [
@@ -17,10 +17,33 @@ const colorOptions = [
   { name: "Фиолетовый", hex: "#a855f7" },
 ];
 
+// type guard: есть ли у айтема одно из id-полей
+function hasAnyId(
+  x: CartItemEl
+): x is CartItemEl & {
+  productId?: number | string;
+  product_id?: number | string;
+} {
+  return "productId" in x || "product_id" in x;
+}
+
 export default function CartItem({ item }: CartItemProps) {
   const { increaseQuantity, decreaseQuantity, removeFromCart } = useCart();
   const colorObj = colorOptions.find((c) => c.hex === item.selectedColor);
   const colorName = colorObj?.name ?? item.selectedColor;
+
+  // корректный путь на страницу товара
+  const productPath = React.useMemo(() => {
+    if (hasAnyId(item)) {
+      const candidate = item.productId ?? item.product_id;
+      const isNumeric =
+        typeof candidate === "number"
+          ? Number.isFinite(candidate)
+          : typeof candidate === "string" && /^\d+$/.test(candidate);
+      if (isNumeric) return `/catalog/${candidate}`;
+    }
+    return `/catalog/${encodeURIComponent(item.slug)}`;
+  }, [item]);
 
   return (
     <motion.li
@@ -33,9 +56,7 @@ export default function CartItem({ item }: CartItemProps) {
           transition: { type: "spring", stiffness: 200, damping: 20 },
         },
       }}>
-      <Link
-        to={`/catalog/${item.slug}`}
-        className="flex items-center gap-4 flex-1">
+      <Link to={productPath} className="flex items-center gap-4 flex-1">
         <img
           src={item.image}
           alt={item.name}

@@ -19,7 +19,11 @@ type Props = {
 
 function errMsg(err: unknown) {
   if (err instanceof Error) return err.message;
-  return "Не удалось войти";
+  try {
+    return typeof err === "string" ? err : JSON.stringify(err);
+  } catch {
+    return "Не удалось войти";
+  }
 }
 
 const LoginForm: React.FC<Props> = ({
@@ -49,9 +53,11 @@ const LoginForm: React.FC<Props> = ({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${apiBase}/auth/login`, {
+      // <— ВАЖНО: передаём remember как query-параметр (бек установит долгоживущую rt-cookie)
+      const url = `${apiBase}/auth/login${remember ? "?remember=1" : ""}`;
+      const res = await fetch(url, {
         method: "POST",
-        credentials: "include",
+        credentials: "include", // получим httpOnly rt-куку
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
@@ -60,10 +66,21 @@ const LoginForm: React.FC<Props> = ({
         throw new Error(text || `HTTP ${res.status}`);
       }
       const data = (await res.json()) as LoginResponse;
+
+      // access держим в памяти
       if (data.accessToken) {
         setAccessToken(data.accessToken);
         setToken(data.accessToken);
       }
+
+      // помечаем режим для будущего авто-рефреша при старте приложения
+      try {
+        if (remember) localStorage.setItem("auth.remember", "1");
+        else localStorage.removeItem("auth.remember");
+      } catch {
+        /* ignore quota/SS mode */
+      }
+
       await refreshProfile();
       onSuccess?.(data);
       navigate("/account", { replace: true });
@@ -83,11 +100,13 @@ const LoginForm: React.FC<Props> = ({
             <h1 className="text-2xl font-semibold text-primary">
               Войти в аккаунт
             </h1>
+
             {error && (
               <div className="mt-4 rounded-lg border border-red-800 bg-[#271c1c] px-3 py-2 text-sm text-red-300">
                 {error}
               </div>
             )}
+
             <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label
@@ -106,6 +125,7 @@ const LoginForm: React.FC<Props> = ({
                   autoComplete="email"
                 />
               </div>
+
               <div>
                 <label
                   htmlFor="password"
@@ -131,6 +151,7 @@ const LoginForm: React.FC<Props> = ({
                   </button>
                 </div>
               </div>
+
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-3 text-sm text-text.secondary">
                   <input
@@ -148,12 +169,14 @@ const LoginForm: React.FC<Props> = ({
                   Забыли пароль?
                 </a>
               </div>
+
               <button
                 type="submit"
                 disabled={!canSubmit}
                 className="mt-2 w-full rounded-lg bg-primary text-[#1a1a1a] px-5 py-2.5 text-sm font-semibold transition hover:bg-[#e6d878] disabled:cursor-not-allowed disabled:opacity-60">
                 {loading ? "Вход…" : "Войти"}
               </button>
+
               <p className="text-center text-sm text-text.secondary">
                 Нет аккаунта?{" "}
                 <a href="/register" className="text-primary hover:underline">

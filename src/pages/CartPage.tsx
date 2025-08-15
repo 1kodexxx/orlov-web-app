@@ -7,7 +7,6 @@ import {
   CartSummary,
   EmptyCartMessage,
 } from "@/components/shop/cartPage";
-import type { CartItem as CartItemType } from "@/data/cart.data";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -20,14 +19,19 @@ const containerVariants = {
 const CartPage: React.FC = () => {
   const { cartItems } = useCart();
 
+  // Все вычисления делаем от фактического типа элементов из контекста
   const { subtotal, vat, discount, total } = useMemo(() => {
-    const sub = cartItems.reduce(
-      (sum: number, item: CartItemType) => sum + item.price * item.quantity,
-      0
-    );
+    const sub = cartItems.reduce((sum, item) => {
+      // На случай если price может быть строкой — приводим к числу
+      const price =
+        typeof item.price === "string" ? parseFloat(item.price) : item.price;
+      return sum + price * item.quantity;
+    }, 0);
+
     const vatAmount = parseFloat((sub * 0.1).toFixed(2));
     const discountAmount = parseFloat((sub * 0.05).toFixed(2));
     const tot = parseFloat((sub + vatAmount - discountAmount).toFixed(2));
+
     return {
       subtotal: sub,
       vat: vatAmount,
@@ -67,6 +71,7 @@ const CartPage: React.FC = () => {
         ) : (
           <>
             <CartItemList cartItems={cartItems} />
+
             <motion.div
               className="border-t border-[#CCCCCC] mt-4"
               initial="hidden"
@@ -76,6 +81,7 @@ const CartPage: React.FC = () => {
                 visible: { opacity: 1, transition: { duration: 0.6 } },
               }}
             />
+
             <CartSummary
               refProp={ref}
               subtotal={subtotal}

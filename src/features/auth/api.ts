@@ -3,7 +3,6 @@ import { apiFetch, setAccessToken } from "@/shared/apiClient";
 
 export type Role = "admin" | "manager" | "customer";
 
-// Полный профиль, который возвращает бэкенд на GET /users/me
 export type Me = {
   id: number;
   email: string;
@@ -13,7 +12,6 @@ export type Me = {
   avatarUrl: string | null;
 };
 
-// Лёгкий пользователь из /auth/login (может и не понадобиться снаружи)
 export type PublicUser = {
   id: number;
   email: string;
@@ -49,7 +47,7 @@ export async function login(dto: LoginDto) {
   return data.user;
 }
 
-// Профиль берём из /users/me (возвращает Me напрямую)
+// Профиль
 export async function me(): Promise<Me> {
   return apiFetch<Me>("/users/me");
 }
@@ -57,4 +55,17 @@ export async function me(): Promise<Me> {
 export async function logout() {
   await apiFetch("/auth/logout", { method: "POST" });
   setAccessToken(null);
+}
+
+/** НОВОЕ: /auth/refresh -> { accessToken, user } (если есть httpOnly rt-кука) */
+export async function refresh(): Promise<{
+  accessToken: string;
+  user: PublicUser;
+}> {
+  const data = await apiFetch<{ accessToken: string; user: PublicUser }>(
+    "/auth/refresh",
+    { method: "POST" } // credentials: 'include' уже проставляется в apiFetch
+  );
+  setAccessToken(data.accessToken);
+  return data;
 }

@@ -4,12 +4,12 @@ import {
   login as apiLogin,
   register as apiRegister,
   logout as apiLogout,
+  refresh as apiRefresh, // ⬅️ НОВОЕ
 } from "./api";
 import { setAccessToken, getAccessToken } from "@/shared/apiClient";
-import { Ctx } from "./AuthContextObject"; // ⬅️ импортируем объект контекста отсюда
+import { Ctx } from "./AuthContextObject";
 
 export type Role = "admin" | "manager" | "customer";
-
 export type CurrentUser = {
   id: number;
   email: string;
@@ -34,7 +34,6 @@ export type AuthCtx = {
   setToken: (t: string | null) => void;
 };
 
-/** Тайпгард для ответов, где может быть accessToken */
 function hasAccessToken(x: unknown): x is { accessToken: string } {
   return (
     typeof x === "object" &&
@@ -49,19 +48,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<CurrentUser>(null);
   const [loading, setLoading] = useState(true);
 
-  // первый запуск: если есть access — пробуем /auth/me
+  // === НОВОЕ: при старте пробуем:
+  // 1) если есть access в памяти — просто /users/me
+  // 2) иначе один раз /auth/refresh (по rt-куке), затем /users/me
   useEffect(() => {
     (async () => {
       try {
         if (getAccessToken()) {
           const profile = await fetchMe();
           setUser(profile);
+          return;
+        }
+        // Нет access в памяти — пробуем освежить по httpOnly rt
+        try {
+          await apiRefresh(); // установит новый access через setAccessToken
+          const profile = await fetchMe();
+          setUser(profile);
+        } catch {
+          // refresh недоступен — остаёмся разлогиненными
+          setUser(null);
         }
       } finally {
         setLoading(false);
       }
     })();
   }, []);
+  // === конец блока инициализации ===
 
   const login = async ({
     email,

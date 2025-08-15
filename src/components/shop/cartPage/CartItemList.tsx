@@ -1,10 +1,12 @@
-// src/components/shop/cartPage/CartItemList.tsx
 import { motion } from "framer-motion";
-import { CartItem } from "./";
-import type { CartItem as CartItemType } from "@/data/cart.data";
+import CartItem from "./CartItem";
+import { useCart } from "@/context/useCart";
+
+// Тип элемента корзины берём из контекста
+export type CartItemEl = ReturnType<typeof useCart>["cartItems"][number];
 
 interface CartItemListProps {
-  cartItems: CartItemType[];
+  cartItems: CartItemEl[];
 }
 
 const containerVariants = {
@@ -15,14 +17,14 @@ const containerVariants = {
   },
 };
 
+const keyFrom = (i: CartItemEl) =>
+  `${i.slug}-${i.selectedColor}-${i.selectedModel}`;
+
 export default function CartItemList({ cartItems }: CartItemListProps) {
   return (
     <motion.ul className="flex flex-col" variants={containerVariants}>
       {cartItems.map((item) => (
-        <CartItem
-          key={`${item.slug}-${item.selectedColor}-${item.selectedModel}`}
-          item={item}
-        />
+        <CartItem key={keyFrom(item)} item={item} />
       ))}
     </motion.ul>
   );
