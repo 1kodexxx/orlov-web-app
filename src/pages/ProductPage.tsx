@@ -6,6 +6,7 @@ import BackTo from "@/components/shop/productPage/BackTo";
 import ProductSlider from "@/components/shop/productPage/ProductSlider";
 import ProductDetails from "@/components/shop/productPage/ProductDetails";
 import ProductNotification from "@/components/shop/productPage/ProductNotification";
+import ProductComments from "@/components/shop/productPage/ProductComments";
 import { Loader } from "@/components/common";
 
 // API
@@ -14,15 +15,13 @@ import { getProduct, type ProductRow } from "@/features/catalog";
 /**
  * Страница товара:
  * - грузит товар по :id
- * - прокидывает название в Breadcrumb через lastLabel
- * - до загрузки использует location.state.productName (чтобы не мигало)
  * - показывает Loader / ошибку / контент
  * - отправляет "view" (fire-and-forget), когда товар успешно загружен
+ * - ниже карточки выводит комментарии ProductComments
  */
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  // const location = useLocation() as { state?: { productName?: string } };
 
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -65,21 +64,9 @@ const ProductPage: React.FC = () => {
     };
   }, [id]);
 
-  // Обновим title вкладки, когда знаем имя
-  // React.useEffect(() => {
-  //   const prev = document.title;
-  //   const name = product?.name ?? location.state?.productName;
-  //   if (name) document.title = `${name} — ORLOV BRAND`;
-  //   return () => {
-  //     document.title = prev;
-  //   };
-  // }, [product?.name, location.state?.productName]);
-
   // Отправим "просмотр" после успешной загрузки (fire-and-forget)
   React.useEffect(() => {
     if (!product?.product_id) return;
-    // Если у тебя есть обёртка addView из features/catalog — используй её.
-    // Ниже — максимально безопасный fire-and-forget:
     void fetch(`/catalog/${product.product_id}/view`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -110,20 +97,27 @@ const ProductPage: React.FC = () => {
         )}
 
         {!loading && !error && product && (
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="flex-1 flex items-center justify-center">
-              {/* С бэка уже приходят нормализованные string[] (мы это сделали в сервисе) */}
-              <ProductSlider
-                images={(product.images as unknown as string[]) ?? []}
-                name={product.name}
+          <>
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="flex-1 flex items-center justify-center">
+                {/* С бэка уже приходят нормализованные string[] */}
+                <ProductSlider
+                  images={(product.images as unknown as string[]) ?? []}
+                  name={product.name}
+                />
+              </div>
+
+              <ProductDetails
+                product={product}
+                setNotification={setNotification}
               />
             </div>
 
-            <ProductDetails
-              product={product}
-              setNotification={setNotification}
-            />
-          </div>
+            {/* Комментарии к товару ниже карточки */}
+            <div className="mt-10">
+              <ProductComments productId={product.product_id} />
+            </div>
+          </>
         )}
       </section>
 

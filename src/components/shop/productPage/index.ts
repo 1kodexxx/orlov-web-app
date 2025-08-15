@@ -5,3 +5,4 @@ export { default as ProductActions } from "./ProductActions";
 export { default as ProductDetails } from "./ProductDetails";
 export { default as ProductNotification } from "./ProductNotification";
 export { default as ProductSlider } from "./ProductSlider";
+export { default as ProductComments } from "./ProductComments";
