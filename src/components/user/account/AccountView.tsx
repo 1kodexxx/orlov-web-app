@@ -79,7 +79,7 @@ const AccountView: React.FC<Props> = ({
     birthDate: user.birthDate ?? null,
   });
 
-  const totalOrdersCompare = "против 20 за последние 3 месяца";
+  const totalOrdersCompare = "";
   const iconCls = "mb-2 h-8 w-8 text-gray-400";
 
   const ordersSorted = useMemo(
@@ -188,7 +188,7 @@ const AccountView: React.FC<Props> = ({
             title="Добавлено отзывов"
             value={stats.reviewsAdded}
             delta={stats.reviewsChangePct}
-            compare="против 14 за последние 3 месяца"
+            compare=""
           />
 
           <StatCard
@@ -210,7 +210,7 @@ const AccountView: React.FC<Props> = ({
             title="Товаров в избранное"
             value={stats.favoritesAdded}
             delta={stats.favoritesChangePct}
-            compare="против 10 за последние 3 месяца"
+            compare=""
           />
 
           <StatCard
@@ -232,7 +232,7 @@ const AccountView: React.FC<Props> = ({
             title="Возвратов товаров"
             value={stats.returns}
             delta={stats.returnsChangePct}
-            compare="против 1 за последние 3 месяца"
+            compare=""
           />
         </div>
 
