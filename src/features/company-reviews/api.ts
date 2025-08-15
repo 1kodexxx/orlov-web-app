@@ -1,64 +1,87 @@
-import { apiFetch } from "@/shared/apiClient";
-import type { CompanyReview, Paged, CompanyStats } from "./types";
+import { API_BASE, getAccessToken } from "@/shared/apiClient";
+import type { CompanyReview, CompanyReviewStats, Paged } from "./types";
 
-/** Параметры выборки */
-export type ListParams = {
-  approved?: boolean; // по умолчанию true
-  page?: number; // по умолчанию 1
-  limit?: number; // по умолчанию 20/на UI можно 9
-};
-
-/** Сборка query-строки из примитивов (стабильная для useMemo/useEffect) */
-export function makeQuery(params: ListParams = {}): string {
-  const approved = params.approved ?? true;
-  const page = params.page ?? 1;
-  const limit = params.limit ?? 20;
-  const qs = new URLSearchParams({
-    approved: String(approved),
-    page: String(page),
-    limit: String(limit),
-  });
-  return qs.toString();
-}
-
-/** Список отзывов (публично) */
-export async function fetchCompanyReviews(
-  params: ListParams = {}
-): Promise<Paged<CompanyReview>> {
-  const query = makeQuery(params);
-  return apiFetch<Paged<CompanyReview>>(`/company-reviews?${query}`);
-}
-
-/** Статистика компании */
-export async function fetchCompanyStats(): Promise<CompanyStats> {
-  return apiFetch<CompanyStats>("/company-reviews/stats");
-}
-
-/** Минимальный ответ создания отзыва — ровно то, что нужно для личного кабинета */
+// Тип ответа от POST /company-reviews
 export type CreatedCompanyReview = {
-  id: string | number;
+  id: number | string;
   text: string;
-  createdAt?: string;
+  createdAt: string;
   isApproved?: boolean;
 };
 
-/** Создание отзыва текущим пользователем */
-export async function createCompanyReview(payload: {
+// универсальный fetch с обработкой ошибок
+async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getAccessToken();
+  const resp = await fetch(`${API_BASE}${path}`, {
+    credentials: "include",
+    ...init,
+    headers: {
+      ...(init?.body instanceof FormData
+        ? {}
+        : { "Content-Type": "application/json" }),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(init?.headers || {}),
+    },
+  });
+
+  if (!resp.ok) {
+    let msg = `HTTP ${resp.status}`;
+    try {
+      const ct = resp.headers.get("content-type") ?? "";
+      if (ct.includes("application/json")) {
+        const j = (await resp.json()) as { message?: string | string[] };
+        msg = Array.isArray(j.message)
+          ? j.message.join(", ")
+          : j.message ?? msg;
+      } else {
+        msg = (await resp.text()) || msg;
+      }
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg);
+  }
+
+  if (resp.status === 204) return undefined as T;
+  const ct = resp.headers.get("content-type") ?? "";
+  return (
+    ct.includes("application/json") ? resp.json() : resp.text()
+  ) as Promise<T>;
+}
+
+/** Получить отзывы (пагинация) */
+export async function fetchCompanyReviews(params: {
+  approved?: boolean;
+  page?: number;
+  limit?: number;
+}): Promise<Paged<CompanyReview>> {
+  const q = new URLSearchParams();
+  if (typeof params.approved === "boolean")
+    q.set("approved", String(params.approved));
+  q.set("page", String(params.page ?? 1));
+  q.set("limit", String(params.limit ?? 9));
+  return api<Paged<CompanyReview>>(`/company-reviews?${q.toString()}`);
+}
+
+/** Статистика по отзывам */
+export async function fetchCompanyReviewsStats(): Promise<CompanyReviewStats> {
+  return api<CompanyReviewStats>("/company-reviews/stats");
+}
+
+/** Создать отзыв о компании (без рейтинга) */
+export async function createCompanyReview(body: {
   text: string;
-  /** опционально — чтобы совместить со старым бэком; новый может игнорировать */
-  rating?: number;
 }): Promise<CreatedCompanyReview> {
-  return apiFetch<CreatedCompanyReview>("/company-reviews", {
+  // На бек не отправляем rating, чтобы не ловить «property rating should not exist»
+  return api(`/company-reviews`, {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ text: body.text }),
   });
 }
 
-/** Удаление отзыва (владелец или админ; см. правила на бэке) */
+/** Удалить мой отзыв о компании */
 export async function deleteCompanyReview(
   id: string | number
 ): Promise<{ success: true }> {
-  return apiFetch<{ success: true }>(`/company-reviews/${id}`, {
-    method: "DELETE",
-  });
+  return api<{ success: true }>(`/company-reviews/${id}`, { method: "DELETE" });
 }

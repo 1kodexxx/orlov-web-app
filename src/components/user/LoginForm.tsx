@@ -157,7 +157,7 @@ const LoginForm: React.FC<Props> = ({
                   <input
                     id="remember"
                     type="checkbox"
-                    className="text-primary h-4 w-4 rounded border-gray-700 bg-[#1b1b1b] text-primary focus:ring-primary cursor-pointer"
+                    className="text-primary h-4 w-4 rounded border-gray-700 bg-[#1b1b1b]  focus:ring-primary cursor-pointer"
                     checked={remember}
                     onChange={(e) => setRemember(e.target.checked)}
                   />

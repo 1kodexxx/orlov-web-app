@@ -1,6 +1,7 @@
 import React from "react";
 import type { OrderStatus } from "./types";
 
+// Форматирование цены
 export const currency = (v: number) =>
   new Intl.NumberFormat("ru-RU", {
     style: "currency",
@@ -8,6 +9,7 @@ export const currency = (v: number) =>
     maximumFractionDigits: 0,
   }).format(v);
 
+// Плашки для статусов заказа
 export const statusPill: Record<
   OrderStatus,
   { label: string; cls: string; icon: React.ReactNode }

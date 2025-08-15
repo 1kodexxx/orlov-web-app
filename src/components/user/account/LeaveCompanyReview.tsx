@@ -1,33 +1,39 @@
-// src/components/user/account/LeaveCompanyReview.tsx
 import React, { useState } from "react";
-import { createCompanyReview } from "@/features/company-reviews/api";
+import {
+  createCompanyReview,
+  type CreatedCompanyReview,
+} from "@/features/company-reviews/api";
 import type { MyCompanyReview } from "./types";
-
-/** Узкое описание ответа API, которое нам нужно в ЛК */
-type CreatedShape = {
-  id: string | number;
-  text: string;
-  createdAt?: unknown; // может прийти строкой, Date или не прийти вовсе
-  isApproved?: boolean;
-};
-
-function isCreatedShape(v: unknown): v is CreatedShape {
-  if (!v || typeof v !== "object") return false;
-  const r = v as Record<string, unknown>;
-  return "id" in r && ("text" in r || typeof r.text === "string");
-}
 
 type Props = {
   className?: string;
+  /** Вызывается после успешного создания отзыва */
   onCreated?: (review: MyCompanyReview) => void;
 };
+
+/** Нормализуем ответ бэка в форму, удобную для фронта */
+function toMyCompanyReview(
+  created: CreatedCompanyReview,
+  fallbackText: string
+): MyCompanyReview {
+  const idRaw = created.id;
+  const idNum =
+    typeof idRaw === "string" ? Number.parseInt(idRaw, 10) : Number(idRaw);
+
+  return {
+    id: Number.isFinite(idNum) ? idNum : Date.now(),
+    text: created.text ?? fallbackText,
+    createdAt: created.createdAt ?? new Date().toISOString(),
+    isApproved: created.isApproved ?? true,
+  };
+}
 
 const LeaveCompanyReview: React.FC<Props> = ({ onCreated, className }) => {
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const body = text.trim();
     if (!body) return;
@@ -35,44 +41,15 @@ const LeaveCompanyReview: React.FC<Props> = ({ onCreated, className }) => {
     setSubmitting(true);
     setError(null);
     try {
-      // rating передаём опционально (на новом бэке игнорируется)
-      const created = await createCompanyReview({ text: body, rating: 5 });
+      // ⚠️ отправляем ТОЛЬКО text — без rating
+      const created = await createCompanyReview({ text: body });
 
-      let mine: MyCompanyReview;
-
-      if (isCreatedShape(created)) {
-        const raw: unknown = created.createdAt;
-
-        const createdAt: string =
-          typeof raw === "string"
-            ? raw
-            : raw instanceof Date
-            ? raw.toISOString()
-            : new Date().toISOString();
-
-        mine = {
-          id: Number(created.id),
-          text: created.text,
-          createdAt,
-          isApproved: created.isApproved ?? true,
-        };
-      } else {
-        // Фолбэк на случай неожиданного формата
-        mine = {
-          id: Date.now(),
-          text: body,
-          createdAt: new Date().toISOString(),
-          isApproved: true,
-        };
-      }
-
+      const mine = toMyCompanyReview(created, body);
       onCreated?.(mine);
       setText("");
-    } catch (e) {
+    } catch (err) {
       setError(
-        e instanceof Error
-          ? e.message
-          : "Не удалось отправить отзыв. Попробуйте позже."
+        err instanceof Error ? err.message : "Не удалось отправить отзыв"
       );
     } finally {
       setSubmitting(false);

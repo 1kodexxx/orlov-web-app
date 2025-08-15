@@ -1,95 +1,116 @@
-// src/features/company-reviews/hooks.ts
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { fetchCompanyReviews, fetchCompanyStats } from "./api";
-import type { CompanyReview, CompanyStats, Paged } from "./types";
-import type { ListParams } from "./api";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { fetchCompanyReviews, fetchCompanyReviewsStats } from "./api";
+import type { CompanyReview, CompanyReviewStats, Paged } from "./types";
 
-/** Стабилизация объекта параметров (чтобы не триггерить эффект на каждый рендер) */
-function useStableParams<T extends object>(params: T): T {
-  const json = useMemo(() => JSON.stringify(params ?? {}), [params]);
-  // возвращаем новый, но детерминированный объект
-
-  return useMemo(() => JSON.parse(json) as T, [json]);
-}
-
-/** Список отзывов компании */
-export function useCompanyReviews(params: ListParams) {
-  const stable = useStableParams(params);
+/** Хук для списка отзывов (с пагинацией) */
+export function useCompanyReviews(opts: {
+  approved?: boolean;
+  page?: number;
+  limit?: number;
+}) {
+  const options = useMemo(
+    () => ({
+      approved: opts.approved,
+      page: opts.page ?? 1,
+      limit: opts.limit ?? 9,
+    }),
+    [opts.approved, opts.page, opts.limit]
+  );
 
   const [data, setData] = useState<Paged<CompanyReview> | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [tick, setTick] = useState(0);
+  const acRef = useRef<AbortController | null>(null);
 
-  const reload = useCallback(() => setTick((x) => x + 1), []);
-
+  // базовая загрузка при монтировании/смене опций
   useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    setError(null);
+    let ignore = false;
 
     (async () => {
+      acRef.current?.abort();
+      const ac = new AbortController();
+      acRef.current = ac;
+      setLoading(true);
+      setError(null);
       try {
-        const res = await fetchCompanyReviews(stable);
-        if (!mounted) return;
-        setData(res);
-      } catch (err) {
-        const msg =
-          err instanceof Error
-            ? err.message
-            : `Unexpected error: ${String(err)}`;
-        if (!mounted) return;
-        setError(msg);
+        const res = await fetchCompanyReviews(options);
+        if (!ac.signal.aborted && !ignore) setData(res);
+      } catch (e) {
+        if (!ac.signal.aborted && !ignore)
+          setError(
+            e instanceof Error ? e.message : "Не удалось загрузить отзывы"
+          );
       } finally {
-        if (mounted) setLoading(false);
+        if (!ac.signal.aborted && !ignore) setLoading(false);
       }
     })();
 
     return () => {
-      mounted = false;
+      ignore = true;
+      acRef.current?.abort();
     };
-  }, [stable, tick]);
+  }, [options.approved, options.page, options.limit]);
 
-  return { data, loading, error, reload };
+  // умный reload: гарантирует, что limit >= уже показанному числу элементов
+  async function reload(override?: { page?: number; limit?: number }) {
+    acRef.current?.abort();
+    const ac = new AbortController();
+    acRef.current = ac;
+    setLoading(true);
+    setError(null);
+    try {
+      const currentLen = data?.items?.length ?? 0;
+      const res = await fetchCompanyReviews({
+        approved: options.approved,
+        page: override?.page ?? options.page,
+        limit: Math.max(override?.limit ?? options.limit, currentLen || 0),
+      });
+      if (!ac.signal.aborted) setData(res);
+    } catch (e) {
+      if (!ac.signal.aborted)
+        setError(
+          e instanceof Error ? e.message : "Не удалось загрузить отзывы"
+        );
+    } finally {
+      if (!ac.signal.aborted) setLoading(false);
+    }
+  }
+
+  return {
+    data,
+    loading,
+    error,
+    reload,
+  };
 }
 
-/** Статистика отзывов компании (средняя оценка и количество) */
+/** Хук для статистики отзывов */
 export function useCompanyReviewsStats() {
-  const [data, setData] = useState<CompanyStats | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<CompanyReviewStats | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [tick, setTick] = useState(0);
-
-  const reload = useCallback(() => setTick((x) => x + 1), []);
 
   useEffect(() => {
     let mounted = true;
-    setLoading(true);
-    setError(null);
-
     (async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const res = await fetchCompanyStats();
-        if (!mounted) return;
-        setData(res);
-      } catch (err) {
-        const msg =
-          err instanceof Error
-            ? err.message
-            : `Unexpected error: ${String(err)}`;
-        if (!mounted) return;
-        setError(msg);
+        const res = await fetchCompanyReviewsStats();
+        if (mounted) setData(res);
+      } catch (e) {
+        if (mounted)
+          setError(
+            e instanceof Error ? e.message : "Не удалось загрузить статистику"
+          );
       } finally {
         if (mounted) setLoading(false);
       }
     })();
-
     return () => {
       mounted = false;
     };
-  }, [tick]);
+  }, []);
 
-  return { data, loading, error, reload };
+  return { data, loading, error, reload: () => {} };
 }
-
-export type { CompanyReview, CompanyStats, Paged, ListParams };

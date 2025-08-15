@@ -1,4 +1,3 @@
-// src/components/user/account/AccountPage.tsx
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useAuth } from "@/features/auth/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -202,19 +201,28 @@ const AccountPage: React.FC = () => {
     })();
   }, [api, user?.email, toAbsoluteUrl]);
 
-  // обновить список моих отзывов
+  // обновить список моих отзывов (не теряем уже показанные)
   const reloadMyCompanyReviews = useCallback(async () => {
     setCrLoading(true);
     setCrError(null);
     try {
-      const cr = await api<MyCompanyReview[]>("/users/me/company-reviews");
-      setCompanyReviews(cr ?? []);
+      const minLimit = Math.max(9, companyReviews.length);
+      const cr = await api<MyCompanyReview[]>(
+        `/users/me/company-reviews?limit=${minLimit}&page=1`
+      );
+      setCompanyReviews((prev) => {
+        const byId = new Map<string, MyCompanyReview>();
+        for (const x of [...cr, ...prev]) byId.set(String(x.id), x);
+        return [...byId.values()].sort(
+          (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
+        );
+      });
     } catch (e) {
       setCrError(e instanceof Error ? e.message : "Не удалось загрузить");
     } finally {
       setCrLoading(false);
     }
-  }, [api]);
+  }, [api, companyReviews.length]);
 
   // удалить отзыв
   const deleteCompanyReview = useCallback(
@@ -370,21 +378,43 @@ const AccountPage: React.FC = () => {
             <article
               key={r.id}
               className="rounded-xl border border-gray-700 bg-background-paper p-4 shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
-              <header className="mb-2 flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="truncate font-semibold text-white">
-                    {new Date(r.createdAt).toLocaleDateString("ru-RU", {
-                      year: "numeric",
-                      month: "short",
-                      day: "2-digit",
-                    })}
-                  </div>
-                  {r.isApproved === false && (
-                    <div className="text-xs text-yellow-300 mt-1">
-                      На модерации
+              {/* === Заголовок с аватаром, именем и датой === */}
+              <header className="mb-3 flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  {/* Аватар */}
+                  {profile.avatarUrl ? (
+                    <img
+                      src={profile.avatarUrl}
+                      alt={profile.name || "Пользователь"}
+                      className="w-10 h-10 rounded-full object-cover border border-secondary flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full grid place-items-center bg-[#2A2A2A] text-xs font-semibold text-gray-200 border border-secondary flex-shrink-0">
+                      {(profile.name || "U")
+                        .split(" ")
+                        .slice(0, 2)
+                        .map((s) => s[0])
+                        .join("")
+                        .toUpperCase()}
                     </div>
                   )}
+
+                  {/* Имя + дата */}
+                  <div className="min-w-0">
+                    <div className="truncate font-semibold text-white">
+                      {profile.name || "Пользователь"}
+                    </div>
+                    <div className="text-xs text-text-secondary mt-0.5">
+                      {new Date(r.createdAt).toLocaleDateString("ru-RU", {
+                        year: "numeric",
+                        month: "long",
+                        day: "2-digit",
+                      })}
+                    </div>
+                  </div>
                 </div>
+
+                {/* Кнопка удаления */}
                 <button
                   onClick={() => deleteCompanyReview(r.id)}
                   className="rounded p-2 text-text-primary/80 hover:bg-[#2a2a2a] hover:text-text-primary"
@@ -401,9 +431,14 @@ const AccountPage: React.FC = () => {
                 </button>
               </header>
 
+              {/* Текст отзыва */}
               <p className="whitespace-pre-wrap text-text-secondary">
                 {r.text}
               </p>
+
+              {r.isApproved === false && (
+                <div className="text-xs text-yellow-300 mt-2">На модерации</div>
+              )}
             </article>
           ))}
         </div>

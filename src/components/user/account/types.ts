@@ -1,10 +1,32 @@
-// Типы аккаунта
+// Общие типы для страницы аккаунта
+
+export type OrderStatus = "in_transit" | "cancelled" | "completed";
 
 export type Order = {
   id: string;
-  date: string;
+  date: string; // ISO или YYYY-MM-DD
   price: number;
-  status: "completed" | "in_transit" | "cancelled";
+  status: OrderStatus;
+};
+
+export type PaymentMethod = {
+  brand: string; // 'visa', 'mc' и т.п.
+  last4: string; // последние 4 цифры
+  expiry: string; // '12/27'
+};
+
+export type UserProfile = {
+  name: string;
+  email: string;
+  avatarUrl?: string;
+  phone?: string | null;
+  homeAddress?: string | null;
+  deliveryAddress?: string | null;
+  birthDate?: string | null;
+  pickupPoint?: string | null;
+  city?: string | null;
+  country?: string | null;
+  paymentMethods?: PaymentMethod[]; // для бейджей оплаты
 };
 
 export type Stats = {
@@ -18,36 +40,35 @@ export type Stats = {
   returnsChangePct: number;
 };
 
-export type UserProfile = {
-  name: string;
-  email: string;
-  avatarUrl?: string;
-  phone?: string;
-  homeAddress?: string;
-  deliveryAddress?: string;
-  country?: string | null;
-  city?: string | null;
-};
-
 export type ProductSummary = {
-  id: number | string;
+  id: string | number;
+  sku?: string;
   name: string;
   price: number;
-  image?: string;
+  thumbnail?: string;
 };
 
 export type MyComment = {
-  id: number | string;
-  productId: number | string;
+  id: string | number;
+  productId?: string | number;
   text: string;
-  createdAt: string;
+  rating?: number;
+  createdAt: string; // ISO
 };
 
-/** Отзыв о компании в личном кабинете — БЕЗ рейтинга */
 export type MyCompanyReview = {
-  id: number;
+  id: string | number;
   text: string;
-  createdAt: string;
-  /** если бэк шлёт — покажем «На модерации» */
-  isApproved?: boolean;
+  createdAt: string; // ISO
+  isApproved?: boolean; // для вывода статуса
+};
+
+export type AccountCallbacks = {
+  onOrderDetails?: (id: string) => void;
+  onOrderRepeat?: (id: string) => void;
+  onOrderCancel?: (id: string) => Promise<void> | void;
+
+  // из AccountPage пробрасываются сюда:
+  onSaveProfile?: (data: Partial<UserProfile>) => Promise<void> | void;
+  onUploadAvatar?: (file: File) => Promise<void> | void;
 };

@@ -1,4 +1,3 @@
-// src/pages/account/AccountView.tsx
 import React, { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "./Breadcrumbs";
@@ -17,6 +16,7 @@ import type {
   ProductSummary,
   MyComment,
   MyCompanyReview,
+  PaymentMethod,
 } from "./types";
 
 type Props = {
@@ -406,7 +406,7 @@ const AccountView: React.FC<Props> = ({
                 </dt>
                 <dd className="space-y-3">
                   {user.paymentMethods && user.paymentMethods.length > 0 ? (
-                    user.paymentMethods.map((pm, i) => (
+                    user.paymentMethods.map((pm: PaymentMethod, i: number) => (
                       <PaymentBadge key={i} method={pm} />
                     ))
                   ) : (
@@ -445,7 +445,7 @@ const AccountView: React.FC<Props> = ({
           </h3>
 
           {ordersSorted.map((o, idx) => {
-            const pill = statusPill[o.status];
+            const pill = statusPill[o.status as OrderStatus]; // тип ключа для объекта плашек
             return (
               <div
                 key={o.id}
@@ -498,7 +498,7 @@ const AccountView: React.FC<Props> = ({
 
                 <RowActions
                   id={o.id}
-                  status={o.status as OrderStatus}
+                  status={o.status}
                   actMenu={actMenu}
                   setActMenu={setActMenu}
                   setDeleteId={setDeleteId}
