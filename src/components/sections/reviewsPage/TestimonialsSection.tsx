@@ -1,4 +1,3 @@
-// src/sections/TestimonialsSection.tsx
 import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
@@ -13,38 +12,42 @@ const sectionVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
 };
 
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
 const PAGE_SIZE = 6;
 
 const TestimonialsSection: React.FC = () => {
   const [page, setPage] = useState(1);
   const [allItems, setAllItems] = useState<CompanyReview[]>([]);
-  const seenIdsRef = useRef<Set<string>>(new Set());
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  // Загружаем текущую страницу
   const { data, loading, error } = useCompanyReviews({
     page,
     limit: PAGE_SIZE,
   });
-
   const { data: stats } = useCompanyReviewsStats();
 
-  // Добавляем новые карточки к уже имеющимся
+  // Добавляем новые карточки
   useEffect(() => {
     if (data?.items?.length) {
       setAllItems((prev) => {
-        const ids = new Set(prev.map((it) => String(it.id)));
-        const filtered = data.items.filter((it) => !ids.has(String(it.id)));
-        filtered.forEach((it) => seenIdsRef.current.add(String(it.id)));
+        const ids = new Set(prev.map((it) => it.id));
+        const filtered = data.items.filter((it) => !ids.has(it.id));
         return [...prev, ...filtered];
       });
     }
   }, [data?.items]);
 
-  // Intersection Observer для бесконечной подгрузки
+  // Бесконечная подгрузка
   useEffect(() => {
     if (!loaderRef.current) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         const first = entries[0];
@@ -52,9 +55,8 @@ const TestimonialsSection: React.FC = () => {
           setPage((p) => p + 1);
         }
       },
-      { threshold: 1.0 }
+      { threshold: 1 }
     );
-
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
   }, [loading, data?.items?.length]);
@@ -71,18 +73,16 @@ const TestimonialsSection: React.FC = () => {
           className="text-3xl md:text-4xl font-bold text-primary mb-3"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}>
+          transition={{ duration: 0.6 }}>
           Почему выбирают нас?
         </motion.h2>
-
         <motion.p
           className="text-text-secondary max-w-2xl mx-auto"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.6, ease: "easeOut" }}>
+          transition={{ delay: 0.15, duration: 0.6 }}>
           Узнайте, почему выбор Orlov Brand — лучшее решение для вас.
         </motion.p>
-
         {typeof stats?.reviews_count === "number" && (
           <motion.div
             className="mt-4 inline-flex items-center gap-3 rounded-full border border-secondary/60 bg-background-paper/60 px-4 py-2"
@@ -101,7 +101,7 @@ const TestimonialsSection: React.FC = () => {
 
       {/* Ошибка */}
       {error && (
-        <div className="w-full max-w-[1244px] mx-auto text-center mb-6">
+        <div className="w-full max-w-[1244px] text-center mb-6">
           <div className="inline-flex items-center gap-3 rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-red-200">
             Не удалось загрузить отзывы: {error}
           </div>
@@ -110,7 +110,7 @@ const TestimonialsSection: React.FC = () => {
 
       {/* Скелетоны */}
       {loading && allItems.length === 0 && (
-        <div className="w-full max-w-[1244px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
+        <div className="w-full max-w-[1244px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: PAGE_SIZE }).map((_, i) => (
             <div
               key={i}
@@ -120,34 +120,24 @@ const TestimonialsSection: React.FC = () => {
         </div>
       )}
 
-      {/* Список отзывов */}
+      {/* Список */}
       {allItems.length > 0 && (
-        <motion.div
-          layout
-          className="w-full max-w-[1244px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
+        <div className="w-full max-w-[1244px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {allItems.map((t) => {
-            const isNew = !seenIdsRef.current.has(String(t.id));
             const role = t.author.headline || t.author.organization || "Клиент";
             return (
               <motion.div
-                layout
                 key={t.id}
-                className="bg-background-paper rounded-2xl shadow p-6 flex flex-col justify-between h-full cursor-pointer border border-secondary/60"
-                initial={isNew ? { opacity: 0, y: 14, scale: 0.98 } : false}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 320,
-                  damping: 26,
-                  mass: 0.6,
-                }}
-                whileHover={{
-                  scale: 1.03,
-                  y: -4,
-                  filter: "brightness(1.06)",
-                }}
+                className="bg-background-paper rounded-2xl shadow p-6 flex flex-col justify-between h-full border border-secondary/60"
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                whileHover={{ scale: 1.03, y: -4, filter: "brightness(1.06)" }}
                 whileTap={{ scale: 0.985 }}>
-                <p className="mb-5 text-gray-300 leading-relaxed">“{t.text}”</p>
+                <p className="mb-5 text-gray-300 leading-relaxed break-words [overflow-wrap:anywhere]">
+                  “{t.text}”
+                </p>
                 <div className="flex items-center gap-4 mt-auto">
                   {t.author.avatarUrl ? (
                     <img
@@ -175,14 +165,13 @@ const TestimonialsSection: React.FC = () => {
               </motion.div>
             );
           })}
-        </motion.div>
+        </div>
       )}
 
-      {/* Лоадер для бесконечного скролла */}
-      <div ref={loaderRef} className="h-10 mt-8"></div>
+      <div ref={loaderRef} className="h-10 mt-8" />
 
       {!loading && allItems.length === 0 && !error && (
-        <div className="w-full max-w-[1244px] mx-auto text-center text-text-secondary">
+        <div className="w-full max-w-[1244px] text-center text-text-secondary">
           Отзывов пока нет.
         </div>
       )}

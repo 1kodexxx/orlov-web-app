@@ -67,12 +67,14 @@ const LeaveCompanyReview: React.FC<Props> = ({ onCreated, className }) => {
         onChange={(e) => setText(e.target.value)}
         placeholder="Напишите пару слов…"
         rows={4}
+        maxLength={4000}
         className="w-full rounded-lg border border-secondary bg-background-paper p-3 text-white outline-none focus:border-primary"
       />
 
       {error && <div className="mt-2 text-sm text-red-300">{error}</div>}
 
-      <div className="mt-3 flex justify-end">
+      <div className="mt-3 flex justify-between items-center text-xs text-text-secondary">
+        <span>{text.length}/4000</span>
         <button
           type="submit"
           disabled={submitting || !text.trim()}
